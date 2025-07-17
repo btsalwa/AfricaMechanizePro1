@@ -19,7 +19,7 @@ export async function apiRequest(method, url, data) {
   return res;
 }
 
-export const getQueryFn = ({ on401: unauthorizedBehavior }) => 
+export const getQueryFn = ({ on401: unauthorizedBehavior }) =>
   async ({ queryKey }) => {
     const res = await fetch(queryKey.join("/"), {
       credentials: "include",

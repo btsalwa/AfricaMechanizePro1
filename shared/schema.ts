@@ -47,6 +47,7 @@ export const resources = pgTable("resources", {
   title: text("title").notNull(),
   description: text("description").notNull(),
   type: text("type").notNull(), // 'webinar', 'newsletter', 'research', 'presentation'
+  category: text("category").notNull(),
   language: text("language").notNull().default("en"),
   fileUrl: text("file_url"),
   downloadUrl: text("download_url"),
