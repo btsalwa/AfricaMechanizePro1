@@ -15,27 +15,75 @@ export const NewsEvents = () => {
     {
       id: 1,
       title: "Sustainable Farm Power for Enhanced Productivity",
-      description: "FAO & CEMA Hybrid Event exploring innovative solutions for agricultural power systems",
+      description: "FAO & CEMA Hybrid Event exploring innovative solutions for agricultural power systems and mechanization technologies for African farmers",
       date: "2024-06-04",
       type: "event",
+      participants: 850,
       imageUrl: "https://images.unsplash.com/photo-1625246333195-78d9c38ad449?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=800&h=400"
     },
     {
       id: 2,
       title: "FAO Global Conference On Sustainable Agricultural Mechanization",
-      description: "Global leaders discuss the future of sustainable agricultural mechanization",
+      description: "Global leaders discuss the future of sustainable agricultural mechanization with a focus on the F-SAMA framework implementation",
       date: "2023-09-29",
       type: "conference",
+      participants: 1200,
       imageUrl: "https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=800&h=400"
     },
     {
       id: 3,
       title: "Uganda Regional Experience Sharing Meeting",
-      description: "SAM hire service provision and regional cooperation initiatives",
+      description: "SAM hire service provision and regional cooperation initiatives focusing on smallholder farmer access to mechanization",
       date: "2019-12-09",
       type: "meeting",
+      participants: 320,
       imageUrl: "https://images.unsplash.com/photo-1556075798-4825dfaaf498?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=800&h=400"
     },
+    {
+      id: 4,
+      title: "Webinar 12: Revamping Manufacturing of Agricultural Machinery",
+      description: "Interactive webinar featuring industry experts discussing strategies for revitalizing agricultural machinery manufacturing in Africa",
+      date: "2024-03-15",
+      type: "webinar",
+      participants: 680,
+      imageUrl: "https://images.unsplash.com/photo-1560472354-b33ff0c44a43?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=800&h=400"
+    },
+    {
+      id: 5,
+      title: "Women in Agricultural Mechanization Summit",
+      description: "Empowering women entrepreneurs in agricultural mechanization with success stories and capacity building sessions",
+      date: "2024-02-20",
+      type: "conference",
+      participants: 540,
+      imageUrl: "https://images.unsplash.com/photo-1594608661623-2d8c4f7b7ef0?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=800&h=400"
+    },
+    {
+      id: 6,
+      title: "Youth Engagement in Agricultural Technology",
+      description: "Engaging young entrepreneurs in agricultural mechanization through innovation challenges and mentorship programs",
+      date: "2024-01-18",
+      type: "workshop",
+      participants: 420,
+      imageUrl: "https://images.unsplash.com/photo-1523240795612-9a054b0db644?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=800&h=400"
+    },
+    {
+      id: 7,
+      title: "Digital Agriculture and Smart Farming Symposium",
+      description: "Exploring the intersection of digital technology and agricultural mechanization for enhanced productivity and sustainability",
+      date: "2023-12-10",
+      type: "conference",
+      participants: 920,
+      imageUrl: "https://images.unsplash.com/photo-1518186285589-2f7649de83e0?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=800&h=400"
+    },
+    {
+      id: 8,
+      title: "Webinar 11: Sustainable Financing for Agricultural Machinery",
+      description: "Discussion on innovative financing mechanisms for smallholder farmers to access agricultural machinery and equipment",
+      date: "2024-04-22",
+      type: "webinar",
+      participants: 750,
+      imageUrl: "https://images.unsplash.com/photo-1563013544-824ae1b704d3?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=800&h=400"
+    }
   ];
 
   const eventsData = events || defaultEvents;
@@ -84,6 +132,8 @@ export const NewsEvents = () => {
       case 'event': return 'bg-primary';
       case 'conference': return 'bg-secondary';
       case 'meeting': return 'bg-accent';
+      case 'webinar': return 'bg-blue-500';
+      case 'workshop': return 'bg-purple-500';
       default: return 'bg-gray-500';
     }
   };
@@ -93,6 +143,8 @@ export const NewsEvents = () => {
       case 'event': return 'from-primary to-success';
       case 'conference': return 'from-secondary to-warning';
       case 'meeting': return 'from-accent to-primary';
+      case 'webinar': return 'from-blue-500 to-cyan-500';
+      case 'workshop': return 'from-purple-500 to-pink-500';
       default: return 'from-gray-500 to-gray-700';
     }
   };
@@ -158,11 +210,11 @@ export const NewsEvents = () => {
                 <div className="flex items-center justify-between mb-4">
                   <div className="flex items-center text-gray-500 dark:text-gray-400 text-sm">
                     <Clock className="mr-1 w-4 h-4" />
-                    <span>Recent</span>
+                    <span>{formatDate(event.date)}</span>
                   </div>
                   <div className="flex items-center text-gray-500 dark:text-gray-400 text-sm">
                     <Users className="mr-1 w-4 h-4" />
-                    <span>Network</span>
+                    <span>{event.participants || 0} participants</span>
                   </div>
                 </div>
                 

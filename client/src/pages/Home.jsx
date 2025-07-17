@@ -3,6 +3,8 @@ import { StatsCounter } from "../components/StatsCounter";
 import { FrameworkGrid } from "../components/FrameworkGrid";
 import { NewsEvents } from "../components/NewsEvents";
 import { ResourceLibrary } from "../components/ResourceLibrary";
+import { WebinarParticipation } from "../components/WebinarParticipation";
+import { ReadingMaterials } from "../components/ReadingMaterials";
 import { NewsletterSignup } from "../components/NewsletterSignup";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -55,7 +57,11 @@ export default function Home() {
       
       <NewsEvents />
       
+      <WebinarParticipation />
+      
       <ResourceLibrary />
+      
+      <ReadingMaterials />
       
       <NewsletterSignup />
     </div>

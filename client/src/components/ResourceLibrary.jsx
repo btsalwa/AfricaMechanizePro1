@@ -24,7 +24,7 @@ export const ResourceLibrary = () => {
       description: "The framework presents a menu of priority elements to be considered for sustainable agricultural mechanization in Africa.",
       category: "research",
       language: "en",
-      section: "Webinar 1",
+      section: "F-SAMA Framework",
       downloadCount: 1250
     },
     {
@@ -33,7 +33,7 @@ export const ResourceLibrary = () => {
       description: "La mécanisation agricole durable peut sauver l'Afrique. Cadre Stratégique pour l'Afrique.",
       category: "research",
       language: "fr",
-      section: "Webinar 1",
+      section: "F-SAMA Framework",
       downloadCount: 890
     },
     {
@@ -42,7 +42,7 @@ export const ResourceLibrary = () => {
       description: "This is the second quarterly newsletter of the AfricaMechanize Platform, featuring latest developments and insights.",
       category: "newsletter",
       language: "en",
-      section: "Magazine",
+      section: "Quarterly Publication",
       downloadCount: 2100
     },
     {
@@ -51,7 +51,7 @@ export const ResourceLibrary = () => {
       description: "WEBINAR No. 12: Revamping Manufacturing of Agricultural Machinery in Africa",
       category: "webinar",
       language: "en",
-      section: "Upcoming Webinars",
+      section: "Monthly Webinars",
       downloadCount: 750
     },
     {
@@ -60,7 +60,7 @@ export const ResourceLibrary = () => {
       description: "L'objectif du webinaire 12 est d'initier une collaboration entre les pays africains.",
       category: "webinar",
       language: "fr",
-      section: "Upcoming Webinars",
+      section: "Monthly Webinars",
       downloadCount: 650
     },
     {
@@ -69,9 +69,117 @@ export const ResourceLibrary = () => {
       description: "The Objective of Webinar 12 is to initiate collaboration between African countries in agricultural machinery manufacturing.",
       category: "research",
       language: "en",
-      section: "Upcoming Webinars",
+      section: "Technical Papers",
       downloadCount: 430
     },
+    {
+      id: 7,
+      title: "Webinar 11: Advancing Agricultural Mechanization in Africa",
+      description: "Join industry experts discussing the latest trends and innovations in agricultural mechanization across African nations.",
+      category: "webinar",
+      language: "en",
+      section: "Monthly Webinars",
+      downloadCount: 920
+    },
+    {
+      id: 8,
+      title: "Women in Agricultural Mechanization: Breaking Barriers",
+      description: "A comprehensive study on the role of women in agricultural mechanization and pathways to greater participation.",
+      category: "research",
+      language: "en",
+      section: "Gender Studies",
+      downloadCount: 1100
+    },
+    {
+      id: 9,
+      title: "AfricaMechanize Newsletter - Issue 01 (2024)",
+      description: "The inaugural newsletter featuring insights from the F-SAMA framework and regional success stories.",
+      category: "newsletter",
+      language: "en",
+      section: "Quarterly Publication",
+      downloadCount: 1850
+    },
+    {
+      id: 10,
+      title: "Youth Engagement in Agricultural Technology",
+      description: "Exploring innovative approaches to engage young people in agricultural mechanization and technology adoption.",
+      category: "research",
+      language: "en",
+      section: "Youth Initiatives",
+      downloadCount: 780
+    },
+    {
+      id: 11,
+      title: "Webinar 10: Sustainable Financing for Agricultural Machinery",
+      description: "Discussion on innovative financing mechanisms for smallholder farmers to access agricultural machinery.",
+      category: "webinar",
+      language: "en",
+      section: "Monthly Webinars",
+      downloadCount: 890
+    },
+    {
+      id: 12,
+      title: "Regional Agricultural Mechanization Policies",
+      description: "A comparative analysis of agricultural mechanization policies across West, East, and Southern Africa.",
+      category: "research",
+      language: "en",
+      section: "Policy Analysis",
+      downloadCount: 1320
+    },
+    {
+      id: 13,
+      title: "Webinar 9: Digital Agriculture and Smart Farming",
+      description: "Exploring the intersection of digital technology and agricultural mechanization for enhanced productivity.",
+      category: "webinar",
+      language: "en",
+      section: "Monthly Webinars",
+      downloadCount: 1100
+    },
+    {
+      id: 14,
+      title: "Climate-Smart Agricultural Mechanization",
+      description: "Strategies for implementing climate-resilient agricultural mechanization practices in Africa.",
+      category: "research",
+      language: "en",
+      section: "Climate Adaptation",
+      downloadCount: 960
+    },
+    {
+      id: 15,
+      title: "Participant Guide: Best Practices in Agricultural Mechanization",
+      description: "A comprehensive guide for farmers, policymakers, and stakeholders on implementing best practices in agricultural mechanization.",
+      category: "guide",
+      language: "en",
+      section: "Training Materials",
+      downloadCount: 1540
+    },
+    {
+      id: 16,
+      title: "Value Chain Development for Agricultural Machinery",
+      description: "Analyzing the agricultural machinery value chain and opportunities for local manufacturing and distribution.",
+      category: "research",
+      language: "en",
+      section: "Value Chain Analysis",
+      downloadCount: 870
+    },
+    {
+      id: 17,
+      title: "Webinar 8: Post-Harvest Technologies and Equipment",
+      description: "Focus on post-harvest loss reduction through improved technologies and mechanization solutions.",
+      category: "webinar",
+      language: "en",
+      section: "Monthly Webinars",
+      downloadCount: 740
+    },
+    {
+      id: 18,
+      title: "Training Manual: Tractor Operation and Maintenance",
+      description: "Comprehensive training materials for tractor operators and maintenance technicians in rural communities.",
+      category: "guide",
+      language: "en",
+      section: "Training Materials",
+      downloadCount: 1200
+    }
   ];
 
   const resourcesData = resources || defaultResources;
@@ -115,6 +223,7 @@ export const ResourceLibrary = () => {
       case 'webinar': return Video;
       case 'newsletter': return BookOpen;
       case 'research': return FileCheck;
+      case 'guide': return FileText;
       default: return FileText;
     }
   };
@@ -124,6 +233,7 @@ export const ResourceLibrary = () => {
       case 'webinar': return 'from-accent to-primary';
       case 'newsletter': return 'from-secondary to-warning';
       case 'research': return 'from-primary to-success';
+      case 'guide': return 'from-purple-500 to-indigo-600';
       default: return 'from-gray-500 to-gray-700';
     }
   };
@@ -133,6 +243,7 @@ export const ResourceLibrary = () => {
     { key: 'webinar', label: 'Webinars', icon: Video },
     { key: 'newsletter', label: 'Newsletter', icon: BookOpen },
     { key: 'research', label: 'Research', icon: FileCheck },
+    { key: 'guide', label: 'Training Guides', icon: FileText },
   ];
 
   if (isLoading) {
