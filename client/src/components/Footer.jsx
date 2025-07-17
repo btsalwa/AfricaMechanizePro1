@@ -1,0 +1,133 @@
+import { Link } from "wouter";
+import { Sprout, Twitter, Facebook, Linkedin, Youtube, Mail, Phone, MapPin } from "lucide-react";
+
+export const Footer = () => {
+  return (
+    <footer className="bg-neutral-800 dark:bg-neutral-900 text-white py-16">
+      <div className="container mx-auto px-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+          {/* Company Info */}
+          <div>
+            <div className="flex items-center space-x-3 mb-6">
+              <div className="w-10 h-10 bg-gradient-to-br from-primary to-secondary rounded-lg flex items-center justify-center">
+                <Sprout className="text-white" size={20} />
+              </div>
+              <div>
+                <h3 className="text-xl font-bold">AfricaMechanize</h3>
+                <p className="text-sm opacity-75">Sustainable Agriculture</p>
+              </div>
+            </div>
+            <p className="text-gray-300 mb-6">
+              Empowering African agriculture through sustainable mechanization solutions and innovative partnerships.
+            </p>
+            <div className="flex space-x-4">
+              <a href="#" className="text-gray-400 hover:text-primary transition-colors">
+                <Twitter size={20} />
+              </a>
+              <a href="#" className="text-gray-400 hover:text-primary transition-colors">
+                <Facebook size={20} />
+              </a>
+              <a href="#" className="text-gray-400 hover:text-primary transition-colors">
+                <Linkedin size={20} />
+              </a>
+              <a href="#" className="text-gray-400 hover:text-primary transition-colors">
+                <Youtube size={20} />
+              </a>
+            </div>
+          </div>
+
+          {/* Quick Links */}
+          <div>
+            <h4 className="text-lg font-semibold mb-6">Quick Links</h4>
+            <ul className="space-y-3">
+              <li>
+                <Link href="/framework" className="text-gray-300 hover:text-primary transition-colors">
+                  F-SAMA Framework
+                </Link>
+              </li>
+              <li>
+                <Link href="/events" className="text-gray-300 hover:text-primary transition-colors">
+                  Events
+                </Link>
+              </li>
+              <li>
+                <Link href="/resources" className="text-gray-300 hover:text-primary transition-colors">
+                  Resources
+                </Link>
+              </li>
+              <li>
+                <a href="#" className="text-gray-300 hover:text-primary transition-colors">
+                  Webinars
+                </a>
+              </li>
+              <li>
+                <a href="#" className="text-gray-300 hover:text-primary transition-colors">
+                  Magazine
+                </a>
+              </li>
+            </ul>
+          </div>
+
+          {/* Framework */}
+          <div>
+            <h4 className="text-lg font-semibold mb-6">Framework Elements</h4>
+            <ul className="space-y-3">
+              <li>
+                <a href="#" className="text-gray-300 hover:text-primary transition-colors">
+                  Farm Power
+                </a>
+              </li>
+              <li>
+                <a href="#" className="text-gray-300 hover:text-primary transition-colors">
+                  Innovative Financing
+                </a>
+              </li>
+              <li>
+                <a href="#" className="text-gray-300 hover:text-primary transition-colors">
+                  Sustainable Systems
+                </a>
+              </li>
+              <li>
+                <a href="#" className="text-gray-300 hover:text-primary transition-colors">
+                  Social Sustainability
+                </a>
+              </li>
+              <li>
+                <a href="#" className="text-gray-300 hover:text-primary transition-colors">
+                  Human Resources
+                </a>
+              </li>
+            </ul>
+          </div>
+
+          {/* Contact */}
+          <div>
+            <h4 className="text-lg font-semibold mb-6">Contact Information</h4>
+            <ul className="space-y-3">
+              <li className="flex items-center space-x-3">
+                <Mail className="text-primary" size={16} />
+                <span className="text-gray-300">info@africamechanize.org</span>
+              </li>
+              <li className="flex items-center space-x-3">
+                <Phone className="text-primary" size={16} />
+                <span className="text-gray-300">+1 (555) 123-4567</span>
+              </li>
+              <li className="flex items-center space-x-3">
+                <MapPin className="text-primary" size={16} />
+                <span className="text-gray-300">Rome, Italy</span>
+              </li>
+            </ul>
+          </div>
+        </div>
+
+        <div className="border-t border-gray-700 mt-12 pt-8 text-center">
+          <p className="text-gray-400">
+            &copy; 2024 AfricaMechanize. All rights reserved. | 
+            <a href="#" className="hover:text-primary transition-colors ml-1">Privacy Policy</a> | 
+            <a href="#" className="hover:text-primary transition-colors ml-1">Terms of Service</a>
+          </p>
+        </div>
+      </div>
+    </footer>
+  );
+};
