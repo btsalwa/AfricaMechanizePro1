@@ -2,7 +2,7 @@ import { useQuery } from "@tanstack/react-query";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Calendar, ExternalLink } from "lucide-react";
+import { Calendar, ExternalLink, Clock, MapPin, Users, ArrowRight } from "lucide-react";
 
 export const NewsEvents = () => {
   const { data: events, isLoading } = useQuery({
@@ -88,62 +88,121 @@ export const NewsEvents = () => {
     }
   };
 
+  const getTypeGradient = (type) => {
+    switch (type) {
+      case 'event': return 'from-primary to-success';
+      case 'conference': return 'from-secondary to-warning';
+      case 'meeting': return 'from-accent to-primary';
+      default: return 'from-gray-500 to-gray-700';
+    }
+  };
+
   return (
-    <section id="events" className="py-20 bg-gray-50 dark:bg-gray-900">
-      <div className="container mx-auto px-6">
-        <div className="text-center mb-16">
-          <h2 className="text-4xl md:text-5xl font-bold mb-6 bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">
+    <section id="events" className="py-20 bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-900 dark:to-gray-800 relative overflow-hidden">
+      {/* Background decorations */}
+      <div className="absolute inset-0 overflow-hidden">
+        <div className="absolute top-32 left-16 w-48 h-48 bg-primary/5 rounded-full blur-3xl" />
+        <div className="absolute bottom-32 right-16 w-60 h-60 bg-secondary/5 rounded-full blur-3xl" />
+        <div className="absolute top-20 right-32 w-36 h-36 bg-accent/5 rounded-full blur-2xl" />
+      </div>
+
+      <div className="container mx-auto px-6 relative z-10">
+        <div className="text-center mb-16 animate-fade-in-up">
+          <div className="inline-block px-4 py-2 bg-secondary/10 rounded-full mb-4">
+            <p className="text-secondary font-semibold text-sm">UPCOMING EVENTS</p>
+          </div>
+          <h2 className="text-4xl md:text-5xl font-bold mb-6 bg-gradient-to-r from-primary via-secondary to-accent bg-clip-text text-transparent">
             Latest News & Events
           </h2>
-          <p className="text-xl text-gray-600 dark:text-gray-400 max-w-3xl mx-auto">
-            Stay updated with the latest developments in agricultural mechanization across Africa
+          <p className="text-xl text-gray-600 dark:text-gray-400 max-w-4xl mx-auto leading-relaxed">
+            Stay updated with the latest developments, conferences, and networking opportunities in 
+            <span className="font-semibold text-primary"> agricultural mechanization</span> across Africa
           </p>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-          {eventsData.map((event) => (
+          {eventsData.map((event, index) => (
             <Card 
               key={event.id}
-              className="overflow-hidden transition-all duration-300 hover:shadow-xl hover:-translate-y-2"
+              className="group overflow-hidden transition-all duration-500 hover:shadow-2xl hover:-translate-y-4 hover:rotate-1 bg-white/90 dark:bg-gray-800/90 backdrop-blur-sm border-0 animate-fade-in-up"
+              style={{ animationDelay: `${index * 0.2}s` }}
             >
-              <div className="relative">
+              <div className="relative overflow-hidden">
                 <img 
                   src={event.imageUrl} 
                   alt={event.title}
-                  className="w-full h-48 object-cover"
+                  className="w-full h-48 object-cover group-hover:scale-110 transition-transform duration-500"
                 />
+                <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent" />
+                
+                {/* Date Badge */}
                 <div className="absolute top-4 left-4">
-                  <Badge className={`${getTypeColor(event.type)} text-white`}>
+                  <Badge className={`${getTypeColor(event.type)} text-white shadow-lg`}>
+                    <Calendar className="mr-1 w-3 h-3" />
                     {formatDate(event.date)}
                   </Badge>
                 </div>
+
+                {/* Event Type Badge */}
+                <div className="absolute top-4 right-4">
+                  <div className={`px-3 py-1 bg-gradient-to-r ${getTypeGradient(event.type)} text-white text-xs font-semibold rounded-full shadow-lg capitalize`}>
+                    {event.type}
+                  </div>
+                </div>
+
+                {/* Glow effect */}
+                <div className="absolute inset-0 bg-gradient-to-br from-primary/10 to-secondary/10 opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
               </div>
               
-              <CardContent className="p-6">
+              <CardContent className="p-6 relative">
                 <div className="flex items-center justify-between mb-4">
-                  <Badge variant="outline" className="capitalize">
-                    {event.type}
-                  </Badge>
-                  <Calendar className="text-gray-400" size={16} />
+                  <div className="flex items-center text-gray-500 dark:text-gray-400 text-sm">
+                    <Clock className="mr-1 w-4 h-4" />
+                    <span>Recent</span>
+                  </div>
+                  <div className="flex items-center text-gray-500 dark:text-gray-400 text-sm">
+                    <Users className="mr-1 w-4 h-4" />
+                    <span>Network</span>
+                  </div>
                 </div>
                 
-                <h3 className="text-xl font-bold mb-3 text-gray-800 dark:text-white line-clamp-2">
+                <h3 className="text-xl font-bold mb-3 text-gray-800 dark:text-white line-clamp-2 group-hover:text-primary transition-colors duration-300">
                   {event.title}
                 </h3>
                 
-                <p className="text-gray-600 dark:text-gray-400 mb-4 line-clamp-3">
+                <p className="text-gray-600 dark:text-gray-400 mb-6 line-clamp-3 leading-relaxed">
                   {event.description}
                 </p>
                 
-                <Button 
-                  variant="link" 
-                  className="p-0 text-primary hover:text-primary/80 font-semibold"
-                >
-                  Learn More <ExternalLink className="ml-2" size={16} />
-                </Button>
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center text-gray-500 dark:text-gray-400 text-sm">
+                    <MapPin className="mr-1 w-4 h-4" />
+                    <span>Global</span>
+                  </div>
+                  
+                  <Button 
+                    variant="ghost" 
+                    className="p-0 text-primary hover:text-primary/80 font-semibold group-hover:bg-primary/10 transition-all duration-300"
+                  >
+                    Learn More <ArrowRight className="ml-2 w-4 h-4 group-hover:translate-x-1 transition-transform duration-300" />
+                  </Button>
+                </div>
               </CardContent>
             </Card>
           ))}
+        </div>
+
+        {/* Call to Action */}
+        <div className="text-center mt-12">
+          <div className="inline-flex items-center space-x-4 bg-white/60 dark:bg-gray-800/60 backdrop-blur-sm rounded-full px-8 py-4 shadow-lg">
+            <p className="text-gray-700 dark:text-gray-300 font-medium">
+              Want to stay informed about upcoming events?
+            </p>
+            <Button className="bg-gradient-to-r from-secondary to-warning hover:from-secondary/90 hover:to-warning/90 text-white rounded-full px-6">
+              <Calendar className="mr-2 w-4 h-4" />
+              Subscribe to Updates
+            </Button>
+          </div>
         </div>
       </div>
     </section>
