@@ -12,6 +12,7 @@ import Conferences from "@/pages/Conferences";
 import Login from "@/pages/Login";
 import Register from "@/pages/Register";
 import EmailVerification from "@/pages/EmailVerification";
+import ResetPassword from "@/pages/ResetPassword";
 
 function Router() {
   return (
@@ -20,6 +21,7 @@ function Router() {
       <Route path="/login" component={Login} />
       <Route path="/register" component={Register} />
       <Route path="/verify-email" component={EmailVerification} />
+      <Route path="/reset-password" component={ResetPassword} />
       <Route path="/admin" component={Admin} />
       <Route path="/conferences" component={Conferences} />
       <Route component={NotFound} />
