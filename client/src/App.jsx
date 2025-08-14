@@ -4,28 +4,45 @@ import { QueryClientProvider } from "@tanstack/react-query";
 import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { AppProvider } from "./contexts/AppContext";
-import { AuthProvider } from "./hooks/useAuth";
-import NotFound from "@/pages/not-found";
-import Home from "@/pages/Home";
-import Admin from "@/pages/Admin";
-import Conferences from "@/pages/Conferences";
-import Login from "@/pages/Login";
-import Register from "@/pages/Register";
-import EmailVerification from "@/pages/EmailVerification";
-import ResetPassword from "@/pages/ResetPassword";
+import { Header } from "./components/Header";
+import { Footer } from "./components/Footer";
+import Home from "./pages/Home";
+import Framework from "./pages/Framework";
+import Events from "./pages/Events";
+import Resources from "./pages/Resources";
+import About from "./pages/About";
+import Contact from "./pages/Contact";
+import NewsPage from "./pages/NewsPage";
+import NotFound from "./pages/not-found";
+import Login from "./pages/Login";
+import Register from "./pages/Register";
+import EmailVerification from "./pages/EmailVerification";
+import ResetPassword from "./pages/ResetPassword";
+import "slick-carousel/slick/slick.css";
+import "slick-carousel/slick/slick-theme.css";
 
 function Router() {
   return (
-    <Switch>
-      <Route path="/" component={Home} />
-      <Route path="/login" component={Login} />
-      <Route path="/register" component={Register} />
-      <Route path="/verify-email" component={EmailVerification} />
-      <Route path="/reset-password" component={ResetPassword} />
-      <Route path="/admin" component={Admin} />
-      <Route path="/conferences" component={Conferences} />
-      <Route component={NotFound} />
-    </Switch>
+    <div className="min-h-screen flex flex-col">
+      <Header />
+      <main className="flex-1">
+        <Switch>
+          <Route path="/" component={Home} />
+          <Route path="/framework" component={Framework} />
+          <Route path="/events" component={Events} />
+          <Route path="/resources" component={Resources} />
+          <Route path="/about" component={About} />
+          <Route path="/contact" component={Contact} />
+          <Route path="/news" component={NewsPage} />
+          <Route path="/login" component={Login} />
+          <Route path="/register" component={Register} />
+          <Route path="/verify-email" component={EmailVerification} />
+          <Route path="/reset-password" component={ResetPassword} />
+          <Route component={NotFound} />
+        </Switch>
+      </main>
+      <Footer />
+    </div>
   );
 }
 
@@ -33,12 +50,10 @@ function App() {
   return (
     <QueryClientProvider client={queryClient}>
       <TooltipProvider>
-        <AuthProvider>
-          <AppProvider>
-            <Toaster />
-            <Router />
-          </AppProvider>
-        </AuthProvider>
+        <AppProvider>
+          <Toaster />
+          <Router />
+        </AppProvider>
       </TooltipProvider>
     </QueryClientProvider>
   );

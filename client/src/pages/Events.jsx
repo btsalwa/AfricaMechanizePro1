@@ -1,228 +1,303 @@
 import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
-import { Card, CardContent } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Calendar, Search, Filter, ExternalLink } from "lucide-react";
+import { Badge } from "@/components/ui/badge";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Calendar, Clock, MapPin, Users, ExternalLink, Video, ChevronRight } from "lucide-react";
+import { format } from "date-fns";
 
 export default function Events() {
-  const [searchTerm, setSearchTerm] = useState("");
-  const [filterType, setFilterType] = useState("all");
+  const [selectedCategory, setSelectedCategory] = useState("all");
 
-  const { data: events, isLoading } = useQuery({
-    queryKey: ["/api/events"],
-    enabled: true,
-  });
-
-  // Default events if API doesn't return data
-  const defaultEvents = [
+  // Mock events data - replace with actual API call
+  const events = [
     {
       id: 1,
-      title: "Sustainable Farm Power for Enhanced Productivity",
-      description: "FAO & CEMA Hybrid Event exploring innovative solutions for agricultural power systems in Africa. This comprehensive event brings together experts from across the continent to discuss cutting-edge technologies and sustainable practices.",
-      date: "2024-06-04",
-      type: "event",
-      location: "Virtual/Rome, Italy",
-      registrationUrl: "#",
-      imageUrl: "https://images.unsplash.com/photo-1625246333195-78d9c38ad449?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=800&h=400"
+      title: "International Conference on Sustainable Agricultural Mechanization",
+      description: "Join experts from across Africa and the globe to discuss the future of sustainable agricultural mechanization.",
+      date: new Date("2025-03-15"),
+      endDate: new Date("2025-03-17"),
+      time: "09:00 AM",
+      location: "Nairobi, Kenya",
+      venue: "Kenyatta International Convention Centre",
+      category: "conference",
+      type: "In-Person",
+      capacity: 500,
+      registered: 324,
+      price: "Free",
+      status: "upcoming",
+      organizer: "African Union Commission",
+      image: "/api/placeholder/400/250",
+      tags: ["Mechanization", "Sustainability", "Innovation"]
     },
     {
       id: 2,
-      title: "FAO Global Conference On Sustainable Agricultural Mechanization",
-      description: "Global leaders discuss the future of sustainable agricultural mechanization. This landmark conference addresses challenges and opportunities in implementing mechanization strategies across different African contexts.",
-      date: "2023-09-29",
-      type: "conference",
-      location: "Rome, Italy",
-      registrationUrl: "#",
-      imageUrl: "https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=800&h=400"
+      title: "F-SAMA Framework Implementation Workshop",
+      description: "Hands-on workshop on implementing the Framework for Sustainable Agricultural Mechanization in Africa.",
+      date: new Date("2025-02-28"),
+      endDate: new Date("2025-02-28"),
+      time: "02:00 PM",
+      location: "Online",
+      venue: "Virtual Event",
+      category: "workshop",
+      type: "Virtual",
+      capacity: 200,
+      registered: 156,
+      price: "Free",
+      status: "upcoming",
+      organizer: "Africa Mechanize",
+      image: "/api/placeholder/400/250",
+      tags: ["F-SAMA", "Workshop", "Implementation"]
     },
     {
       id: 3,
-      title: "Uganda Regional Experience Sharing Meeting",
-      description: "SAM hire service provision and regional cooperation initiatives. Focus on practical implementation strategies and lessons learned from successful mechanization projects across East Africa.",
-      date: "2019-12-09",
-      type: "meeting",
-      location: "Kampala, Uganda",
-      registrationUrl: "#",
-      imageUrl: "https://images.unsplash.com/photo-1556075798-4825dfaaf498?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=800&h=400"
+      title: "Agricultural Technology Innovation Webinar Series",
+      description: "Monthly webinar series featuring the latest innovations in agricultural technology and mechanization.",
+      date: new Date("2025-02-20"),
+      endDate: new Date("2025-02-20"),
+      time: "11:00 AM",
+      location: "Online",
+      venue: "Zoom Platform",
+      category: "webinar",
+      type: "Virtual",
+      capacity: 1000,
+      registered: 743,
+      price: "Free",
+      status: "upcoming",
+      organizer: "Tech Innovation Hub",
+      image: "/api/placeholder/400/250",
+      tags: ["Technology", "Innovation", "Monthly Series"]
     },
     {
       id: 4,
-      title: "Consultative Meeting on Mechanization Strategy",
-      description: "New models for sustainable agricultural mechanization in sub-Saharan Africa. Strategic discussions on policy frameworks and implementation approaches for sustainable mechanization.",
-      date: "2016-12-02",
-      type: "meeting",
-      location: "Nairobi, Kenya",
-      registrationUrl: "#",
-      imageUrl: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=800&h=400"
-    },
-  ];
-
-  const eventsData = events || defaultEvents;
-
-  const filteredEvents = eventsData.filter(event => {
-    const matchesSearch = event.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         event.description.toLowerCase().includes(searchTerm.toLowerCase());
-    const matchesType = filterType === "all" || event.type === filterType;
-    return matchesSearch && matchesType;
-  });
-
-  const formatDate = (dateString) => {
-    return new Date(dateString).toLocaleDateString('en-US', {
-      year: 'numeric',
-      month: 'long',
-      day: 'numeric'
-    });
-  };
-
-  const getTypeColor = (type) => {
-    switch (type) {
-      case 'event': return 'bg-primary';
-      case 'conference': return 'bg-secondary';
-      case 'meeting': return 'bg-accent';
-      default: return 'bg-gray-500';
+      title: "Youth in Agriculture Mechanization Summit",
+      description: "Empowering the next generation of agricultural leaders through mechanization and technology.",
+      date: new Date("2025-04-10"),
+      endDate: new Date("2025-04-12"),
+      time: "10:00 AM",
+      location: "Accra, Ghana",
+      venue: "National Theatre of Ghana",
+      category: "summit",
+      type: "In-Person",
+      capacity: 300,
+      registered: 187,
+      price: "$50",
+      status: "upcoming",
+      organizer: "Youth Agriculture Network",
+      image: "/api/placeholder/400/250",
+      tags: ["Youth", "Leadership", "Future"]
     }
-  };
-
-  const filterOptions = [
-    { value: "all", label: "All Events" },
-    { value: "event", label: "Events" },
-    { value: "conference", label: "Conferences" },
-    { value: "meeting", label: "Meetings" },
   ];
 
-  return (
-    <div className="min-h-screen pt-20">
-      {/* Header Section */}
-      <section className="py-20 bg-gradient-to-r from-primary to-secondary text-white">
-        <div className="container mx-auto px-6 text-center">
-          <h1 className="text-5xl md:text-6xl font-bold mb-6">
-            Events & Conferences
-          </h1>
-          <p className="text-xl md:text-2xl mb-8 opacity-90 max-w-4xl mx-auto">
-            Stay updated with the latest developments in agricultural mechanization across Africa
-          </p>
-        </div>
-      </section>
+  const categories = [
+    { id: "all", label: "All Events", count: events.length },
+    { id: "conference", label: "Conferences", count: events.filter(e => e.category === "conference").length },
+    { id: "workshop", label: "Workshops", count: events.filter(e => e.category === "workshop").length },
+    { id: "webinar", label: "Webinars", count: events.filter(e => e.category === "webinar").length },
+    { id: "summit", label: "Summits", count: events.filter(e => e.category === "summit").length }
+  ];
 
-      {/* Search and Filter */}
-      <section className="py-12 bg-gray-50 dark:bg-gray-900">
-        <div className="container mx-auto px-6">
-          <div className="max-w-4xl mx-auto">
-            <div className="flex flex-col md:flex-row gap-4 mb-8">
-              <div className="relative flex-1">
-                <Search className="absolute left-3 top-3 text-gray-400" size={20} />
-                <Input
-                  type="text"
-                  placeholder="Search events..."
-                  value={searchTerm}
-                  onChange={(e) => setSearchTerm(e.target.value)}
-                  className="pl-10 py-3 rounded-full"
-                />
-              </div>
-              
-              <div className="flex gap-2">
-                {filterOptions.map((option) => (
-                  <Button
-                    key={option.value}
-                    onClick={() => setFilterType(option.value)}
-                    variant={filterType === option.value ? "default" : "outline"}
-                    className={`rounded-full ${
-                      filterType === option.value
-                        ? "bg-primary text-white"
-                        : "hover:bg-primary/10"
-                    }`}
-                  >
-                    {option.label}
-                  </Button>
-                ))}
-              </div>
-            </div>
+  const filteredEvents = selectedCategory === "all" 
+    ? events 
+    : events.filter(event => event.category === selectedCategory);
+
+  const upcomingEvents = filteredEvents.filter(event => event.status === "upcoming");
+  const pastEvents = filteredEvents.filter(event => event.status === "past");
+
+  const EventCard = ({ event }) => (
+    <Card className="group hover:shadow-lg transition-all duration-300 border-0 shadow-md overflow-hidden">
+      <div className="aspect-video bg-gradient-to-br from-green-100 to-blue-100 dark:from-green-900 dark:to-blue-900 relative overflow-hidden">
+        <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent" />
+        <div className="absolute top-4 left-4 flex gap-2">
+          <Badge className="bg-white/90 text-green-700 hover:bg-white">
+            {event.category}
+          </Badge>
+          <Badge variant={event.type === "Virtual" ? "secondary" : "default"}>
+            {event.type}
+          </Badge>
+        </div>
+        <div className="absolute top-4 right-4">
+          <Badge variant="outline" className="bg-white/90 text-gray-700">
+            {event.price}
+          </Badge>
+        </div>
+      </div>
+      
+      <CardHeader className="pb-3">
+        <CardTitle className="line-clamp-2 group-hover:text-green-600 transition-colors">
+          {event.title}
+        </CardTitle>
+        <div className="flex flex-wrap gap-4 text-sm text-gray-500 dark:text-gray-400">
+          <div className="flex items-center gap-1">
+            <Calendar size={14} />
+            <span>
+              {format(event.date, "MMM dd, yyyy")}
+              {event.endDate && event.endDate !== event.date && 
+                ` - ${format(event.endDate, "MMM dd, yyyy")}`
+              }
+            </span>
+          </div>
+          <div className="flex items-center gap-1">
+            <Clock size={14} />
+            <span>{event.time}</span>
           </div>
         </div>
-      </section>
-
-      {/* Events Grid */}
-      <section className="py-12 bg-white dark:bg-gray-800">
-        <div className="container mx-auto px-6">
-          {isLoading ? (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-              {Array.from({ length: 6 }).map((_, i) => (
-                <Card key={i} className="overflow-hidden animate-pulse">
-                  <div className="w-full h-48 bg-gray-200"></div>
-                  <CardContent className="p-6">
-                    <div className="w-20 h-6 bg-gray-200 rounded mb-4"></div>
-                    <div className="w-full h-6 bg-gray-200 rounded mb-3"></div>
-                    <div className="w-full h-16 bg-gray-200 rounded mb-4"></div>
-                    <div className="w-24 h-4 bg-gray-200 rounded"></div>
-                  </CardContent>
-                </Card>
-              ))}
-            </div>
-          ) : (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-              {filteredEvents.map((event) => (
-                <Card 
-                  key={event.id}
-                  className="overflow-hidden transition-all duration-300 hover:shadow-xl hover:-translate-y-2"
-                >
-                  <div className="relative">
-                    <img 
-                      src={event.imageUrl} 
-                      alt={event.title}
-                      className="w-full h-48 object-cover"
-                    />
-                    <div className="absolute top-4 left-4">
-                      <Badge className={`${getTypeColor(event.type)} text-white`}>
-                        {formatDate(event.date)}
-                      </Badge>
-                    </div>
-                  </div>
-                  
-                  <CardContent className="p-6">
-                    <div className="flex items-center justify-between mb-4">
-                      <Badge variant="outline" className="capitalize">
-                        {event.type}
-                      </Badge>
-                      <Calendar className="text-gray-400" size={16} />
-                    </div>
-                    
-                    <h3 className="text-xl font-bold mb-3 text-gray-800 dark:text-white">
-                      {event.title}
-                    </h3>
-                    
-                    <p className="text-gray-600 dark:text-gray-400 mb-4 line-clamp-4">
-                      {event.description}
-                    </p>
-                    
-                    {event.location && (
-                      <p className="text-sm text-gray-500 dark:text-gray-400 mb-4">
-                        📍 {event.location}
-                      </p>
-                    )}
-                    
-                    <Button 
-                      variant="link" 
-                      className="p-0 text-primary hover:text-primary/80 font-semibold"
-                    >
-                      Learn More <ExternalLink className="ml-2" size={16} />
-                    </Button>
-                  </CardContent>
-                </Card>
-              ))}
-            </div>
-          )}
-          
-          {!isLoading && filteredEvents.length === 0 && (
-            <div className="text-center py-12">
-              <p className="text-gray-500 dark:text-gray-400 text-lg">
-                No events found matching your search criteria.
-              </p>
-            </div>
-          )}
+        <div className="flex items-center gap-1 text-sm text-gray-500 dark:text-gray-400">
+          <MapPin size={14} />
+          <span>{event.location}</span>
         </div>
-      </section>
+      </CardHeader>
+      
+      <CardContent className="pt-0">
+        <p className="text-gray-600 dark:text-gray-300 line-clamp-3 mb-4">
+          {event.description}
+        </p>
+        
+        <div className="flex items-center justify-between mb-4 text-sm">
+          <div className="flex items-center gap-1 text-gray-500">
+            <Users size={14} />
+            <span>{event.registered}/{event.capacity} registered</span>
+          </div>
+          <span className="text-gray-500">by {event.organizer}</span>
+        </div>
+        
+        <div className="flex flex-wrap gap-2 mb-4">
+          {event.tags.map((tag) => (
+            <Badge key={tag} variant="secondary" className="text-xs">
+              {tag}
+            </Badge>
+          ))}
+        </div>
+        
+        <div className="flex gap-2">
+          <Button className="flex-1 group-hover:bg-green-600 transition-colors">
+            {event.category === "webinar" ? (
+              <>
+                <Video className="w-4 h-4 mr-2" />
+                Join Webinar
+              </>
+            ) : (
+              <>
+                Register Now
+                <ChevronRight className="w-4 h-4 ml-2" />
+              </>
+            )}
+          </Button>
+          <Button variant="outline" size="icon">
+            <ExternalLink className="w-4 h-4" />
+          </Button>
+        </div>
+        
+        {/* Progress bar for registration */}
+        <div className="mt-4">
+          <div className="flex justify-between text-xs text-gray-500 mb-1">
+            <span>Registration Progress</span>
+            <span>{Math.round((event.registered / event.capacity) * 100)}%</span>
+          </div>
+          <div className="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2">
+            <div 
+              className="bg-gradient-to-r from-green-500 to-blue-500 h-2 rounded-full transition-all duration-300"
+              style={{ width: `${(event.registered / event.capacity) * 100}%` }}
+            />
+          </div>
+        </div>
+      </CardContent>
+    </Card>
+  );
+
+  return (
+    <div className="min-h-screen py-20 bg-gradient-to-br from-gray-50 to-green-50 dark:from-gray-900 dark:to-gray-800">
+      <div className="container mx-auto px-6">
+        {/* Header */}
+        <div className="text-center mb-16">
+          <h1 className="text-4xl md:text-5xl font-bold mb-6 bg-gradient-to-r from-green-600 to-blue-600 bg-clip-text text-transparent">
+            Events & Learning Opportunities
+          </h1>
+          <p className="text-xl text-gray-600 dark:text-gray-300 max-w-3xl mx-auto">
+            Join our community of agricultural mechanization experts through conferences, 
+            workshops, webinars, and summits designed to advance sustainable farming practices across Africa.
+          </p>
+        </div>
+
+        {/* Category Filter */}
+        <div className="flex flex-wrap justify-center gap-4 mb-12">
+          {categories.map((category) => (
+            <Button
+              key={category.id}
+              variant={selectedCategory === category.id ? "default" : "outline"}
+              onClick={() => setSelectedCategory(category.id)}
+              className="capitalize"
+            >
+              {category.label} ({category.count})
+            </Button>
+          ))}
+        </div>
+
+        {/* Events Tabs */}
+        <Tabs defaultValue="upcoming" className="w-full">
+          <TabsList className="grid w-full grid-cols-2 max-w-md mx-auto mb-12">
+            <TabsTrigger value="upcoming">Upcoming Events</TabsTrigger>
+            <TabsTrigger value="past">Past Events</TabsTrigger>
+          </TabsList>
+          
+          <TabsContent value="upcoming">
+            {upcomingEvents.length > 0 ? (
+              <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-3 max-w-7xl mx-auto">
+                {upcomingEvents.map((event) => (
+                  <EventCard key={event.id} event={event} />
+                ))}
+              </div>
+            ) : (
+              <div className="text-center py-16">
+                <Calendar className="w-16 h-16 text-gray-300 mx-auto mb-4" />
+                <h3 className="text-xl font-semibold text-gray-600 dark:text-gray-300 mb-2">
+                  No upcoming events
+                </h3>
+                <p className="text-gray-500 dark:text-gray-400">
+                  Check back soon for new events and opportunities.
+                </p>
+              </div>
+            )}
+          </TabsContent>
+          
+          <TabsContent value="past">
+            {pastEvents.length > 0 ? (
+              <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-3 max-w-7xl mx-auto">
+                {pastEvents.map((event) => (
+                  <EventCard key={event.id} event={event} />
+                ))}
+              </div>
+            ) : (
+              <div className="text-center py-16">
+                <Calendar className="w-16 h-16 text-gray-300 mx-auto mb-4" />
+                <h3 className="text-xl font-semibold text-gray-600 dark:text-gray-300 mb-2">
+                  No past events
+                </h3>
+                <p className="text-gray-500 dark:text-gray-400">
+                  Past events will appear here once they're completed.
+                </p>
+              </div>
+            )}
+          </TabsContent>
+        </Tabs>
+
+        {/* Call to Action */}
+        <div className="mt-20 text-center">
+          <div className="bg-gradient-to-r from-green-600 to-blue-600 rounded-2xl p-12 text-white">
+            <h2 className="text-3xl font-bold mb-4">
+              Host Your Own Event
+            </h2>
+            <p className="text-xl mb-8 opacity-90 max-w-2xl mx-auto">
+              Interested in organizing an event for the agricultural mechanization community? 
+              We'd love to help you reach our global network of experts and practitioners.
+            </p>
+            <Button size="lg" variant="secondary" className="px-8 py-3 text-lg font-semibold">
+              Submit Event Proposal
+            </Button>
+          </div>
+        </div>
+      </div>
     </div>
   );
 }

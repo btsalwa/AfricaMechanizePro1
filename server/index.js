@@ -12,8 +12,9 @@ dotenv.config();
 
 const app = express();
 
-// Setup authentication before other middleware
-await setupAuth();
+// Body parsing middleware (must come before passport)
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
 
 // Session configuration
 const PgStore = connectPgSimple(session);
@@ -34,7 +35,10 @@ app.use(session({
   },
 }));
 
-// Initialize passport
+// Setup authentication after session middleware
+await setupAuth();
+
+// Initialize passport after session
 app.use(passport.initialize());
 app.use(passport.session());
 

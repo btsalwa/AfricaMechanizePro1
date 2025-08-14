@@ -56,13 +56,13 @@ export const Footer = () => {
                 </Link>
               </li>
               <li>
-                <a href="#" className="text-gray-300 hover:text-primary transition-colors">
-                  Webinars
-                </a>
+                <Link href="/news" className="text-gray-300 hover:text-primary transition-colors">
+                  News
+                </Link>
               </li>
               <li>
                 <a href="#" className="text-gray-300 hover:text-primary transition-colors">
-                  Magazine
+                  Webinars
                 </a>
               </li>
             </ul>
@@ -110,11 +110,11 @@ export const Footer = () => {
               </li>
               <li className="flex items-center space-x-3">
                 <Phone className="text-primary" size={16} />
-                <span className="text-gray-300">+1 (555) 123-4567</span>
+                <span className="text-gray-300">+254 20 123 4567</span>
               </li>
               <li className="flex items-center space-x-3">
                 <MapPin className="text-primary" size={16} />
-                <span className="text-gray-300">Rome, Italy</span>
+                <span className="text-gray-300">Nairobi, Kenya</span>
               </li>
             </ul>
           </div>
@@ -122,8 +122,8 @@ export const Footer = () => {
 
         <div className="border-t border-gray-700 mt-12 pt-8 text-center">
           <p className="text-gray-400">
-            &copy; 2024 AfricaMechanize. All rights reserved. | 
-            <a href="#" className="hover:text-primary transition-colors ml-1">Privacy Policy</a> | 
+            &copy; 2025 AfricaMechanize. All rights reserved. |
+            <a href="#" className="hover:text-primary transition-colors ml-1">Privacy Policy</a> |
             <a href="#" className="hover:text-primary transition-colors ml-1">Terms of Service</a>
           </p>
         </div>

@@ -1,5 +1,5 @@
-import { useState } from 'react';
-import { User, Settings, LogOut, Shield, Mail, Bell } from 'lucide-react';
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -7,50 +7,31 @@ import {
   DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu';
-import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { useAuth, useLogout } from '@/hooks/useAuth';
-import { Link } from 'wouter';
+} from "@/components/ui/dropdown-menu";
+import { useAuth, useLogout } from "@/hooks/useAuth";
+import { User, Settings, LogOut, Shield } from "lucide-react";
+import { Link } from "wouter";
 
-export function UserMenu() {
+export const UserMenu = () => {
   const { user } = useAuth();
-  const logoutMutation = useLogout();
+  const { logout } = useLogout();
 
-  if (!user) return null;
+  if (!user) {
+    return null;
+  }
 
-  const handleLogout = () => {
-    logoutMutation.mutate();
-  };
-
-  const getInitials = () => {
-    if (user.firstName && user.lastName) {
-      return `${user.firstName[0]}${user.lastName[0]}`.toUpperCase();
-    }
-    return user.email[0].toUpperCase();
-  };
-
-  const getDisplayName = () => {
-    if (user.firstName && user.lastName) {
-      return `${user.firstName} ${user.lastName}`;
-    }
-    return user.email;
-  };
+  const userInitials = user.firstName && user.lastName 
+    ? `${user.firstName[0]}${user.lastName[0]}`.toUpperCase()
+    : user.email ? user.email[0].toUpperCase()
+    : 'U';
 
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <Button
-          variant="ghost"
-          className="relative h-8 w-8 rounded-full"
-          data-testid="button-user-menu"
-        >
+        <Button variant="ghost" className="relative h-8 w-8 rounded-full">
           <Avatar className="h-8 w-8">
-            <AvatarImage src={user.profileImage} alt={getDisplayName()} />
-            <AvatarFallback className="text-xs bg-green-100 text-green-800">
-              {getInitials()}
-            </AvatarFallback>
+            <AvatarImage src={user.profileImageUrl} alt={user.firstName || user.email} />
+            <AvatarFallback>{userInitials}</AvatarFallback>
           </Avatar>
         </Button>
       </DropdownMenuTrigger>
@@ -58,61 +39,46 @@ export function UserMenu() {
         <DropdownMenuLabel className="font-normal">
           <div className="flex flex-col space-y-1">
             <p className="text-sm font-medium leading-none">
-              {getDisplayName()}
+              {user.firstName && user.lastName 
+                ? `${user.firstName} ${user.lastName}`
+                : user.email
+              }
             </p>
             <p className="text-xs leading-none text-muted-foreground">
               {user.email}
             </p>
-            <div className="flex items-center gap-2 mt-2">
-              {user.role === 'admin' && (
-                <Badge variant="secondary" className="text-xs">
-                  <Shield className="w-3 h-3 mr-1" />
-                  Admin
-                </Badge>
-              )}
-              {!user.isEmailVerified && (
-                <Badge variant="destructive" className="text-xs">
-                  <Mail className="w-3 h-3 mr-1" />
-                  Unverified
-                </Badge>
-              )}
-            </div>
           </div>
         </DropdownMenuLabel>
         <DropdownMenuSeparator />
-        
         <DropdownMenuItem asChild>
-          <Link href="/profile">
+          <Link href="/profile" className="flex items-center cursor-pointer">
             <User className="mr-2 h-4 w-4" />
-            <span data-testid="menu-profile">Profile</span>
+            <span>Profile</span>
           </Link>
         </DropdownMenuItem>
-        
         <DropdownMenuItem asChild>
-          <Link href="/settings">
+          <Link href="/settings" className="flex items-center cursor-pointer">
             <Settings className="mr-2 h-4 w-4" />
-            <span data-testid="menu-settings">Settings</span>
+            <span>Settings</span>
           </Link>
         </DropdownMenuItem>
-        
-        <DropdownMenuItem asChild>
-          <Link href="/notifications">
-            <Bell className="mr-2 h-4 w-4" />
-            <span data-testid="menu-notifications">Notifications</span>
-          </Link>
-        </DropdownMenuItem>
-        
+        {user.isAdmin && (
+          <DropdownMenuItem asChild>
+            <Link href="/admin" className="flex items-center cursor-pointer">
+              <Shield className="mr-2 h-4 w-4" />
+              <span>Admin Panel</span>
+            </Link>
+          </DropdownMenuItem>
+        )}
         <DropdownMenuSeparator />
-        
-        <DropdownMenuItem
-          onClick={handleLogout}
-          disabled={logoutMutation.isPending}
-          data-testid="menu-logout"
+        <DropdownMenuItem 
+          onClick={logout} 
+          className="flex items-center cursor-pointer text-red-600 focus:text-red-600"
         >
           <LogOut className="mr-2 h-4 w-4" />
-          <span>{logoutMutation.isPending ? 'Signing out...' : 'Sign out'}</span>
+          <span>Log out</span>
         </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>
   );
-}
+};
