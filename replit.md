@@ -7,6 +7,7 @@ This is a full-stack web application for Africa Mechanize, built using React (fr
 ## User Preferences
 
 Preferred communication style: Simple, everyday language.
+File format preference: JSX files instead of TSX (converted December 2024).
 
 ## System Architecture
 
