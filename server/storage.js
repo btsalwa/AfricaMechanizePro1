@@ -1,5 +1,6 @@
 import { 
-  users, events, resources, frameworkElements, newsletters, contacts, statistics, webinars, readingMaterials
+  users, events, resources, frameworkElements, newsletters, contacts, statistics, 
+  webinars, readingMaterials
 } from "../shared/schema.js";
 import { db } from "./db.js";
 import { eq } from "drizzle-orm";
@@ -205,6 +206,31 @@ export class DatabaseStorage {
   async deleteReadingMaterial(id) {
     await db.delete(readingMaterials).where(eq(readingMaterials.id, id));
   }
+
+  // Mock data methods for new features (to be replaced with real DB methods when schema is ready)
+  async getAllPartners() {
+    return [
+      { id: 1, name: "FAO", type: "organization", website: "https://www.fao.org", country: "Global" },
+      { id: 2, name: "African Union Commission", type: "organization", website: "https://au.int", country: "Continental" }
+    ];
+  }
+
+  async getAllConferences() {
+    return [
+      { 
+        id: 1, 
+        title: "FAO Global Conference On Sustainable Agricultural Mechanization",
+        description: "Major international conference bringing together experts, policymakers, and practitioners to discuss the future of sustainable agricultural mechanization globally.",
+        startDate: "2023-09-29",
+        endDate: "2023-09-29",
+        location: "Rome, Italy",
+        isVirtual: false,
+        website: "https://www.fao.org/conferences"
+      }
+    ];
+  }
+
+
 }
 
 export const storage = new DatabaseStorage();

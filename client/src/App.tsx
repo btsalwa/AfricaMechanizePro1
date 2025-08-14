@@ -7,12 +7,14 @@ import { AppProvider } from "./contexts/AppContext";
 import NotFound from "@/pages/not-found";
 import Home from "@/pages/Home";
 import Admin from "@/pages/Admin";
+import Conferences from "@/pages/Conferences";
 
 function Router() {
   return (
     <Switch>
       <Route path="/" component={Home} />
       <Route path="/admin" component={Admin} />
+      <Route path="/conferences" component={Conferences} />
       <Route component={NotFound} />
     </Switch>
   );

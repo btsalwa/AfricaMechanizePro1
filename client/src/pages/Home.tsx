@@ -1,3 +1,5 @@
+import { Header } from "../components/Header";
+import { Footer } from "../components/Footer";
 import { Hero } from "../components/Hero";
 import { StatsCounter } from "../components/StatsCounter";
 import { FrameworkGrid } from "../components/FrameworkGrid";
@@ -12,6 +14,7 @@ import { Button } from "@/components/ui/button";
 export default function Home() {
   return (
     <div className="min-h-screen">
+      <Header />
       <Hero />
       
       <StatsCounter />
@@ -64,6 +67,7 @@ export default function Home() {
       <ReadingMaterials />
       
       <NewsletterSignup />
+      <Footer />
     </div>
   );
 }

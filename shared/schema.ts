@@ -193,21 +193,18 @@ export const webinarSeries = pgTable("webinar_series", {
 });
 
 // Relations
-export const eventsRelations = relations(events, ({ many }) => ({
-  resources: many(resources),
+export const abstractsRelations = relations(abstracts, ({ one }) => ({
+  conference: one(conferences, {
+    fields: [abstracts.conferenceId],
+    references: [conferences.id],
+  }),
 }));
 
-export const resourcesRelations = relations(resources, ({ one }) => ({
-  event: one(events),
+export const conferencesRelations = relations(conferences, ({ many }) => ({
+  abstracts: many(abstracts),
 }));
 
-// Insert schemas
-export const insertUserSchema = createInsertSchema(users).omit({
-  id: true,
-  createdAt: true,
-  updatedAt: true,
-});
-
+// Insert and Select Schemas
 export const insertFrameworkElementSchema = createInsertSchema(frameworkElements).omit({
   id: true,
   createdAt: true,
@@ -226,6 +223,37 @@ export const insertResourceSchema = createInsertSchema(resources).omit({
   updatedAt: true,
 });
 
+export const insertWebinarSchema = createInsertSchema(webinars).omit({
+  id: true,
+  createdAt: true,
+  updatedAt: true,
+});
+
+export const insertConferenceSchema = createInsertSchema(conferences).omit({
+  id: true,
+  createdAt: true,
+  updatedAt: true,
+});
+
+export const insertAbstractSchema = createInsertSchema(abstracts).omit({
+  id: true,
+  submittedAt: true,
+  createdAt: true,
+  updatedAt: true,
+});
+
+export const insertPartnerSchema = createInsertSchema(partners).omit({
+  id: true,
+  createdAt: true,
+  updatedAt: true,
+});
+
+export const insertReadingMaterialSchema = createInsertSchema(readingMaterials).omit({
+  id: true,
+  createdAt: true,
+  updatedAt: true,
+});
+
 export const insertNewsletterSchema = createInsertSchema(newsletters).omit({
   id: true,
   createdAt: true,
@@ -238,27 +266,7 @@ export const insertContactSchema = createInsertSchema(contacts).omit({
   updatedAt: true,
 });
 
-export const insertStatisticsSchema = createInsertSchema(statistics).omit({
-  id: true,
-  updatedAt: true,
-});
-
-export const insertWebinarSchema = createInsertSchema(webinars).omit({
-  id: true,
-  createdAt: true,
-  updatedAt: true,
-});
-
-export const insertReadingMaterialSchema = createInsertSchema(readingMaterials).omit({
-  id: true,
-  createdAt: true,
-  updatedAt: true,
-});
-
-// Types
-export type User = typeof users.$inferSelect;
-export type InsertUser = z.infer<typeof insertUserSchema>;
-
+// Type Exports
 export type FrameworkElement = typeof frameworkElements.$inferSelect;
 export type InsertFrameworkElement = z.infer<typeof insertFrameworkElementSchema>;
 
@@ -268,11 +276,47 @@ export type InsertEvent = z.infer<typeof insertEventSchema>;
 export type Resource = typeof resources.$inferSelect;
 export type InsertResource = z.infer<typeof insertResourceSchema>;
 
+export type Webinar = typeof webinars.$inferSelect;
+export type InsertWebinar = z.infer<typeof insertWebinarSchema>;
+
+export type Conference = typeof conferences.$inferSelect;
+export type InsertConference = z.infer<typeof insertConferenceSchema>;
+
+export type Abstract = typeof abstracts.$inferSelect;
+export type InsertAbstract = z.infer<typeof insertAbstractSchema>;
+
+export type Partner = typeof partners.$inferSelect;
+export type InsertPartner = z.infer<typeof insertPartnerSchema>;
+
+export type ReadingMaterial = typeof readingMaterials.$inferSelect;
+export type InsertReadingMaterial = z.infer<typeof insertReadingMaterialSchema>;
+
 export type Newsletter = typeof newsletters.$inferSelect;
 export type InsertNewsletter = z.infer<typeof insertNewsletterSchema>;
 
 export type Contact = typeof contacts.$inferSelect;
 export type InsertContact = z.infer<typeof insertContactSchema>;
+
+export type Statistics = typeof statistics.$inferSelect;
+
+// Additional type exports
+export type User = typeof users.$inferSelect;
+export type InsertUser = z.infer<typeof insertUserSchema>;
+
+export type WebinarSeries = typeof webinarSeries.$inferSelect;
+export type InsertWebinarSeries = z.infer<typeof insertWebinarSchema>;
+
+// Insert schema for user table
+export const insertUserSchema = createInsertSchema(users).omit({
+  id: true,
+  createdAt: true,
+  updatedAt: true,
+});
+
+export const insertStatisticsSchema = createInsertSchema(statistics).omit({
+  id: true,
+  updatedAt: true,
+});
 
 export type Statistics = typeof statistics.$inferSelect;
 export type InsertStatistics = z.infer<typeof insertStatisticsSchema>;

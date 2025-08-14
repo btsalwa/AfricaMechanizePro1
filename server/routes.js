@@ -3,7 +3,8 @@ import { createServer } from "http";
 import { storage } from "./storage.js";
 import { 
   insertEventSchema, insertResourceSchema, insertFrameworkElementSchema,
-  insertNewsletterSchema, insertContactSchema, insertStatisticsSchema
+  insertNewsletterSchema, insertContactSchema, insertStatisticsSchema,
+  insertWebinarSchema, insertReadingMaterialSchema
 } from "../shared/schema.js";
 
 export async function registerRoutes(app) {
@@ -157,6 +158,26 @@ export async function registerRoutes(app) {
       res.json(materials);
     } catch (error) {
       res.status(500).json({ error: "Failed to fetch materials" });
+    }
+  });
+
+  // Partners endpoints
+  router.get("/api/partners", async (req, res) => {
+    try {
+      const partners = await storage.getAllPartners();
+      res.json(partners);
+    } catch (error) {
+      res.status(500).json({ error: "Failed to fetch partners" });
+    }
+  });
+
+  // Conferences endpoints
+  router.get("/api/conferences", async (req, res) => {
+    try {
+      const conferences = await storage.getAllConferences();
+      res.json(conferences);
+    } catch (error) {
+      res.status(500).json({ error: "Failed to fetch conferences" });
     }
   });
 
