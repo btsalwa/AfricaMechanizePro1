@@ -4,8 +4,8 @@ import { QueryClientProvider } from "@tanstack/react-query";
 import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import NotFound from "@/pages/not-found";
-import Home from "@/pages/Home.jsx";
-import Admin from "@/pages/Admin.jsx";
+import Home from "@/pages/Home";
+import Admin from "@/pages/Admin";
 
 function Router() {
   return (
