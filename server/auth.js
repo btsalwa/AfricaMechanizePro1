@@ -7,6 +7,8 @@ import { db } from './db.js';
 import { eq, and, gt } from 'drizzle-orm';
 import { sendEmail } from './emailService.js';
 
+// Setup passport authentication
+export const setupAuth = async () => {
 // Configure local strategy
 passport.use(new LocalStrategy({
   usernameField: 'email',
@@ -55,6 +57,7 @@ passport.deserializeUser(async (id, done) => {
     done(error);
   }
 });
+}; // End of setupAuth function
 
 // Authentication helper functions
 export const authHelpers = {
@@ -268,5 +271,3 @@ export const requireRole = (role) => {
 };
 
 export const requireAdmin = requireRole('admin');
-
-export default passport;

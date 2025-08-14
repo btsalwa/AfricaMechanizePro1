@@ -1,7 +1,7 @@
 import express, { Router } from "express";
 import { createServer } from "http";
 import { storage } from "./storage.js";
-import passport from "./auth.js";
+import passport from "passport";
 import { authHelpers, requireAuth, requireEmailVerification, requireAdmin } from "./auth.js";
 import { sendWelcomeEmail } from "./emailService.js";
 import { 

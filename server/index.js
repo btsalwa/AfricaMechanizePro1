@@ -1,7 +1,8 @@
 import express from "express";
 import session from "express-session";
 import connectPgSimple from "connect-pg-simple";
-import passport from "./auth.js";
+import passport from "passport";
+import { setupAuth } from "./auth.js";
 import { registerRoutes } from "./routes.js";
 import { setupVite } from "./vite.js";
 import dotenv from 'dotenv';
@@ -10,6 +11,9 @@ import dotenv from 'dotenv';
 dotenv.config();
 
 const app = express();
+
+// Setup authentication before other middleware
+await setupAuth();
 
 // Session configuration
 const PgStore = connectPgSimple(session);
