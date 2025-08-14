@@ -7,7 +7,8 @@ This is a full-stack web application for Africa Mechanize, built using React (fr
 ## User Preferences
 
 Preferred communication style: Simple, everyday language.
-File format preference: JSX files instead of TSX (converted December 2024).
+File format preference: JSX files instead of TSX (converted January 2025).
+Integration improvements: Added enhanced server architecture, migration system, and additional libraries from AfricaMechanizePro repository.
 
 ## System Architecture
 
@@ -32,11 +33,13 @@ The application follows a monorepo structure with clear separation between clien
 - **Form Handling**: React Hook Form with Zod validation resolvers
 
 ### Backend Architecture
-- **Framework**: Express.js with TypeScript
+- **Framework**: Express.js with JavaScript (migrated from TypeScript)
 - **Database ORM**: Drizzle ORM with PostgreSQL dialect
+- **Migration System**: Proper Drizzle migrations with SQL files
 - **API Structure**: RESTful endpoints organized by resource type
 - **Middleware**: Custom logging, JSON parsing, error handling
-- **Development**: Hot reload with tsx
+- **Environment**: dotenv for configuration management
+- **Development**: Hot reload with tsx, cross-env for cross-platform compatibility
 
 ### Database Schema
 The application includes several key entities:

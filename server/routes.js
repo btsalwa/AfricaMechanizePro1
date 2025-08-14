@@ -3,8 +3,7 @@ import { createServer } from "http";
 import { storage } from "./storage.js";
 import { 
   insertEventSchema, insertResourceSchema, insertFrameworkElementSchema,
-  insertNewsletterSchema, insertContactSchema, insertStatisticsSchema,
-  insertWebinarSchema, insertReadingMaterialSchema
+  insertNewsletterSchema, insertContactSchema, insertStatisticsSchema
 } from "../shared/schema.js";
 
 export async function registerRoutes(app) {

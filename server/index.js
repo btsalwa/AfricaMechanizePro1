@@ -1,6 +1,10 @@
 import express from "express";
 import { registerRoutes } from "./routes.js";
 import { setupVite } from "./vite.js";
+import dotenv from 'dotenv';
+
+// Load environment variables
+dotenv.config();
 
 const app = express();
 const server = await registerRoutes(app);
