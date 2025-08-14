@@ -124,6 +124,74 @@ export const readingMaterials = pgTable("reading_materials", {
   updatedAt: timestamp("updated_at").defaultNow(),
 });
 
+// Enhanced schema additions based on africamechanize.org content
+export const conferences = pgTable("conferences", {
+  id: serial("id").primaryKey(),
+  title: text("title").notNull(),
+  subtitle: text("subtitle"),
+  description: text("description").notNull(),
+  startDate: timestamp("start_date").notNull(),
+  endDate: timestamp("end_date").notNull(),
+  location: text("location"),
+  venue: text("venue"),
+  isVirtual: boolean("is_virtual").notNull().default(false),
+  abstractDeadline: timestamp("abstract_deadline"),
+  registrationDeadline: timestamp("registration_deadline"),
+  website: text("website"),
+  contactEmail: text("contact_email"),
+  theme: text("theme"),
+  organizers: jsonb("organizers").default([]),
+  speakers: jsonb("speakers").default([]),
+  sponsors: jsonb("sponsors").default([]),
+  isActive: boolean("is_active").notNull().default(true),
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+});
+
+export const abstracts = pgTable("abstracts", {
+  id: serial("id").primaryKey(),
+  conferenceId: integer("conference_id").notNull(),
+  title: text("title").notNull(),
+  authorName: text("author_name").notNull(),
+  authorEmail: text("author_email").notNull(),
+  authorAffiliation: text("author_affiliation"),
+  coAuthors: jsonb("co_authors").default([]),
+  abstract: text("abstract").notNull(),
+  keywords: jsonb("keywords").default([]),
+  category: text("category").notNull(),
+  presentationType: text("presentation_type").notNull(), // 'oral', 'poster'
+  status: text("status").notNull().default("submitted"), // 'submitted', 'under-review', 'accepted', 'rejected'
+  reviewComments: text("review_comments"),
+  submittedAt: timestamp("submitted_at").defaultNow(),
+  reviewedAt: timestamp("reviewed_at"),
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+});
+
+export const partners = pgTable("partners", {
+  id: serial("id").primaryKey(),
+  name: text("name").notNull(),
+  type: text("type").notNull(), // 'sponsor', 'partner', 'organization', 'government'
+  description: text("description"),
+  website: text("website"),
+  logoUrl: text("logo_url"),
+  country: text("country"),
+  isActive: boolean("is_active").notNull().default(true),
+  displayOrder: integer("display_order").notNull().default(0),
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+});
+
+export const webinarSeries = pgTable("webinar_series", {
+  id: serial("id").primaryKey(),
+  name: text("name").notNull(),
+  description: text("description"),
+  totalWebinars: integer("total_webinars").notNull().default(0),
+  isActive: boolean("is_active").notNull().default(true),
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+});
+
 // Relations
 export const eventsRelations = relations(events, ({ many }) => ({
   resources: many(resources),
