@@ -25,6 +25,20 @@ export class DatabaseStorage {
     return user;
   }
 
+  async getUserByEmail(email) {
+    const [user] = await db.select().from(users).where(eq(users.email, email));
+    return user || undefined;
+  }
+
+  async updateUser(id, updateData) {
+    const [user] = await db
+      .update(users)
+      .set({ ...updateData, updatedAt: new Date() })
+      .where(eq(users.id, id))
+      .returning();
+    return user;
+  }
+
   // Framework elements methods
   async getAllFrameworkElements() {
     return await db.select().from(frameworkElements);

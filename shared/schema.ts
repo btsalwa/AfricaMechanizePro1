@@ -1,14 +1,39 @@
-import { pgTable, text, serial, integer, boolean, timestamp, jsonb } from "drizzle-orm/pg-core";
+import { pgTable, text, serial, integer, boolean, timestamp, jsonb, varchar, index } from "drizzle-orm/pg-core";
 import { relations } from "drizzle-orm";
 import { createInsertSchema } from "drizzle-zod";
 import { z } from "zod";
 
+// Session storage table for express-session
+export const sessions = pgTable(
+  "sessions",
+  {
+    sid: varchar("sid").primaryKey(),
+    sess: jsonb("sess").notNull(),
+    expire: timestamp("expire").notNull(),
+  },
+  (table) => [index("IDX_session_expire").on(table.expire)]
+);
+
+// Enhanced users table with authentication fields
 export const users = pgTable("users", {
   id: serial("id").primaryKey(),
-  username: text("username").notNull().unique(),
   email: text("email").notNull().unique(),
+  username: text("username"),
+  firstName: text("first_name"),
+  lastName: text("last_name"),
   password: text("password").notNull(),
   role: text("role").notNull().default("user"),
+  isEmailVerified: boolean("is_email_verified").notNull().default(false),
+  emailVerificationToken: text("email_verification_token"),
+  emailVerificationExpires: timestamp("email_verification_expires"),
+  passwordResetToken: text("password_reset_token"),
+  passwordResetExpires: timestamp("password_reset_expires"),
+  lastLoginAt: timestamp("last_login_at"),
+  isActive: boolean("is_active").notNull().default(true),
+  profileImage: text("profile_image"),
+  bio: text("bio"),
+  organization: text("organization"),
+  country: text("country"),
   createdAt: timestamp("created_at").defaultNow(),
   updatedAt: timestamp("updated_at").defaultNow(),
 });
@@ -297,32 +322,63 @@ export type InsertNewsletter = z.infer<typeof insertNewsletterSchema>;
 export type Contact = typeof contacts.$inferSelect;
 export type InsertContact = z.infer<typeof insertContactSchema>;
 
-export type Statistics = typeof statistics.$inferSelect;
-
 // Additional type exports
 export type User = typeof users.$inferSelect;
-export type InsertUser = z.infer<typeof insertUserSchema>;
 
-export type WebinarSeries = typeof webinarSeries.$inferSelect;
-export type InsertWebinarSeries = z.infer<typeof insertWebinarSchema>;
-
-// Insert schema for user table
 export const insertUserSchema = createInsertSchema(users).omit({
   id: true,
   createdAt: true,
   updatedAt: true,
 });
 
+export type InsertUser = z.infer<typeof insertUserSchema>;
+
+export type WebinarSeries = typeof webinarSeries.$inferSelect;
+export type InsertWebinarSeries = z.infer<typeof insertWebinarSchema>;
+
+// Authentication-specific schemas
+export const registerSchema = z.object({
+  email: z.string().email("Please enter a valid email address"),
+  password: z.string().min(6, "Password must be at least 6 characters"),
+  confirmPassword: z.string(),
+  firstName: z.string().min(1, "First name is required"),
+  lastName: z.string().min(1, "Last name is required"),
+  organization: z.string().optional(),
+  country: z.string().optional(),
+}).refine((data) => data.password === data.confirmPassword, {
+  message: "Passwords don't match",
+  path: ["confirmPassword"],
+});
+
+export const loginSchema = z.object({
+  email: z.string().email("Please enter a valid email address"),
+  password: z.string().min(1, "Password is required"),
+});
+
+export const forgotPasswordSchema = z.object({
+  email: z.string().email("Please enter a valid email address"),
+});
+
+export const resetPasswordSchema = z.object({
+  password: z.string().min(6, "Password must be at least 6 characters"),
+  confirmPassword: z.string(),
+  token: z.string(),
+}).refine((data) => data.password === data.confirmPassword, {
+  message: "Passwords don't match",
+  path: ["confirmPassword"],
+});
+
+// Type exports for authentication
+export type RegisterData = z.infer<typeof registerSchema>;
+export type LoginData = z.infer<typeof loginSchema>;
+export type ForgotPasswordData = z.infer<typeof forgotPasswordSchema>;
+export type ResetPasswordData = z.infer<typeof resetPasswordSchema>;
+
 export const insertStatisticsSchema = createInsertSchema(statistics).omit({
   id: true,
   updatedAt: true,
 });
 
+// Clean up duplicate type exports
 export type Statistics = typeof statistics.$inferSelect;
 export type InsertStatistics = z.infer<typeof insertStatisticsSchema>;
-
-export type Webinar = typeof webinars.$inferSelect;
-export type InsertWebinar = z.infer<typeof insertWebinarSchema>;
-
-export type ReadingMaterial = typeof readingMaterials.$inferSelect;
-export type InsertReadingMaterial = z.infer<typeof insertReadingMaterialSchema>;

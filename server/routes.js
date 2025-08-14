@@ -1,13 +1,180 @@
 import express, { Router } from "express";
 import { createServer } from "http";
 import { storage } from "./storage.js";
+import passport from "./auth.js";
+import { authHelpers, requireAuth, requireEmailVerification, requireAdmin } from "./auth.js";
+import { sendWelcomeEmail } from "./emailService.js";
 import { 
   insertEventSchema, insertResourceSchema, insertFrameworkElementSchema,
-  insertNewsletterSchema, insertContactSchema, insertStatisticsSchema
+  insertNewsletterSchema, insertContactSchema, insertStatisticsSchema,
+  registerSchema, loginSchema, forgotPasswordSchema, resetPasswordSchema
 } from "../shared/schema.js";
 
 export async function registerRoutes(app) {
   const router = Router();
+
+  // Authentication endpoints
+  router.post("/api/auth/register", async (req, res) => {
+    try {
+      const validatedData = registerSchema.parse(req.body);
+      const existingUser = await storage.getUserByEmail(validatedData.email);
+      
+      if (existingUser) {
+        return res.status(400).json({ message: "Email already registered" });
+      }
+      
+      const user = await authHelpers.createUser(validatedData);
+      
+      // Send welcome email after email verification
+      if (user.isEmailVerified) {
+        await sendWelcomeEmail(user);
+      }
+      
+      res.status(201).json({ 
+        message: "Registration successful! Please check your email to verify your account.",
+        user: {
+          id: user.id,
+          email: user.email,
+          firstName: user.firstName,
+          lastName: user.lastName,
+          isEmailVerified: user.isEmailVerified
+        }
+      });
+    } catch (error) {
+      console.error("Registration error:", error);
+      res.status(400).json({ message: error.message || "Registration failed" });
+    }
+  });
+
+  router.post("/api/auth/login", (req, res, next) => {
+    try {
+      const validatedData = loginSchema.parse(req.body);
+      
+      passport.authenticate('local', (err, user, info) => {
+        if (err) {
+          return res.status(500).json({ message: "Authentication error" });
+        }
+        
+        if (!user) {
+          return res.status(401).json({ message: info?.message || "Invalid credentials" });
+        }
+        
+        req.logIn(user, (err) => {
+          if (err) {
+            return res.status(500).json({ message: "Login failed" });
+          }
+          
+          res.json({
+            message: "Login successful",
+            user: {
+              id: user.id,
+              email: user.email,
+              firstName: user.firstName,
+              lastName: user.lastName,
+              role: user.role,
+              isEmailVerified: user.isEmailVerified,
+              organization: user.organization,
+              country: user.country
+            }
+          });
+        });
+      })(req, res, next);
+    } catch (error) {
+      res.status(400).json({ message: error.message });
+    }
+  });
+
+  router.post("/api/auth/logout", (req, res) => {
+    req.logout((err) => {
+      if (err) {
+        return res.status(500).json({ message: "Logout failed" });
+      }
+      res.json({ message: "Logout successful" });
+    });
+  });
+
+  router.get("/api/auth/user", requireAuth, (req, res) => {
+    res.json({
+      id: req.user.id,
+      email: req.user.email,
+      firstName: req.user.firstName,
+      lastName: req.user.lastName,
+      role: req.user.role,
+      isEmailVerified: req.user.isEmailVerified,
+      organization: req.user.organization,
+      country: req.user.country,
+      profileImage: req.user.profileImage,
+      bio: req.user.bio,
+      lastLoginAt: req.user.lastLoginAt
+    });
+  });
+
+  router.get("/api/auth/verify-email", async (req, res) => {
+    try {
+      const { token } = req.query;
+      if (!token) {
+        return res.status(400).json({ message: "Verification token is required" });
+      }
+      
+      const user = await authHelpers.verifyEmail(token);
+      
+      // Send welcome email after successful verification
+      await sendWelcomeEmail(user);
+      
+      res.json({ message: "Email verified successfully! Welcome to Africa Mechanize." });
+    } catch (error) {
+      res.status(400).json({ message: error.message });
+    }
+  });
+
+  router.post("/api/auth/forgot-password", async (req, res) => {
+    try {
+      const validatedData = forgotPasswordSchema.parse(req.body);
+      await authHelpers.sendPasswordReset(validatedData.email);
+      res.json({ message: "Password reset email sent" });
+    } catch (error) {
+      // Don't reveal if email exists or not for security
+      res.json({ message: "If the email exists, a password reset link has been sent" });
+    }
+  });
+
+  router.post("/api/auth/reset-password", async (req, res) => {
+    try {
+      const validatedData = resetPasswordSchema.parse(req.body);
+      await authHelpers.resetPassword(validatedData.token, validatedData.password);
+      res.json({ message: "Password reset successful" });
+    } catch (error) {
+      res.status(400).json({ message: error.message });
+    }
+  });
+
+  router.put("/api/auth/profile", requireAuth, async (req, res) => {
+    try {
+      const updates = {
+        firstName: req.body.firstName,
+        lastName: req.body.lastName,
+        organization: req.body.organization,
+        country: req.body.country,
+        bio: req.body.bio
+      };
+      
+      const updatedUser = await storage.updateUser(req.user.id, updates);
+      res.json({
+        message: "Profile updated successfully",
+        user: {
+          id: updatedUser.id,
+          email: updatedUser.email,
+          firstName: updatedUser.firstName,
+          lastName: updatedUser.lastName,
+          organization: updatedUser.organization,
+          country: updatedUser.country,
+          bio: updatedUser.bio
+        }
+      });
+    } catch (error) {
+      res.status(400).json({ message: error.message });
+    }
+  });
 
   // Framework elements endpoints
   router.get("/api/framework", async (req, res) => {
