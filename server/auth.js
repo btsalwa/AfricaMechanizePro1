@@ -22,7 +22,7 @@ passport.use(new LocalStrategy({
       return done(null, false, { message: 'Invalid email or password' });
     }
     
-    if (!user.isActive) {
+    if (user.isActive === false) {
       return done(null, false, { message: 'Account is deactivated' });
     }
     
