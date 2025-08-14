@@ -8,11 +8,21 @@ import { format } from "date-fns";
 
 export const WebinarCard = ({ webinar, variant = "default" }) => {
   const formatDate = (date) => {
-    return format(new Date(date), "MMM dd, yyyy");
+    if (!date) return "TBD";
+    try {
+      return format(new Date(date), "MMM dd, yyyy");
+    } catch {
+      return "TBD";
+    }
   };
 
   const formatTime = (date) => {
-    return format(new Date(date), "h:mm a");
+    if (!date) return "TBD";
+    try {
+      return format(new Date(date), "h:mm a");
+    } catch {
+      return "TBD";
+    }
   };
 
   const getStatusColor = (status) => {
@@ -61,12 +71,18 @@ export const WebinarCard = ({ webinar, variant = "default" }) => {
                 )}
               </div>
               <h3 className="font-semibold text-sm text-gray-900 dark:text-gray-100 mb-1 line-clamp-2">
-                <Link 
-                  href={`/webinars/${webinar.slug}`}
-                  className="hover:text-primary transition-colors"
-                >
-                  {webinar.title}
-                </Link>
+                {webinar.slug ? (
+                  <Link 
+                    href={`/webinars/${webinar.slug}`}
+                    className="hover:text-primary transition-colors"
+                  >
+                    {webinar.title}
+                  </Link>
+                ) : (
+                  <span className="text-gray-600 dark:text-gray-300">
+                    {webinar.title}
+                  </span>
+                )}
               </h3>
               <div className="flex items-center text-xs text-gray-500 dark:text-gray-400 space-x-3">
                 <span className="flex items-center">
@@ -135,9 +151,15 @@ export const WebinarCard = ({ webinar, variant = "default" }) => {
         </div>
         
         <CardTitle className="text-xl leading-tight text-gray-900 dark:text-gray-100 mb-2 line-clamp-2 group-hover:text-primary transition-colors">
-          <Link href={`/webinars/${webinar.slug}`}>
-            {webinar.title}
-          </Link>
+          {webinar.slug ? (
+            <Link href={`/webinars/${webinar.slug}`}>
+              {webinar.title}
+            </Link>
+          ) : (
+            <span className="cursor-default">
+              {webinar.title}
+            </span>
+          )}
         </CardTitle>
         
         <p className="text-gray-600 dark:text-gray-300 text-sm line-clamp-2">
@@ -156,7 +178,7 @@ export const WebinarCard = ({ webinar, variant = "default" }) => {
           </Avatar>
           <div className="flex-1 min-w-0">
             <p className="font-medium text-sm text-gray-900 dark:text-gray-100">
-              {webinar.speakerName}
+              {webinar.speakerName || "Speaker TBA"}
             </p>
             {webinar.speakerTitle && (
               <p className="text-xs text-gray-500 dark:text-gray-400 truncate">
