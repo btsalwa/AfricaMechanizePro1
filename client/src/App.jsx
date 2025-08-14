@@ -18,6 +18,7 @@ import Login from "./pages/Login";
 import Register from "./pages/Register";
 import EmailVerification from "./pages/EmailVerification";
 import ResetPassword from "./pages/ResetPassword";
+import WebinarDetail from "./pages/WebinarDetail";
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
 
@@ -38,6 +39,7 @@ function Router() {
           <Route path="/register" component={Register} />
           <Route path="/verify-email" component={EmailVerification} />
           <Route path="/reset-password" component={ResetPassword} />
+          <Route path="/webinars/:slug" component={WebinarDetail} />
           <Route component={NotFound} />
         </Switch>
       </main>

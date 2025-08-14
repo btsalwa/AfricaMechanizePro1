@@ -1,248 +1,134 @@
-import { pgTable, text, serial, integer, boolean, timestamp, jsonb, varchar, index } from "drizzle-orm/pg-core";
-import { relations } from "drizzle-orm";
+import { pgTable, text, varchar, integer, timestamp, boolean, jsonb, serial } from "drizzle-orm/pg-core";
 import { createInsertSchema } from "drizzle-zod";
 import { z } from "zod";
 
-// Session storage table for express-session
-export const sessions = pgTable(
-  "sessions",
-  {
-    sid: varchar("sid").primaryKey(),
-    sess: jsonb("sess").notNull(),
-    expire: timestamp("expire").notNull(),
-  },
-  (table) => [index("IDX_session_expire").on(table.expire)]
-);
-
-// Enhanced users table with authentication fields
+// Users table
 export const users = pgTable("users", {
   id: serial("id").primaryKey(),
-  email: text("email").notNull().unique(),
-  username: text("username"),
-  firstName: text("first_name"),
-  lastName: text("last_name"),
-  password: text("password").notNull(),
-  role: text("role").notNull().default("user"),
-  isEmailVerified: boolean("is_email_verified").notNull().default(false),
-  emailVerificationToken: text("email_verification_token"),
-  emailVerificationExpires: timestamp("email_verification_expires"),
-  passwordResetToken: text("password_reset_token"),
-  passwordResetExpires: timestamp("password_reset_expires"),
-  lastLoginAt: timestamp("last_login_at"),
-  isActive: boolean("is_active").notNull().default(true),
-  profileImage: text("profile_image"),
-  bio: text("bio"),
-  organization: text("organization"),
-  country: text("country"),
+  email: varchar("email", { length: 255 }).unique().notNull(),
+  password: varchar("password", { length: 255 }).notNull(),
+  firstName: varchar("first_name", { length: 100 }),
+  lastName: varchar("last_name", { length: 100 }),
+  role: varchar("role", { length: 20 }).default("user"),
+  isEmailVerified: boolean("is_email_verified").default(false),
+  emailVerificationToken: varchar("email_verification_token", { length: 255 }),
+  resetPasswordToken: varchar("reset_password_token", { length: 255 }),
+  resetPasswordExpires: timestamp("reset_password_expires"),
+  profileImageUrl: varchar("profile_image_url", { length: 500 }),
   createdAt: timestamp("created_at").defaultNow(),
   updatedAt: timestamp("updated_at").defaultNow(),
 });
 
-export const frameworkElements = pgTable("framework_elements", {
-  id: serial("id").primaryKey(),
-  number: integer("number").notNull().unique(),
-  title: text("title").notNull(),
-  description: text("description").notNull(),
-  icon: text("icon").notNull(),
-  color: text("color").notNull(),
-  detailsEn: text("details_en").notNull(),
-  detailsFr: text("details_fr").notNull(),
-  isActive: boolean("is_active").notNull().default(true),
-  createdAt: timestamp("created_at").defaultNow(),
-  updatedAt: timestamp("updated_at").defaultNow(),
-});
-
-export const events = pgTable("events", {
-  id: serial("id").primaryKey(),
-  title: text("title").notNull(),
-  description: text("description").notNull(),
-  date: timestamp("date").notNull(),
-  type: text("type").notNull(), // 'conference', 'webinar', 'meeting', 'workshop'
-  location: text("location"),
-  isVirtual: boolean("is_virtual").notNull().default(false),
-  registrationUrl: text("registration_url"),
-  imageUrl: text("image_url"),
-  isActive: boolean("is_active").notNull().default(true),
-  createdAt: timestamp("created_at").defaultNow(),
-  updatedAt: timestamp("updated_at").defaultNow(),
-});
-
-export const resources = pgTable("resources", {
-  id: serial("id").primaryKey(),
-  title: text("title").notNull(),
-  description: text("description").notNull(),
-  type: text("type").notNull(), // 'webinar', 'newsletter', 'research', 'presentation'
-  category: text("category").notNull(),
-  language: text("language").notNull().default("en"),
-  fileUrl: text("file_url"),
-  downloadUrl: text("download_url"),
-  section: text("section"), // 'Webinar 1', 'Magazine', 'Upcoming Webinars', etc.
-  isActive: boolean("is_active").notNull().default(true),
-  createdAt: timestamp("created_at").defaultNow(),
-  updatedAt: timestamp("updated_at").defaultNow(),
-});
-
-export const newsletters = pgTable("newsletters", {
-  id: serial("id").primaryKey(),
-  email: text("email").notNull(),
-  isActive: boolean("is_active").notNull().default(true),
-  preferences: jsonb("preferences").default({}),
-  createdAt: timestamp("created_at").defaultNow(),
-  updatedAt: timestamp("updated_at").defaultNow(),
-});
-
-export const contacts = pgTable("contacts", {
-  id: serial("id").primaryKey(),
-  name: text("name").notNull(),
-  email: text("email").notNull(),
-  subject: text("subject").notNull(),
-  message: text("message").notNull(),
-  isRead: boolean("is_read").notNull().default(false),
-  createdAt: timestamp("created_at").defaultNow(),
-  updatedAt: timestamp("updated_at").defaultNow(),
-});
-
-export const statistics = pgTable("statistics", {
-  id: serial("id").primaryKey(),
-  network: integer("network").notNull().default(0),
-  countries: integer("countries").notNull().default(0),
-  webinars: integer("webinars").notNull().default(0),
-  speakers: integer("speakers").notNull().default(0),
-  participants: integer("participants").notNull().default(0),
-  updatedAt: timestamp("updated_at").defaultNow(),
-});
-
+// Webinars table
 export const webinars = pgTable("webinars", {
   id: serial("id").primaryKey(),
-  title: text("title").notNull(),
+  title: varchar("title", { length: 255 }).notNull(),
+  slug: varchar("slug", { length: 255 }).unique().notNull(),
   description: text("description").notNull(),
-  date: timestamp("date").notNull(),
-  time: text("time").notNull(),
-  duration: text("duration").notNull(),
-  presenter: text("presenter").notNull(),
-  participants: integer("participants").notNull().default(0),
-  maxParticipants: integer("max_participants").notNull().default(500),
-  status: text("status").notNull().default("upcoming"), // 'upcoming', 'live', 'completed'
-  language: text("language").notNull().default("English"),
-  registrationUrl: text("registration_url"),
-  topics: jsonb("topics").default([]),
-  isActive: boolean("is_active").notNull().default(true),
+  shortDescription: varchar("short_description", { length: 500 }),
+  speakerName: varchar("speaker_name", { length: 255 }).notNull(),
+  speakerTitle: varchar("speaker_title", { length: 255 }),
+  speakerBio: text("speaker_bio"),
+  speakerImage: varchar("speaker_image", { length: 500 }),
+  scheduledDate: timestamp("scheduled_date").notNull(),
+  duration: integer("duration").notNull(), // in minutes
+  status: varchar("status", { length: 20 }).default("upcoming"), // upcoming, live, completed, cancelled
+  registrationRequired: boolean("registration_required").default(true),
+  maxAttendees: integer("max_attendees"),
+  currentAttendees: integer("current_attendees").default(0),
+  thumbnailImage: varchar("thumbnail_image", { length: 500 }),
+  bannerImage: varchar("banner_image", { length: 500 }),
+  tags: text("tags").array(),
+  category: varchar("category", { length: 100 }),
+  language: varchar("language", { length: 10 }).default("en"),
+  isPublic: boolean("is_public").default(true),
   createdAt: timestamp("created_at").defaultNow(),
   updatedAt: timestamp("updated_at").defaultNow(),
 });
 
-export const readingMaterials = pgTable("reading_materials", {
+// Webinar Resources (presentations, downloads, etc.)
+export const webinarResources = pgTable("webinar_resources", {
   id: serial("id").primaryKey(),
-  title: text("title").notNull(),
-  description: text("description").notNull(),
-  category: text("category").notNull(), // 'framework', 'case-study', 'technical', etc.
-  author: text("author").notNull(),
-  readTime: text("read_time").notNull(),
-  difficulty: text("difficulty").notNull(), // 'Beginner', 'Intermediate', 'Advanced'
-  downloadCount: integer("download_count").notNull().default(0),
-  rating: integer("rating").notNull().default(4), // 1-5 scale, stored as integer (4.5 = 45)
-  coverImage: text("cover_image"),
-  tags: jsonb("tags").default([]),
-  fileUrl: text("file_url"),
-  isActive: boolean("is_active").notNull().default(true),
-  createdAt: timestamp("created_at").defaultNow(),
-  updatedAt: timestamp("updated_at").defaultNow(),
-});
-
-// Enhanced schema additions based on africamechanize.org content
-export const conferences = pgTable("conferences", {
-  id: serial("id").primaryKey(),
-  title: text("title").notNull(),
-  subtitle: text("subtitle"),
-  description: text("description").notNull(),
-  startDate: timestamp("start_date").notNull(),
-  endDate: timestamp("end_date").notNull(),
-  location: text("location"),
-  venue: text("venue"),
-  isVirtual: boolean("is_virtual").notNull().default(false),
-  abstractDeadline: timestamp("abstract_deadline"),
-  registrationDeadline: timestamp("registration_deadline"),
-  website: text("website"),
-  contactEmail: text("contact_email"),
-  theme: text("theme"),
-  organizers: jsonb("organizers").default([]),
-  speakers: jsonb("speakers").default([]),
-  sponsors: jsonb("sponsors").default([]),
-  isActive: boolean("is_active").notNull().default(true),
-  createdAt: timestamp("created_at").defaultNow(),
-  updatedAt: timestamp("updated_at").defaultNow(),
-});
-
-export const abstracts = pgTable("abstracts", {
-  id: serial("id").primaryKey(),
-  conferenceId: integer("conference_id").notNull(),
-  title: text("title").notNull(),
-  authorName: text("author_name").notNull(),
-  authorEmail: text("author_email").notNull(),
-  authorAffiliation: text("author_affiliation"),
-  coAuthors: jsonb("co_authors").default([]),
-  abstract: text("abstract").notNull(),
-  keywords: jsonb("keywords").default([]),
-  category: text("category").notNull(),
-  presentationType: text("presentation_type").notNull(), // 'oral', 'poster'
-  status: text("status").notNull().default("submitted"), // 'submitted', 'under-review', 'accepted', 'rejected'
-  reviewComments: text("review_comments"),
-  submittedAt: timestamp("submitted_at").defaultNow(),
-  reviewedAt: timestamp("reviewed_at"),
-  createdAt: timestamp("created_at").defaultNow(),
-  updatedAt: timestamp("updated_at").defaultNow(),
-});
-
-export const partners = pgTable("partners", {
-  id: serial("id").primaryKey(),
-  name: text("name").notNull(),
-  type: text("type").notNull(), // 'sponsor', 'partner', 'organization', 'government'
+  webinarId: integer("webinar_id").references(() => webinars.id).notNull(),
+  title: varchar("title", { length: 255 }).notNull(),
   description: text("description"),
-  website: text("website"),
-  logoUrl: text("logo_url"),
-  country: text("country"),
-  isActive: boolean("is_active").notNull().default(true),
-  displayOrder: integer("display_order").notNull().default(0),
+  resourceType: varchar("resource_type", { length: 50 }).notNull(), // presentation, download, link, video
+  fileUrl: varchar("file_url", { length: 500 }),
+  fileName: varchar("file_name", { length: 255 }),
+  fileSize: integer("file_size"), // in bytes
+  requiresAuth: boolean("requires_auth").default(false),
+  downloadCount: integer("download_count").default(0),
+  isPublic: boolean("is_public").default(true),
+  sortOrder: integer("sort_order").default(0),
   createdAt: timestamp("created_at").defaultNow(),
-  updatedAt: timestamp("updated_at").defaultNow(),
 });
 
-export const webinarSeries = pgTable("webinar_series", {
+// Webinar Recordings (YouTube, Google Drive, etc.)
+export const webinarRecordings = pgTable("webinar_recordings", {
   id: serial("id").primaryKey(),
-  name: text("name").notNull(),
+  webinarId: integer("webinar_id").references(() => webinars.id).notNull(),
+  title: varchar("title", { length: 255 }).notNull(),
   description: text("description"),
-  totalWebinars: integer("total_webinars").notNull().default(0),
-  isActive: boolean("is_active").notNull().default(true),
+  recordingUrl: varchar("recording_url", { length: 500 }).notNull(),
+  recordingType: varchar("recording_type", { length: 50 }).notNull(), // youtube, gdrive, vimeo, direct
+  duration: integer("duration"), // in minutes
+  thumbnailUrl: varchar("thumbnail_url", { length: 500 }),
+  requiresAuth: boolean("requires_auth").default(true),
+  viewCount: integer("view_count").default(0),
+  isPublic: boolean("is_public").default(false),
+  createdAt: timestamp("created_at").defaultNow(),
+});
+
+// Webinar Registrations
+export const webinarRegistrations = pgTable("webinar_registrations", {
+  id: serial("id").primaryKey(),
+  webinarId: integer("webinar_id").references(() => webinars.id).notNull(),
+  userId: integer("user_id").references(() => users.id).notNull(),
+  registeredAt: timestamp("registered_at").defaultNow(),
+  attended: boolean("attended").default(false),
+  attendedAt: timestamp("attended_at"),
+});
+
+// Framework Elements
+export const frameworkElements = pgTable("framework_elements", {
+  id: serial("id").primaryKey(),
+  title: varchar("title", { length: 255 }).notNull(),
+  shortTitle: varchar("short_title", { length: 100 }),
+  description: text("description").notNull(),
+  details: text("details"),
+  category: varchar("category", { length: 100 }),
+  color: varchar("color", { length: 100 }),
+  icon: varchar("icon", { length: 50 }),
+  sortOrder: integer("sort_order").default(0),
+  isActive: boolean("is_active").default(true),
   createdAt: timestamp("created_at").defaultNow(),
   updatedAt: timestamp("updated_at").defaultNow(),
 });
 
-// Relations
-export const abstractsRelations = relations(abstracts, ({ one }) => ({
-  conference: one(conferences, {
-    fields: [abstracts.conferenceId],
-    references: [conferences.id],
-  }),
-}));
-
-export const conferencesRelations = relations(conferences, ({ many }) => ({
-  abstracts: many(abstracts),
-}));
-
-// Insert and Select Schemas
-export const insertFrameworkElementSchema = createInsertSchema(frameworkElements).omit({
-  id: true,
-  createdAt: true,
-  updatedAt: true,
+// Newsletter Subscriptions
+export const newsletterSubscriptions = pgTable("newsletter_subscriptions", {
+  id: serial("id").primaryKey(),
+  email: varchar("email", { length: 255 }).unique().notNull(),
+  firstName: varchar("first_name", { length: 100 }),
+  lastName: varchar("last_name", { length: 100 }),
+  isActive: boolean("is_active").default(true),
+  subscribedAt: timestamp("subscribed_at").defaultNow(),
+  unsubscribedAt: timestamp("unsubscribed_at"),
 });
 
-export const insertEventSchema = createInsertSchema(events).omit({
-  id: true,
-  createdAt: true,
-  updatedAt: true,
+// Contact Forms
+export const contactForms = pgTable("contact_forms", {
+  id: serial("id").primaryKey(),
+  name: varchar("name", { length: 255 }).notNull(),
+  email: varchar("email", { length: 255 }).notNull(),
+  subject: varchar("subject", { length: 255 }),
+  message: text("message").notNull(),
+  status: varchar("status", { length: 20 }).default("new"), // new, read, responded, closed
+  createdAt: timestamp("created_at").defaultNow(),
 });
 
-export const insertResourceSchema = createInsertSchema(resources).omit({
+// Insert schemas
+export const insertUserSchema = createInsertSchema(users).omit({
   id: true,
   createdAt: true,
   updatedAt: true,
@@ -252,139 +138,88 @@ export const insertWebinarSchema = createInsertSchema(webinars).omit({
   id: true,
   createdAt: true,
   updatedAt: true,
+  currentAttendees: true,
 });
 
-export const insertConferenceSchema = createInsertSchema(conferences).omit({
+export const insertWebinarResourceSchema = createInsertSchema(webinarResources).omit({
+  id: true,
+  createdAt: true,
+  downloadCount: true,
+});
+
+export const insertWebinarRecordingSchema = createInsertSchema(webinarRecordings).omit({
+  id: true,
+  createdAt: true,
+  viewCount: true,
+});
+
+export const insertWebinarRegistrationSchema = createInsertSchema(webinarRegistrations).omit({
+  id: true,
+  registeredAt: true,
+  attended: true,
+  attendedAt: true,
+});
+
+export const insertFrameworkElementSchema = createInsertSchema(frameworkElements).omit({
   id: true,
   createdAt: true,
   updatedAt: true,
 });
 
-export const insertAbstractSchema = createInsertSchema(abstracts).omit({
+export const insertNewsletterSubscriptionSchema = createInsertSchema(newsletterSubscriptions).omit({
   id: true,
-  submittedAt: true,
-  createdAt: true,
-  updatedAt: true,
+  subscribedAt: true,
+  unsubscribedAt: true,
 });
 
-export const insertPartnerSchema = createInsertSchema(partners).omit({
+export const insertContactFormSchema = createInsertSchema(contactForms).omit({
   id: true,
   createdAt: true,
-  updatedAt: true,
 });
 
-export const insertReadingMaterialSchema = createInsertSchema(readingMaterials).omit({
-  id: true,
-  createdAt: true,
-  updatedAt: true,
-});
-
-export const insertNewsletterSchema = createInsertSchema(newsletters).omit({
-  id: true,
-  createdAt: true,
-  updatedAt: true,
-});
-
-export const insertContactSchema = createInsertSchema(contacts).omit({
-  id: true,
-  createdAt: true,
-  updatedAt: true,
-});
-
-// Type Exports
-export type FrameworkElement = typeof frameworkElements.$inferSelect;
-export type InsertFrameworkElement = z.infer<typeof insertFrameworkElementSchema>;
-
-export type Event = typeof events.$inferSelect;
-export type InsertEvent = z.infer<typeof insertEventSchema>;
-
-export type Resource = typeof resources.$inferSelect;
-export type InsertResource = z.infer<typeof insertResourceSchema>;
+// Types
+export type User = typeof users.$inferSelect;
+export type InsertUser = z.infer<typeof insertUserSchema>;
 
 export type Webinar = typeof webinars.$inferSelect;
 export type InsertWebinar = z.infer<typeof insertWebinarSchema>;
 
-export type Conference = typeof conferences.$inferSelect;
-export type InsertConference = z.infer<typeof insertConferenceSchema>;
+export type WebinarResource = typeof webinarResources.$inferSelect;
+export type InsertWebinarResource = z.infer<typeof insertWebinarResourceSchema>;
 
-export type Abstract = typeof abstracts.$inferSelect;
-export type InsertAbstract = z.infer<typeof insertAbstractSchema>;
+export type WebinarRecording = typeof webinarRecordings.$inferSelect;
+export type InsertWebinarRecording = z.infer<typeof insertWebinarRecordingSchema>;
 
-export type Partner = typeof partners.$inferSelect;
-export type InsertPartner = z.infer<typeof insertPartnerSchema>;
+export type WebinarRegistration = typeof webinarRegistrations.$inferSelect;
+export type InsertWebinarRegistration = z.infer<typeof insertWebinarRegistrationSchema>;
 
-export type ReadingMaterial = typeof readingMaterials.$inferSelect;
-export type InsertReadingMaterial = z.infer<typeof insertReadingMaterialSchema>;
+export type FrameworkElement = typeof frameworkElements.$inferSelect;
+export type InsertFrameworkElement = z.infer<typeof insertFrameworkElementSchema>;
 
-export type Newsletter = typeof newsletters.$inferSelect;
-export type InsertNewsletter = z.infer<typeof insertNewsletterSchema>;
+export type NewsletterSubscription = typeof newsletterSubscriptions.$inferSelect;
+export type InsertNewsletterSubscription = z.infer<typeof insertNewsletterSubscriptionSchema>;
 
-export type Contact = typeof contacts.$inferSelect;
-export type InsertContact = z.infer<typeof insertContactSchema>;
+export type ContactForm = typeof contactForms.$inferSelect;
+export type InsertContactForm = z.infer<typeof insertContactFormSchema>;
 
-// Additional type exports
-export type User = typeof users.$inferSelect;
-
-export const insertUserSchema = createInsertSchema(users).omit({
-  id: true,
-  createdAt: true,
-  updatedAt: true,
-});
-
-export type InsertUser = z.infer<typeof insertUserSchema>;
-
-export type WebinarSeries = typeof webinarSeries.$inferSelect;
-export type InsertWebinarSeries = z.infer<typeof insertWebinarSchema>;
-
-// Authentication-specific schemas
+// Auth schemas for routes
 export const registerSchema = z.object({
-  email: z.string().email("Please enter a valid email address"),
-  password: z.string().min(8, "Password must be at least 8 characters")
-    .regex(/[A-Z]/, "Password must contain at least one uppercase letter")
-    .regex(/[a-z]/, "Password must contain at least one lowercase letter")
-    .regex(/[0-9]/, "Password must contain at least one number"),
-  confirmPassword: z.string(),
-  firstName: z.string().min(2, "First name must be at least 2 characters"),
-  lastName: z.string().min(2, "Last name must be at least 2 characters"),
-  organization: z.string().optional(),
-  country: z.string().optional(),
-}).refine((data) => data.password === data.confirmPassword, {
-  message: "Passwords don't match",
-  path: ["confirmPassword"],
+  email: z.string().email(),
+  password: z.string().min(8),
+  firstName: z.string().optional(),
+  lastName: z.string().optional(),
 });
 
 export const loginSchema = z.object({
-  email: z.string().email("Please enter a valid email address"),
-  password: z.string().min(1, "Password is required"),
+  email: z.string().email(),
+  password: z.string().min(1),
 });
 
 export const forgotPasswordSchema = z.object({
-  email: z.string().email("Please enter a valid email address"),
+  email: z.string().email(),
 });
 
 export const resetPasswordSchema = z.object({
-  token: z.string().min(1, "Reset token is required"),
-  password: z.string().min(8, "Password must be at least 8 characters")
-    .regex(/[A-Z]/, "Password must contain at least one uppercase letter")
-    .regex(/[a-z]/, "Password must contain at least one lowercase letter")
-    .regex(/[0-9]/, "Password must contain at least one number"),
-  confirmPassword: z.string(),
-}).refine((data) => data.password === data.confirmPassword, {
-  message: "Passwords don't match",
-  path: ["confirmPassword"],
+  token: z.string(),
+  password: z.string().min(8),
 });
-
-// Type exports for authentication
-export type RegisterData = z.infer<typeof registerSchema>;
-export type LoginData = z.infer<typeof loginSchema>;
-export type ForgotPasswordData = z.infer<typeof forgotPasswordSchema>;
-export type ResetPasswordData = z.infer<typeof resetPasswordSchema>;
-
-export const insertStatisticsSchema = createInsertSchema(statistics).omit({
-  id: true,
-  updatedAt: true,
-});
-
-// Clean up duplicate type exports
-export type Statistics = typeof statistics.$inferSelect;
-export type InsertStatistics = z.infer<typeof insertStatisticsSchema>;

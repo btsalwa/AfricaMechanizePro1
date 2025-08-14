@@ -3,9 +3,9 @@ import { Footer } from "../components/Footer";
 import { Hero } from "../components/Hero";
 import { StatsCounter } from "../components/StatsCounter";
 import { FrameworkGrid } from "../components/FrameworkGrid";
+import { WebinarSection } from "../components/WebinarSection";
 import { NewsEvents } from "../components/NewsEvents";
 import { ResourceLibrary } from "../components/ResourceLibrary";
-import { WebinarParticipation } from "../components/WebinarParticipation";
 import { ReadingMaterials } from "../components/ReadingMaterials";
 import { NewsletterSignup } from "../components/NewsletterSignup";
 import { Card, CardContent } from "@/components/ui/card";
@@ -60,7 +60,7 @@ export default function Home() {
       
       <NewsEvents />
       
-      <WebinarParticipation />
+      <WebinarSection />
       
       <ResourceLibrary />
       

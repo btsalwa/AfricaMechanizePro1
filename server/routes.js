@@ -4,9 +4,9 @@ import { storage } from "./storage.js";
 import passport from "passport";
 import { authHelpers, requireAuth, requireEmailVerification, requireAdmin } from "./auth.js";
 import { sendWelcomeEmail } from "./emailService.js";
+import webinarRoutes from "./routes/webinars.js";
 import { 
-  insertEventSchema, insertResourceSchema, insertFrameworkElementSchema,
-  insertNewsletterSchema, insertContactSchema, insertStatisticsSchema,
+  insertFrameworkElementSchema, insertNewsletterSubscriptionSchema, insertContactFormSchema,
   registerSchema, loginSchema, forgotPasswordSchema, resetPasswordSchema
 } from "../shared/schema.js";
 
@@ -307,15 +307,8 @@ export async function registerRoutes(app) {
     }
   });
 
-  // Webinars endpoints
-  router.get("/api/webinars", async (req, res) => {
-    try {
-      const webinars = await storage.getAllWebinars();
-      res.json(webinars);
-    } catch (error) {
-      res.status(500).json({ error: "Failed to fetch webinars" });
-    }
-  });
+  // Mount webinar routes
+  router.use("/api/webinars", webinarRoutes);
 
   // Reading Materials endpoints
   router.get("/api/materials", async (req, res) => {
