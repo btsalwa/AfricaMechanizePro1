@@ -140,6 +140,117 @@ export async function registerRoutes(app) {
     }
   });
 
+  // Webinars endpoints
+  router.get("/api/webinars", async (req, res) => {
+    try {
+      const webinars = await storage.getAllWebinars();
+      res.json(webinars);
+    } catch (error) {
+      res.status(500).json({ error: "Failed to fetch webinars" });
+    }
+  });
+
+  // Reading Materials endpoints
+  router.get("/api/materials", async (req, res) => {
+    try {
+      const materials = await storage.getAllReadingMaterials();
+      res.json(materials);
+    } catch (error) {
+      res.status(500).json({ error: "Failed to fetch materials" });
+    }
+  });
+
+  // Admin CRUD Routes
+  router.patch("/api/resources/:id", async (req, res) => {
+    try {
+      const resource = await storage.updateResource(parseInt(req.params.id), req.body);
+      res.json(resource);
+    } catch (error) {
+      res.status(500).json({ error: "Failed to update resource" });
+    }
+  });
+
+  router.delete("/api/resources/:id", async (req, res) => {
+    try {
+      await storage.deleteResource(parseInt(req.params.id));
+      res.json({ message: "Resource deleted successfully" });
+    } catch (error) {
+      res.status(500).json({ error: "Failed to delete resource" });
+    }
+  });
+
+  router.patch("/api/events/:id", async (req, res) => {
+    try {
+      const event = await storage.updateEvent(parseInt(req.params.id), req.body);
+      res.json(event);
+    } catch (error) {
+      res.status(500).json({ error: "Failed to update event" });
+    }
+  });
+
+  router.delete("/api/events/:id", async (req, res) => {
+    try {
+      await storage.deleteEvent(parseInt(req.params.id));
+      res.json({ message: "Event deleted successfully" });
+    } catch (error) {
+      res.status(500).json({ error: "Failed to delete event" });
+    }
+  });
+
+  router.post("/api/webinars", async (req, res) => {
+    try {
+      const webinar = await storage.createWebinar(req.body);
+      res.json(webinar);
+    } catch (error) {
+      res.status(500).json({ error: "Failed to create webinar" });
+    }
+  });
+
+  router.patch("/api/webinars/:id", async (req, res) => {
+    try {
+      const webinar = await storage.updateWebinar(parseInt(req.params.id), req.body);
+      res.json(webinar);
+    } catch (error) {
+      res.status(500).json({ error: "Failed to update webinar" });
+    }
+  });
+
+  router.delete("/api/webinars/:id", async (req, res) => {
+    try {
+      await storage.deleteWebinar(parseInt(req.params.id));
+      res.json({ message: "Webinar deleted successfully" });
+    } catch (error) {
+      res.status(500).json({ error: "Failed to delete webinar" });
+    }
+  });
+
+  router.post("/api/materials", async (req, res) => {
+    try {
+      const material = await storage.createReadingMaterial(req.body);
+      res.json(material);
+    } catch (error) {
+      res.status(500).json({ error: "Failed to create material" });
+    }
+  });
+
+  router.patch("/api/materials/:id", async (req, res) => {
+    try {
+      const material = await storage.updateReadingMaterial(parseInt(req.params.id), req.body);
+      res.json(material);
+    } catch (error) {
+      res.status(500).json({ error: "Failed to update material" });
+    }
+  });
+
+  router.delete("/api/materials/:id", async (req, res) => {
+    try {
+      await storage.deleteReadingMaterial(parseInt(req.params.id));
+      res.json({ message: "Material deleted successfully" });
+    } catch (error) {
+      res.status(500).json({ error: "Failed to delete material" });
+    }
+  });
+
   app.use(express.json());
   app.use(router);
 

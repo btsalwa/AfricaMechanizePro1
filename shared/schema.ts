@@ -87,6 +87,43 @@ export const statistics = pgTable("statistics", {
   updatedAt: timestamp("updated_at").defaultNow(),
 });
 
+export const webinars = pgTable("webinars", {
+  id: serial("id").primaryKey(),
+  title: text("title").notNull(),
+  description: text("description").notNull(),
+  date: timestamp("date").notNull(),
+  time: text("time").notNull(),
+  duration: text("duration").notNull(),
+  presenter: text("presenter").notNull(),
+  participants: integer("participants").notNull().default(0),
+  maxParticipants: integer("max_participants").notNull().default(500),
+  status: text("status").notNull().default("upcoming"), // 'upcoming', 'live', 'completed'
+  language: text("language").notNull().default("English"),
+  registrationUrl: text("registration_url"),
+  topics: jsonb("topics").default([]),
+  isActive: boolean("is_active").notNull().default(true),
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+});
+
+export const readingMaterials = pgTable("reading_materials", {
+  id: serial("id").primaryKey(),
+  title: text("title").notNull(),
+  description: text("description").notNull(),
+  category: text("category").notNull(), // 'framework', 'case-study', 'technical', etc.
+  author: text("author").notNull(),
+  readTime: text("read_time").notNull(),
+  difficulty: text("difficulty").notNull(), // 'Beginner', 'Intermediate', 'Advanced'
+  downloadCount: integer("download_count").notNull().default(0),
+  rating: integer("rating").notNull().default(4), // 1-5 scale, stored as integer (4.5 = 45)
+  coverImage: text("cover_image"),
+  tags: jsonb("tags").default([]),
+  fileUrl: text("file_url"),
+  isActive: boolean("is_active").notNull().default(true),
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+});
+
 // Relations
 export const eventsRelations = relations(events, ({ many }) => ({
   resources: many(resources),
@@ -138,6 +175,18 @@ export const insertStatisticsSchema = createInsertSchema(statistics).omit({
   updatedAt: true,
 });
 
+export const insertWebinarSchema = createInsertSchema(webinars).omit({
+  id: true,
+  createdAt: true,
+  updatedAt: true,
+});
+
+export const insertReadingMaterialSchema = createInsertSchema(readingMaterials).omit({
+  id: true,
+  createdAt: true,
+  updatedAt: true,
+});
+
 // Types
 export type User = typeof users.$inferSelect;
 export type InsertUser = z.infer<typeof insertUserSchema>;
@@ -159,3 +208,9 @@ export type InsertContact = z.infer<typeof insertContactSchema>;
 
 export type Statistics = typeof statistics.$inferSelect;
 export type InsertStatistics = z.infer<typeof insertStatisticsSchema>;
+
+export type Webinar = typeof webinars.$inferSelect;
+export type InsertWebinar = z.infer<typeof insertWebinarSchema>;
+
+export type ReadingMaterial = typeof readingMaterials.$inferSelect;
+export type InsertReadingMaterial = z.infer<typeof insertReadingMaterialSchema>;

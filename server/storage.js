@@ -1,5 +1,5 @@
 import { 
-  users, events, resources, frameworkElements, newsletters, contacts, statistics
+  users, events, resources, frameworkElements, newsletters, contacts, statistics, webinars, readingMaterials
 } from "../shared/schema.js";
 import { db } from "./db.js";
 import { eq } from "drizzle-orm";
@@ -60,6 +60,19 @@ export class DatabaseStorage {
     return event;
   }
 
+  async updateEvent(id, updateData) {
+    const [event] = await db
+      .update(events)
+      .set(updateData)
+      .where(eq(events.id, id))
+      .returning();
+    return event;
+  }
+
+  async deleteEvent(id) {
+    await db.delete(events).where(eq(events.id, id));
+  }
+
   // Resources methods
   async getAllResources() {
     return await db.select().from(resources);
@@ -80,6 +93,19 @@ export class DatabaseStorage {
       .values(insertResource)
       .returning();
     return resource;
+  }
+
+  async updateResource(id, updateData) {
+    const [resource] = await db
+      .update(resources)
+      .set(updateData)
+      .where(eq(resources.id, id))
+      .returning();
+    return resource;
+  }
+
+  async deleteResource(id) {
+    await db.delete(resources).where(eq(resources.id, id));
   }
 
   // Newsletter methods
@@ -116,6 +142,68 @@ export class DatabaseStorage {
       })
       .returning();
     return stats;
+  }
+
+  // Webinars methods
+  async getAllWebinars() {
+    return await db.select().from(webinars);
+  }
+
+  async getWebinar(id) {
+    const [webinar] = await db.select().from(webinars).where(eq(webinars.id, id));
+    return webinar || undefined;
+  }
+
+  async createWebinar(insertWebinar) {
+    const [webinar] = await db
+      .insert(webinars)
+      .values(insertWebinar)
+      .returning();
+    return webinar;
+  }
+
+  async updateWebinar(id, updateData) {
+    const [webinar] = await db
+      .update(webinars)
+      .set(updateData)
+      .where(eq(webinars.id, id))
+      .returning();
+    return webinar;
+  }
+
+  async deleteWebinar(id) {
+    await db.delete(webinars).where(eq(webinars.id, id));
+  }
+
+  // Reading Materials methods
+  async getAllReadingMaterials() {
+    return await db.select().from(readingMaterials);
+  }
+
+  async getReadingMaterial(id) {
+    const [material] = await db.select().from(readingMaterials).where(eq(readingMaterials.id, id));
+    return material || undefined;
+  }
+
+  async createReadingMaterial(insertMaterial) {
+    const [material] = await db
+      .insert(readingMaterials)
+      .values(insertMaterial)
+      .returning();
+    return material;
+  }
+
+  async updateReadingMaterial(id, updateData) {
+    const [material] = await db
+      .update(readingMaterials)
+      .set(updateData)
+      .where(eq(readingMaterials.id, id))
+      .returning();
+    return material;
+  }
+
+  async deleteReadingMaterial(id) {
+    await db.delete(readingMaterials).where(eq(readingMaterials.id, id));
   }
 }
 
