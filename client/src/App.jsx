@@ -19,6 +19,10 @@ import Register from "./pages/Register";
 import EmailVerification from "./pages/EmailVerification";
 import ResetPassword from "./pages/ResetPassword";
 import WebinarDetail from "./pages/WebinarDetail";
+import Webinars from "./pages/Webinars";
+import WebinarPresentations from "./pages/WebinarPresentations";
+import FarmPower from "./pages/framework/FarmPower";
+import InnovativeFinancing from "./pages/framework/InnovativeFinancing";
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
 
@@ -39,7 +43,11 @@ function Router() {
           <Route path="/register" component={Register} />
           <Route path="/verify-email" component={EmailVerification} />
           <Route path="/reset-password" component={ResetPassword} />
+          <Route path="/webinars" component={Webinars} />
+          <Route path="/webinars/presentations" component={WebinarPresentations} />
           <Route path="/webinars/:slug" component={WebinarDetail} />
+          <Route path="/framework/farm-power" component={FarmPower} />
+          <Route path="/framework/innovative-financing" component={InnovativeFinancing} />
           <Route component={NotFound} />
         </Switch>
       </main>

@@ -6,7 +6,14 @@ import { ThemeToggle } from "./ThemeToggle";
 import { UserMenu } from "./auth/UserMenu";
 import { useAuth } from "@/hooks/useAuth";
 import { Button } from "@/components/ui/button";
-import { Sprout, Menu, X, LogIn, UserPlus } from "lucide-react";
+import { 
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { Sprout, Menu, X, LogIn, UserPlus, ChevronDown } from "lucide-react";
 
 export const Header = () => {
   const [location] = useLocation();
@@ -25,10 +32,26 @@ export const Header = () => {
 
   const navItems = [
     { href: "/", label: "Home" },
-    { href: "/framework", label: "Framework" },
-    { href: "/events", label: "Events" },
-    { href: "/resources", label: "Resources" },
     { href: "/about", label: "About" },
+    { href: "/framework", label: "SAMA Focus Areas", dropdown: [
+      { href: "/framework/farm-power", label: "1. Farm Power" },
+      { href: "/framework/innovative-financing", label: "2. Innovative Financing" },
+      { href: "/framework/sustainable-systems", label: "3. Sustainable Systems" },
+      { href: "/framework/mechanization", label: "4. Mechanization" },
+      { href: "/framework/innovative-systems", label: "5. Innovative Systems" },
+      { href: "/framework/land-preparation", label: "6. Land Preparation" },
+      { href: "/framework/social-sustainability", label: "7. Social Sustainability" },
+      { href: "/framework/human-resources", label: "8. Human Resources" },
+      { href: "/framework/vision-policy-strategy", label: "9. Vision & Policy" },
+      { href: "/framework/cooperation-networking", label: "10. Cooperation & Networking" },
+    ]},
+    { href: "/webinars", label: "Webinars", dropdown: [
+      { href: "/webinars", label: "All Webinars" },
+      { href: "/webinars/upcoming", label: "Upcoming Webinars" },
+      { href: "/webinars/presentations", label: "Presentations & Downloads" },
+    ]},
+    { href: "/news", label: "News & Events" },
+    { href: "/resources", label: "Resources" },
     { href: "/contact", label: "Contact" },
   ];
 
@@ -66,17 +89,44 @@ export const Header = () => {
 
             {/* Desktop Navigation */}
             <div className="hidden lg:flex items-center space-x-8">
-              {navItems.map((item) => (
-                <Link
-                  key={item.href}
-                  href={item.href}
-                  className={`text-gray-700 dark:text-gray-300 hover:text-primary dark:hover:text-primary transition-colors duration-300 font-medium ${
-                    location === item.href ? "text-primary" : ""
-                  }`}
-                >
-                  {item.label}
-                </Link>
-              ))}
+              {navItems.map((item) => {
+                if (item.dropdown) {
+                  return (
+                    <DropdownMenu key={item.label}>
+                      <DropdownMenuTrigger asChild>
+                        <Button variant="ghost" className="p-0 h-auto font-medium text-gray-700 dark:text-gray-300 hover:text-primary dark:hover:text-primary">
+                          {item.label}
+                          <ChevronDown className="ml-1 h-4 w-4" />
+                        </Button>
+                      </DropdownMenuTrigger>
+                      <DropdownMenuContent align="start" className="w-56">
+                        {item.dropdown.map((dropdownItem, index) => (
+                          <DropdownMenuItem key={dropdownItem.href} asChild>
+                            <Link 
+                              href={dropdownItem.href}
+                              className="cursor-pointer w-full text-sm"
+                            >
+                              {dropdownItem.label}
+                            </Link>
+                          </DropdownMenuItem>
+                        ))}
+                      </DropdownMenuContent>
+                    </DropdownMenu>
+                  );
+                }
+                
+                return (
+                  <Link
+                    key={item.href}
+                    href={item.href}
+                    className={`text-gray-700 dark:text-gray-300 hover:text-primary dark:hover:text-primary transition-colors duration-300 font-medium ${
+                      location === item.href ? "text-primary" : ""
+                    }`}
+                  >
+                    {item.label}
+                  </Link>
+                );
+              })}
             </div>
 
             {/* Controls */}
