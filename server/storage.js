@@ -209,6 +209,19 @@ export class DatabaseStorage {
     return await db.select().from(contactForms).orderBy(sql`created_at DESC`);
   }
 
+  async deleteUser(id) {
+    await db.delete(users).where(eq(users.id, id));
+  }
+
+  async updateContact(id, updateData) {
+    const [contact] = await db
+      .update(contactForms)
+      .set({ ...updateData, updatedAt: new Date() })
+      .where(eq(contactForms.id, id))
+      .returning();
+    return contact;
+  }
+
   // Webinars methods
   async getAllWebinars() {
     return await db.select().from(webinars);

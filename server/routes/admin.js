@@ -181,6 +181,44 @@ router.get("/contacts", verifyAdminToken, async (req, res) => {
   }
 });
 
+// Update user
+router.put("/users/:id", verifyAdminToken, async (req, res) => {
+  try {
+    const userId = parseInt(req.params.id);
+    const userData = req.body;
+    const user = await storage.updateUser(userId, userData);
+    res.json(user);
+  } catch (error) {
+    console.error("Update user error:", error);
+    res.status(500).json({ error: "Failed to update user" });
+  }
+});
+
+// Delete user
+router.delete("/users/:id", verifyAdminToken, async (req, res) => {
+  try {
+    const userId = parseInt(req.params.id);
+    await storage.deleteUser(userId);
+    res.json({ message: "User deleted successfully" });
+  } catch (error) {
+    console.error("Delete user error:", error);
+    res.status(500).json({ error: "Failed to delete user" });
+  }
+});
+
+// Update contact
+router.put("/contacts/:id", verifyAdminToken, async (req, res) => {
+  try {
+    const contactId = parseInt(req.params.id);
+    const updateData = req.body;
+    const contact = await storage.updateContact(contactId, updateData);
+    res.json(contact);
+  } catch (error) {
+    console.error("Update contact error:", error);
+    res.status(500).json({ error: "Failed to update contact" });
+  }
+});
+
 // Update site statistics
 router.post("/update-stats", verifyAdminToken, async (req, res) => {
   try {

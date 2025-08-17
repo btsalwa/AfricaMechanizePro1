@@ -1,13 +1,22 @@
 import { useState, useEffect } from "react";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
 import { useToast } from "@/hooks/use-toast";
+import { apiRequest } from "@/lib/queryClient";
 import { 
   Shield, Users, FileText, Calendar, Settings, BarChart3, 
-  LogOut, Edit, Trash2, Plus, Eye, Download 
+  LogOut, Edit, Trash2, Plus, Eye, Download, Mail, Phone, 
+  Globe, Activity, TrendingUp, UserCheck, MessageSquare,
+  Search, Filter, RefreshCw, ExternalLink
 } from "lucide-react";
 
 // Admin guard component
@@ -57,25 +66,66 @@ const AdminGuard = ({ children }) => {
 
 export default function AdminDashboard() {
   const { toast } = useToast();
+  const queryClient = useQueryClient();
+  const [selectedUser, setSelectedUser] = useState(null);
+  const [editingWebinar, setEditingWebinar] = useState(null);
+  const [statsFormData, setStatsFormData] = useState({});
+  const [userSearch, setUserSearch] = useState("");
+  const [contactFilter, setContactFilter] = useState("all");
 
-  const { data: stats } = useQuery({
+  const getAuthHeaders = () => {
+    const token = localStorage.getItem("adminToken");
+    return {
+      Authorization: `Bearer ${token}`,
+    };
+  };
+
+  const { data: stats, refetch: refetchStats } = useQuery({
     queryKey: ["/api/admin/stats"],
-    enabled: true,
+    queryFn: async () => {
+      const response = await fetch("/api/admin/stats", {
+        headers: getAuthHeaders(),
+      });
+      if (!response.ok) throw new Error("Failed to fetch stats");
+      return response.json();
+    },
   });
 
-  const { data: users } = useQuery({
+  const { data: users, refetch: refetchUsers } = useQuery({
     queryKey: ["/api/admin/users"],
-    enabled: true,
+    queryFn: async () => {
+      const response = await fetch("/api/admin/users", {
+        headers: getAuthHeaders(),
+      });
+      if (!response.ok) throw new Error("Failed to fetch users");
+      return response.json();
+    },
   });
 
-  const { data: webinars } = useQuery({
+  const { data: webinars, refetch: refetchWebinars } = useQuery({
     queryKey: ["/api/admin/webinars"],
-    enabled: true,
+    queryFn: async () => {
+      const response = await fetch("/api/admin/webinars", {
+        headers: getAuthHeaders(),
+      });
+      if (!response.ok) throw new Error("Failed to fetch webinars");
+      return response.json();
+    },
   });
 
-  const { data: contacts } = useQuery({
+  const { data: contacts, refetch: refetchContacts } = useQuery({
     queryKey: ["/api/admin/contacts"],
-    enabled: true,
+    queryFn: async () => {
+      const response = await fetch("/api/admin/contacts", {
+        headers: getAuthHeaders(),
+      });
+      if (!response.ok) throw new Error("Failed to fetch contacts");
+      return response.json();
+    },
+  });
+
+  const { data: siteStats } = useQuery({
+    queryKey: ["/api/statistics"],
   });
 
   const handleLogout = () => {
@@ -87,6 +137,126 @@ export default function AdminDashboard() {
     window.location.href = "/admin/login";
   };
 
+  // Mutations
+  const updateUserMutation = useMutation({
+    mutationFn: async ({ userId, userData }) => {
+      const response = await fetch(`/api/admin/users/${userId}`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+          ...getAuthHeaders(),
+        },
+        body: JSON.stringify(userData),
+      });
+      if (!response.ok) throw new Error("Failed to update user");
+      return response.json();
+    },
+    onSuccess: () => {
+      toast({ title: "User updated successfully" });
+      refetchUsers();
+      setSelectedUser(null);
+    },
+    onError: (error) => {
+      toast({
+        title: "Update failed",
+        description: error.message,
+        variant: "destructive",
+      });
+    },
+  });
+
+  const deleteUserMutation = useMutation({
+    mutationFn: async (userId) => {
+      const response = await fetch(`/api/admin/users/${userId}`, {
+        method: "DELETE",
+        headers: getAuthHeaders(),
+      });
+      if (!response.ok) throw new Error("Failed to delete user");
+    },
+    onSuccess: () => {
+      toast({ title: "User deleted successfully" });
+      refetchUsers();
+    },
+    onError: (error) => {
+      toast({
+        title: "Delete failed",
+        description: error.message,
+        variant: "destructive",
+      });
+    },
+  });
+
+  const updateStatsFormMutation = useMutation({
+    mutationFn: async (statsData) => {
+      const response = await apiRequest("POST", "/api/statistics", statsData);
+      return response;
+    },
+    onSuccess: () => {
+      toast({ title: "Statistics updated successfully" });
+      queryClient.invalidateQueries(["/api/statistics"]);
+      refetchStats();
+    },
+    onError: (error) => {
+      toast({
+        title: "Update failed",
+        description: error.message,
+        variant: "destructive",
+      });
+    },
+  });
+
+  const markContactReadMutation = useMutation({
+    mutationFn: async (contactId) => {
+      const response = await fetch(`/api/admin/contacts/${contactId}`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+          ...getAuthHeaders(),
+        },
+        body: JSON.stringify({ status: "read" }),
+      });
+      if (!response.ok) throw new Error("Failed to update contact");
+      return response.json();
+    },
+    onSuccess: () => {
+      toast({ title: "Contact marked as read" });
+      refetchContacts();
+      refetchStats();
+    },
+    onError: (error) => {
+      toast({
+        title: "Update failed",
+        description: error.message,
+        variant: "destructive",
+      });
+    },
+  });
+
+  // Initialize stats form data
+  useEffect(() => {
+    if (siteStats) {
+      setStatsFormData({
+        network: siteStats.network || 0,
+        countries: siteStats.countries || 0,
+        webinars: siteStats.webinars || 0,
+        speakers: siteStats.speakers || 0,
+        participants: siteStats.participants || 0,
+      });
+    }
+  }, [siteStats]);
+
+  // Filter functions
+  const filteredUsers = users?.filter(user =>
+    user.firstName?.toLowerCase().includes(userSearch.toLowerCase()) ||
+    user.lastName?.toLowerCase().includes(userSearch.toLowerCase()) ||
+    user.email?.toLowerCase().includes(userSearch.toLowerCase())
+  ) || [];
+
+  const filteredContacts = contacts?.filter(contact => {
+    if (contactFilter === "all") return true;
+    return contact.status === contactFilter;
+  }) || [];
+
   const statsCards = [
     {
       title: "Total Users",
@@ -95,6 +265,8 @@ export default function AdminDashboard() {
       icon: Users,
       color: "text-blue-600",
       bgColor: "bg-blue-50",
+      trend: "+12%",
+      trendIcon: TrendingUp,
     },
     {
       title: "Active Webinars",
@@ -103,14 +275,18 @@ export default function AdminDashboard() {
       icon: Calendar,
       color: "text-green-600",
       bgColor: "bg-green-50",
+      trend: "+5%",
+      trendIcon: Activity,
     },
     {
-      title: "Contact Forms",
+      title: "Unread Messages",
       value: stats?.contactForms || 0,
-      description: "Unread messages",
-      icon: FileText,
+      description: "Contact submissions",
+      icon: MessageSquare,
       color: "text-orange-600",
       bgColor: "bg-orange-50",
+      trend: stats?.contactForms > 0 ? "New" : "All Clear",
+      trendIcon: Mail,
     },
     {
       title: "Newsletter Subs",
@@ -119,6 +295,8 @@ export default function AdminDashboard() {
       icon: BarChart3,
       color: "text-purple-600",
       bgColor: "bg-purple-50",
+      trend: "+8%",
+      trendIcon: UserCheck,
     },
   ];
 
@@ -154,11 +332,12 @@ export default function AdminDashboard() {
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
             {statsCards.map((stat, index) => {
               const IconComponent = stat.icon;
+              const TrendIconComponent = stat.trendIcon;
               return (
-                <Card key={index} className="hover:shadow-md transition-shadow">
+                <Card key={index} className="hover:shadow-md transition-shadow border-l-4 border-l-primary">
                   <CardContent className="p-6">
                     <div className="flex items-center justify-between">
-                      <div>
+                      <div className="flex-1">
                         <p className="text-sm font-medium text-muted-foreground">
                           {stat.title}
                         </p>
@@ -166,6 +345,10 @@ export default function AdminDashboard() {
                         <p className="text-xs text-muted-foreground">
                           {stat.description}
                         </p>
+                        <div className="flex items-center mt-2">
+                          <TrendIconComponent className="w-3 h-3 text-green-600 mr-1" />
+                          <span className="text-xs text-green-600 font-medium">{stat.trend}</span>
+                        </div>
                       </div>
                       <div className={`w-12 h-12 ${stat.bgColor} rounded-lg flex items-center justify-center`}>
                         <IconComponent className={`w-6 h-6 ${stat.color}`} />
@@ -177,38 +360,109 @@ export default function AdminDashboard() {
             })}
           </div>
 
+          {/* Quick Actions */}
+          <Card className="mb-8">
+            <CardHeader>
+              <CardTitle className="flex items-center">
+                <Activity className="w-5 h-5 mr-2" />
+                Quick Actions
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                <Button 
+                  onClick={() => refetchStats()} 
+                  variant="outline" 
+                  className="h-20 flex-col space-y-2"
+                  data-testid="button-refresh-stats"
+                >
+                  <RefreshCw className="w-5 h-5" />
+                  <span>Refresh Data</span>
+                </Button>
+                <Button 
+                  variant="outline" 
+                  className="h-20 flex-col space-y-2"
+                  data-testid="button-export-data"
+                >
+                  <Download className="w-5 h-5" />
+                  <span>Export Data</span>
+                </Button>
+                <Button 
+                  variant="outline" 
+                  className="h-20 flex-col space-y-2"
+                  onClick={() => window.open("/", "_blank")}
+                  data-testid="button-view-site"
+                >
+                  <ExternalLink className="w-5 h-5" />
+                  <span>View Site</span>
+                </Button>
+                <Button 
+                  variant="outline" 
+                  className="h-20 flex-col space-y-2"
+                  data-testid="button-site-settings"
+                >
+                  <Settings className="w-5 h-5" />
+                  <span>Site Settings</span>
+                </Button>
+              </div>
+            </CardContent>
+          </Card>
+
           {/* Management Tabs */}
           <Tabs defaultValue="users" className="space-y-6">
-            <TabsList className="grid w-full grid-cols-4">
+            <TabsList className="grid w-full grid-cols-5">
               <TabsTrigger value="users">Users</TabsTrigger>
               <TabsTrigger value="webinars">Webinars</TabsTrigger>
               <TabsTrigger value="contacts">Contacts</TabsTrigger>
+              <TabsTrigger value="content">Content</TabsTrigger>
               <TabsTrigger value="settings">Settings</TabsTrigger>
             </TabsList>
 
             {/* Users Management */}
             <TabsContent value="users" className="space-y-6">
               <Card>
-                <CardHeader>
-                  <CardTitle>User Management</CardTitle>
-                  <CardDescription>
-                    Manage registered users and their permissions
-                  </CardDescription>
+                <CardHeader className="flex flex-row items-center justify-between">
+                  <div>
+                    <CardTitle>User Management</CardTitle>
+                    <CardDescription>
+                      Manage registered users and their permissions
+                    </CardDescription>
+                  </div>
+                  <div className="flex items-center space-x-2">
+                    <div className="relative">
+                      <Search className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
+                      <Input
+                        placeholder="Search users..."
+                        value={userSearch}
+                        onChange={(e) => setUserSearch(e.target.value)}
+                        className="pl-8 w-64"
+                        data-testid="input-user-search"
+                      />
+                    </div>
+                  </div>
                 </CardHeader>
                 <CardContent>
                   <div className="space-y-4">
-                    {users?.slice(0, 10).map((user) => (
-                      <div key={user.id} className="flex items-center justify-between p-4 border rounded-lg">
+                    {filteredUsers.slice(0, 10).map((user) => (
+                      <div key={user.id} className="flex items-center justify-between p-4 border rounded-lg hover:bg-gray-50 dark:hover:bg-gray-800">
                         <div className="flex-1">
                           <div className="flex items-center space-x-4">
                             <div className="w-10 h-10 bg-gradient-to-br from-primary to-secondary rounded-full flex items-center justify-center">
                               <span className="text-white font-medium">
-                                {user.firstName?.[0]}{user.lastName?.[0]}
+                                {user.firstName?.[0] || 'U'}{user.lastName?.[0] || ''}
                               </span>
                             </div>
                             <div>
                               <p className="font-medium">{user.firstName} {user.lastName}</p>
                               <p className="text-sm text-muted-foreground">{user.email}</p>
+                              <div className="flex items-center space-x-2 mt-1">
+                                <Badge variant="outline" className="text-xs">
+                                  {user.isEmailVerified ? "Verified" : "Unverified"}
+                                </Badge>
+                                <span className="text-xs text-muted-foreground">
+                                  Joined {new Date(user.createdAt).toLocaleDateString()}
+                                </span>
+                              </div>
                             </div>
                           </div>
                         </div>
@@ -216,12 +470,117 @@ export default function AdminDashboard() {
                           <Badge variant={user.isActive ? "default" : "secondary"}>
                             {user.isActive ? "Active" : "Inactive"}
                           </Badge>
-                          <Button size="sm" variant="outline" data-testid={`button-edit-user-${user.id}`}>
-                            <Edit className="w-3 h-3" />
-                          </Button>
+                          <Dialog>
+                            <DialogTrigger asChild>
+                              <Button 
+                                size="sm" 
+                                variant="outline" 
+                                onClick={() => setSelectedUser(user)}
+                                data-testid={`button-edit-user-${user.id}`}
+                              >
+                                <Edit className="w-3 h-3" />
+                              </Button>
+                            </DialogTrigger>
+                            <DialogContent className="sm:max-w-md">
+                              <DialogHeader>
+                                <DialogTitle>Edit User</DialogTitle>
+                                <DialogDescription>
+                                  Update user information and status
+                                </DialogDescription>
+                              </DialogHeader>
+                              {selectedUser && (
+                                <div className="space-y-4">
+                                  <div className="grid grid-cols-2 gap-4">
+                                    <div>
+                                      <Label>First Name</Label>
+                                      <Input
+                                        value={selectedUser.firstName || ""}
+                                        onChange={(e) => setSelectedUser({...selectedUser, firstName: e.target.value})}
+                                      />
+                                    </div>
+                                    <div>
+                                      <Label>Last Name</Label>
+                                      <Input
+                                        value={selectedUser.lastName || ""}
+                                        onChange={(e) => setSelectedUser({...selectedUser, lastName: e.target.value})}
+                                      />
+                                    </div>
+                                  </div>
+                                  <div>
+                                    <Label>Email</Label>
+                                    <Input
+                                      value={selectedUser.email || ""}
+                                      onChange={(e) => setSelectedUser({...selectedUser, email: e.target.value})}
+                                    />
+                                  </div>
+                                  <div>
+                                    <Label>Status</Label>
+                                    <Select
+                                      value={selectedUser.isActive ? "active" : "inactive"}
+                                      onValueChange={(value) => setSelectedUser({...selectedUser, isActive: value === "active"})}
+                                    >
+                                      <SelectTrigger>
+                                        <SelectValue />
+                                      </SelectTrigger>
+                                      <SelectContent>
+                                        <SelectItem value="active">Active</SelectItem>
+                                        <SelectItem value="inactive">Inactive</SelectItem>
+                                      </SelectContent>
+                                    </Select>
+                                  </div>
+                                  <div className="flex justify-between">
+                                    <AlertDialog>
+                                      <AlertDialogTrigger asChild>
+                                        <Button variant="destructive" size="sm">
+                                          <Trash2 className="w-3 h-3 mr-1" />
+                                          Delete User
+                                        </Button>
+                                      </AlertDialogTrigger>
+                                      <AlertDialogContent>
+                                        <AlertDialogHeader>
+                                          <AlertDialogTitle>Delete User</AlertDialogTitle>
+                                          <AlertDialogDescription>
+                                            Are you sure? This action cannot be undone.
+                                          </AlertDialogDescription>
+                                        </AlertDialogHeader>
+                                        <AlertDialogFooter>
+                                          <AlertDialogCancel>Cancel</AlertDialogCancel>
+                                          <AlertDialogAction
+                                            onClick={() => deleteUserMutation.mutate(selectedUser.id)}
+                                            className="bg-destructive text-destructive-foreground"
+                                          >
+                                            Delete
+                                          </AlertDialogAction>
+                                        </AlertDialogFooter>
+                                      </AlertDialogContent>
+                                    </AlertDialog>
+                                    <Button
+                                      onClick={() => updateUserMutation.mutate({
+                                        userId: selectedUser.id,
+                                        userData: {
+                                          firstName: selectedUser.firstName,
+                                          lastName: selectedUser.lastName,
+                                          email: selectedUser.email,
+                                          isActive: selectedUser.isActive,
+                                        }
+                                      })}
+                                      disabled={updateUserMutation.isPending}
+                                    >
+                                      {updateUserMutation.isPending ? "Saving..." : "Save Changes"}
+                                    </Button>
+                                  </div>
+                                </div>
+                              )}
+                            </DialogContent>
+                          </Dialog>
                         </div>
                       </div>
                     ))}
+                    {filteredUsers.length === 0 && (
+                      <div className="text-center py-8 text-muted-foreground">
+                        {userSearch ? "No users found matching your search." : "No users registered yet."}
+                      </div>
+                    )}
                   </div>
                 </CardContent>
               </Card>
@@ -273,16 +632,29 @@ export default function AdminDashboard() {
             {/* Contacts Management */}
             <TabsContent value="contacts" className="space-y-6">
               <Card>
-                <CardHeader>
-                  <CardTitle>Contact Messages</CardTitle>
-                  <CardDescription>
-                    Review and respond to contact form submissions
-                  </CardDescription>
+                <CardHeader className="flex flex-row items-center justify-between">
+                  <div>
+                    <CardTitle>Contact Messages</CardTitle>
+                    <CardDescription>
+                      Review and respond to contact form submissions
+                    </CardDescription>
+                  </div>
+                  <Select value={contactFilter} onValueChange={setContactFilter}>
+                    <SelectTrigger className="w-32">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="all">All</SelectItem>
+                      <SelectItem value="new">New</SelectItem>
+                      <SelectItem value="read">Read</SelectItem>
+                      <SelectItem value="responded">Responded</SelectItem>
+                    </SelectContent>
+                  </Select>
                 </CardHeader>
                 <CardContent>
                   <div className="space-y-4">
-                    {contacts?.slice(0, 8).map((contact) => (
-                      <div key={contact.id} className="p-4 border rounded-lg">
+                    {filteredContacts.slice(0, 8).map((contact) => (
+                      <div key={contact.id} className="p-4 border rounded-lg hover:bg-gray-50 dark:hover:bg-gray-800">
                         <div className="flex items-start justify-between">
                           <div className="flex-1">
                             <div className="flex items-center space-x-2 mb-2">
@@ -290,20 +662,147 @@ export default function AdminDashboard() {
                               <Badge variant={contact.status === "new" ? "destructive" : "default"}>
                                 {contact.status}
                               </Badge>
+                              {contact.status === "new" && (
+                                <Button
+                                  size="sm"
+                                  variant="outline"
+                                  onClick={() => markContactReadMutation.mutate(contact.id)}
+                                  disabled={markContactReadMutation.isPending}
+                                >
+                                  <Eye className="w-3 h-3 mr-1" />
+                                  Mark Read
+                                </Button>
+                              )}
                             </div>
-                            <p className="text-sm text-muted-foreground mb-2">{contact.email}</p>
-                            <p className="text-sm font-medium mb-1">{contact.subject}</p>
-                            <p className="text-sm text-gray-600 line-clamp-2">{contact.message}</p>
+                            <div className="flex items-center space-x-4 mb-2">
+                              <div className="flex items-center">
+                                <Mail className="w-3 h-3 mr-1 text-muted-foreground" />
+                                <p className="text-sm text-muted-foreground">{contact.email}</p>
+                              </div>
+                              {contact.phone && (
+                                <div className="flex items-center">
+                                  <Phone className="w-3 h-3 mr-1 text-muted-foreground" />
+                                  <p className="text-sm text-muted-foreground">{contact.phone}</p>
+                                </div>
+                              )}
+                            </div>
+                            <p className="text-sm font-medium mb-2">{contact.subject}</p>
+                            <p className="text-sm text-gray-600 line-clamp-3">{contact.message}</p>
                           </div>
-                          <div className="text-xs text-muted-foreground">
-                            {new Date(contact.createdAt).toLocaleDateString()}
+                          <div className="text-xs text-muted-foreground text-right">
+                            <p>{new Date(contact.createdAt).toLocaleDateString()}</p>
+                            <p>{new Date(contact.createdAt).toLocaleTimeString()}</p>
                           </div>
+                        </div>
+                        <div className="flex justify-end mt-3 space-x-2">
+                          <Button size="sm" variant="outline">
+                            <Mail className="w-3 h-3 mr-1" />
+                            Reply
+                          </Button>
+                          <Button size="sm" variant="outline">
+                            <Trash2 className="w-3 h-3" />
+                          </Button>
                         </div>
                       </div>
                     ))}
+                    {filteredContacts.length === 0 && (
+                      <div className="text-center py-8 text-muted-foreground">
+                        {contactFilter === "all" ? "No contact messages yet." : `No ${contactFilter} messages.`}
+                      </div>
+                    )}
                   </div>
                 </CardContent>
               </Card>
+            </TabsContent>
+
+            {/* Content Management */}
+            <TabsContent value="content" className="space-y-6">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <Card>
+                  <CardHeader>
+                    <CardTitle>Site Statistics</CardTitle>
+                    <CardDescription>Update homepage statistics display</CardDescription>
+                  </CardHeader>
+                  <CardContent className="space-y-4">
+                    <div className="grid grid-cols-2 gap-4">
+                      <div>
+                        <Label>Network Partners</Label>
+                        <Input
+                          type="number"
+                          value={statsFormData.network || 0}
+                          onChange={(e) => setStatsFormData({...statsFormData, network: parseInt(e.target.value) || 0})}
+                        />
+                      </div>
+                      <div>
+                        <Label>Countries</Label>
+                        <Input
+                          type="number"
+                          value={statsFormData.countries || 0}
+                          onChange={(e) => setStatsFormData({...statsFormData, countries: parseInt(e.target.value) || 0})}
+                        />
+                      </div>
+                      <div>
+                        <Label>Webinars</Label>
+                        <Input
+                          type="number"
+                          value={statsFormData.webinars || 0}
+                          onChange={(e) => setStatsFormData({...statsFormData, webinars: parseInt(e.target.value) || 0})}
+                        />
+                      </div>
+                      <div>
+                        <Label>Speakers</Label>
+                        <Input
+                          type="number"
+                          value={statsFormData.speakers || 0}
+                          onChange={(e) => setStatsFormData({...statsFormData, speakers: parseInt(e.target.value) || 0})}
+                        />
+                      </div>
+                    </div>
+                    <div>
+                      <Label>Participants</Label>
+                      <Input
+                        type="number"
+                        value={statsFormData.participants || 0}
+                        onChange={(e) => setStatsFormData({...statsFormData, participants: parseInt(e.target.value) || 0})}
+                      />
+                    </div>
+                    <Button
+                      onClick={() => updateStatsFormMutation.mutate(statsFormData)}
+                      disabled={updateStatsFormMutation.isPending}
+                      className="w-full"
+                    >
+                      {updateStatsFormMutation.isPending ? "Updating..." : "Update Statistics"}
+                    </Button>
+                  </CardContent>
+                </Card>
+
+                <Card>
+                  <CardHeader>
+                    <CardTitle>Content Overview</CardTitle>
+                    <CardDescription>Manage site content and pages</CardDescription>
+                  </CardHeader>
+                  <CardContent className="space-y-4">
+                    <div className="space-y-3">
+                      <div className="flex items-center justify-between p-3 border rounded">
+                        <span>Framework Elements</span>
+                        <Badge variant="outline">10 Pages</Badge>
+                      </div>
+                      <div className="flex items-center justify-between p-3 border rounded">
+                        <span>Active Webinars</span>
+                        <Badge variant="outline">{stats?.activeWebinars || 0}</Badge>
+                      </div>
+                      <div className="flex items-center justify-between p-3 border rounded">
+                        <span>Resource Downloads</span>
+                        <Badge variant="outline">Available</Badge>
+                      </div>
+                    </div>
+                    <Button variant="outline" className="w-full">
+                      <Globe className="w-4 h-4 mr-2" />
+                      Manage Content
+                    </Button>
+                  </CardContent>
+                </Card>
+              </div>
             </TabsContent>
 
             {/* Settings */}
