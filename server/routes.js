@@ -449,15 +449,17 @@ export async function registerRoutes(app) {
         success: true,
         message: 'Legacy data migration status',
         summary: {
-          adminAccountsImported: accountsArray.length,
-          legacyAdminAccounts: accountsArray.map(acc => ({
+          adminAccountsImported: legacyAccounts.length,
+          legacyAdminAccounts: legacyAccounts.map(acc => ({
             username: acc.username,
             email: acc.email,
             fullName: acc.full_name,
-            adminType: acc.admin_type
+            adminType: acc.admin_type,
+            legacyId: acc.legacy_admin_id,
+            isActive: acc.is_active
           })),
           migrationStatus: 'completed',
-          note: 'Legacy admin accounts from original africamechanize.org database have been imported'
+          note: 'Legacy admin accounts from original africamechanize.org database have been imported and are active'
         }
       });
     } catch (error) {
@@ -481,12 +483,15 @@ export async function registerRoutes(app) {
       res.json({
         success: true,
         migrationTablesExist: true,
-        legacyAccountsCount: accountsArray.length,
-        accounts: accountsArray.map(acc => ({
+        legacyAccountsCount: legacyAccounts.length,
+        accounts: legacyAccounts.map(acc => ({
           username: acc.username,
           email: acc.email,
           fullName: acc.full_name,
-          isActive: acc.is_active
+          isActive: acc.is_active,
+          adminType: acc.admin_type,
+          legacyId: acc.legacy_admin_id,
+          createdAt: acc.created_at
         }))
       });
     } catch (error) {
