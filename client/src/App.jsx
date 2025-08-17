@@ -23,6 +23,11 @@ import Webinars from "./pages/Webinars";
 import WebinarPresentations from "./pages/WebinarPresentations";
 import FarmPower from "./pages/framework/FarmPower";
 import InnovativeFinancing from "./pages/framework/InnovativeFinancing";
+import SustainableSystems from "./pages/framework/SustainableSystems";
+import SocialSustainability from "./pages/framework/SocialSustainability";
+import Mechanization from "./pages/framework/Mechanization";
+import HumanResources from "./pages/framework/HumanResources";
+import News from "./pages/News";
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
 
@@ -48,6 +53,11 @@ function Router() {
           <Route path="/webinars/:slug" component={WebinarDetail} />
           <Route path="/framework/farm-power" component={FarmPower} />
           <Route path="/framework/innovative-financing" component={InnovativeFinancing} />
+          <Route path="/framework/sustainable-systems" component={SustainableSystems} />
+          <Route path="/framework/mechanization" component={Mechanization} />
+          <Route path="/framework/social-sustainability" component={SocialSustainability} />
+          <Route path="/framework/human-resources" component={HumanResources} />
+          <Route path="/news" component={News} />
           <Route component={NotFound} />
         </Switch>
       </main>
