@@ -3,17 +3,8 @@ import nodemailer from 'nodemailer';
 // Email configuration
 let transporter;
 
-if (process.env.SENDGRID_API_KEY) {
-  // SendGrid configuration
-  transporter = nodemailer.createTransport({
-    service: 'SendGrid',
-    auth: {
-      user: 'apikey',
-      pass: process.env.SENDGRID_API_KEY,
-    },
-  });
-} else if (process.env.SMTP_HOST) {
-  // SMTP configuration
+if (process.env.SMTP_HOST && process.env.SMTP_USER && process.env.SMTP_PASS) {
+  // Custom SMTP configuration
   transporter = nodemailer.createTransport({
     host: process.env.SMTP_HOST,
     port: process.env.SMTP_PORT || 587,
@@ -23,28 +14,17 @@ if (process.env.SENDGRID_API_KEY) {
       pass: process.env.SMTP_PASS,
     },
   });
+  console.log('📧 Email service configured with custom SMTP');
 } else {
-  // Development mode - use ethereal email for testing
-  console.log('⚠️  No email service configured. Using test account for development.');
-  
-  // Create test account for development
-  const testAccount = {
-    user: 'noreply@africamechanize.org',
-    pass: 'development-only',
-  };
-  
-  transporter = nodemailer.createTransport({
-    host: 'smtp.ethereal.email',
-    port: 587,
-    secure: false,
-    auth: testAccount,
-  });
+  // No email configuration - disable email functionality
+  console.log('⚠️  No SMTP credentials configured. Email functionality disabled.');
+  transporter = null;
 }
 
 export async function sendEmail({ to, subject, text, html }) {
   try {
     if (!transporter) {
-      console.error('Email transporter not configured');
+      console.log('📧 Email not sent - SMTP not configured:', { to, subject });
       return false;
     }
     
@@ -58,18 +38,15 @@ export async function sendEmail({ to, subject, text, html }) {
     
     const info = await transporter.sendMail(mailOptions);
     
-    if (process.env.NODE_ENV === 'development') {
-      console.log('📧 Email sent:', {
-        to,
-        subject,
-        messageId: info.messageId,
-        previewURL: nodemailer.getTestMessageUrl(info),
-      });
-    }
+    console.log('📧 Email sent successfully:', {
+      to,
+      subject,
+      messageId: info.messageId,
+    });
     
     return true;
   } catch (error) {
-    console.error('Email send error:', error);
+    console.error('📧 Email send error:', error.message);
     return false;
   }
 }
