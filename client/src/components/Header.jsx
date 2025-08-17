@@ -52,6 +52,7 @@ export const Header = () => {
     ]},
     { href: "/news", label: "News & Events" },
     { href: "/resources", label: "Resources" },
+    { href: "/about", label: "About" },
     { href: "/contact", label: "Contact" },
   ];
 

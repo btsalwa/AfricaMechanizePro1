@@ -1,301 +1,342 @@
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { Separator } from "@/components/ui/separator";
 import { 
-  Target, Users, Globe, Sprout, Award, TrendingUp, 
-  Heart, CheckCircle, ArrowRight, Linkedin, Twitter, Mail
+  Target, 
+  Globe, 
+  Users, 
+  Lightbulb, 
+  Handshake, 
+  Award, 
+  ArrowRight,
+  CheckCircle,
+  MapPin,
+  Calendar,
+  ExternalLink
 } from "lucide-react";
 
 export default function About() {
-  const values = [
+  const objectives = [
     {
-      icon: <Target className="w-8 h-8" />,
-      title: "Innovation",
-      description: "Promoting cutting-edge agricultural technologies and sustainable mechanization solutions."
+      icon: <Target className="w-6 h-6" />,
+      title: "Enhance Food Security",
+      description: "Improve agricultural productivity through sustainable mechanization to achieve food security and nutrition goals across Africa."
     },
     {
-      icon: <Users className="w-8 h-8" />,
-      title: "Collaboration",
-      description: "Building partnerships across governments, private sector, and farming communities."
+      icon: <Users className="w-6 h-6" />,
+      title: "Empower Farmers",
+      description: "Enable farmers of all scales to access appropriate mechanization technologies and services that reduce drudgery and increase efficiency."
     },
     {
-      icon: <Globe className="w-8 h-8" />,
-      title: "Inclusivity",
-      description: "Ensuring equal access to mechanization opportunities for all farmers, including women and youth."
+      icon: <Globe className="w-6 h-6" />,
+      title: "Promote Sustainability",
+      description: "Ensure mechanization development follows environmentally sustainable practices and contributes to climate resilience."
     },
     {
-      icon: <Sprout className="w-8 h-8" />,
-      title: "Sustainability",
-      description: "Advancing environmentally responsible practices that preserve soil health and biodiversity."
+      icon: <Lightbulb className="w-6 h-6" />,
+      title: "Foster Innovation",
+      description: "Encourage research, development, and innovation in agricultural mechanization technologies appropriate for African conditions."
     }
   ];
 
-  const achievements = [
+  const keyFeatures = [
     {
-      number: "2M+",
-      label: "Farmers Reached",
-      description: "Smallholder farmers benefiting from our mechanization programs"
+      title: "Framework for Sustainable Agricultural Mechanization in Africa (F-SAMA)",
+      description: "A comprehensive 10-element framework providing strategic guidance for sustainable mechanization development.",
+      icon: <Award className="w-5 h-5" />
     },
     {
-      number: "15",
-      label: "Countries",
-      description: "African nations implementing F-SAMA framework initiatives"
+      title: "Knowledge Sharing Platform",
+      description: "Regular webinars, conferences, and resource sharing to facilitate learning and best practice exchange.",
+      icon: <Users className="w-5 h-5" />
     },
     {
-      number: "500+",
-      label: "Partners",
-      description: "Organizations collaborating on sustainable mechanization"
+      title: "Multi-stakeholder Network",
+      description: "Bringing together governments, private sector, development partners, and research institutions.",
+      icon: <Handshake className="w-5 h-5" />
     },
     {
-      number: "40%",
-      label: "Productivity Increase",
-      description: "Average improvement in agricultural productivity"
+      title: "Policy and Strategy Support",
+      description: "Assisting African countries in developing appropriate mechanization policies and strategies.",
+      icon: <Lightbulb className="w-5 h-5" />
     }
   ];
 
-  const teamMembers = [
+  const partners = [
     {
-      name: "Dr. Amina Hassan",
-      role: "Executive Director",
-      bio: "Leading agricultural development expert with 20+ years experience in African agriculture.",
-      image: "/api/placeholder/150/150",
-      social: {
-        linkedin: "#",
-        twitter: "#",
-        email: "amina@africamechanize.org"
-      }
+      name: "Food and Agriculture Organization (FAO)",
+      role: "Lead Technical Partner",
+      description: "Providing technical expertise and global mechanization knowledge"
     },
     {
-      name: "Prof. John Ochieng",
-      role: "Technical Director",
-      bio: "Specialist in agricultural mechanization and sustainable farming systems.",
-      image: "/api/placeholder/150/150",
-      social: {
-        linkedin: "#",
-        twitter: "#",
-        email: "john@africamechanize.org"
-      }
+      name: "African Union Commission (AUC)",
+      role: "Strategic Partner",
+      description: "Ensuring alignment with continental agricultural development priorities"
     },
     {
-      name: "Sarah Nakamura",
-      role: "Program Manager",
-      bio: "Expert in program implementation and stakeholder engagement across Africa.",
-      image: "/api/placeholder/150/150",
-      social: {
-        linkedin: "#",
-        twitter: "#",
-        email: "sarah@africamechanize.org"
-      }
+      name: "Regional Economic Communities",
+      role: "Implementation Partners",
+      description: "Facilitating regional cooperation and implementation"
+    },
+    {
+      name: "National Governments",
+      role: "Policy Partners",
+      description: "Developing and implementing national mechanization strategies"
     }
   ];
 
-  const milestones = [
+  const timeline = [
+    {
+      year: "2016",
+      event: "Consultative Meeting on Mechanization Strategy",
+      description: "Initial consultative meeting on new models for sustainable agricultural mechanization in sub-Saharan Africa"
+    },
     {
       year: "2018",
-      title: "Organization Founded",
-      description: "Africa Mechanize established to advance sustainable agricultural mechanization across the continent."
+      event: "F-SAMA Framework Launch",
+      description: "Official launch of the Framework for Sustainable Agricultural Mechanization in Africa"
     },
     {
       year: "2019",
-      title: "F-SAMA Framework Launch",
-      description: "Launched the Framework for Sustainable Agricultural Mechanization in Africa with AU support."
+      event: "Platform Establishment",
+      description: "AfricaMechanize platform officially established to support framework implementation"
     },
     {
-      year: "2021",
-      title: "1 Million Farmers Milestone",
-      description: "Reached one million smallholder farmers through our programs and initiatives."
-    },
-    {
-      year: "2023",
-      title: "Global Recognition",
-      description: "Received international award for outstanding contribution to agricultural development."
-    },
-    {
-      year: "2025",
-      title: "Expansion Initiative",
-      description: "Launching new programs to reach 5 million farmers by 2030."
+      year: "2020-2024",
+      event: "Webinar Series & Knowledge Sharing",
+      description: "Regular webinar series and knowledge sharing activities across the continent"
     }
   ];
 
   return (
-    <div className="min-h-screen py-20 bg-gradient-to-br from-gray-50 to-green-50 dark:from-gray-900 dark:to-gray-800">
+    <div className="min-h-screen bg-gradient-to-b from-gray-50 to-white dark:from-gray-900 dark:to-gray-800 pt-24">
       {/* Hero Section */}
-      <div className="container mx-auto px-6 text-center mb-20">
-        <Badge className="mb-4 px-4 py-2 bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200">
-          About Africa Mechanize
-        </Badge>
-        <h1 className="text-4xl md:text-6xl font-bold mb-6 bg-gradient-to-r from-green-600 to-blue-600 bg-clip-text text-transparent">
-          Transforming African Agriculture
-        </h1>
-        <p className="text-xl text-gray-600 dark:text-gray-300 max-w-4xl mx-auto leading-relaxed">
-          We are a leading organization dedicated to advancing sustainable agricultural mechanization 
-          across Africa, empowering farmers with innovative technologies and practices that enhance 
-          productivity while preserving our environment for future generations.
-        </p>
-      </div>
+      <section className="py-16 bg-gradient-to-r from-primary/10 to-secondary/10">
+        <div className="container mx-auto px-6">
+          <div className="max-w-4xl mx-auto text-center">
+            <h1 className="text-4xl md:text-5xl font-bold mb-6 bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">
+              About AfricaMechanize
+            </h1>
+            <p className="text-xl text-gray-600 dark:text-gray-300 mb-8 leading-relaxed">
+              AfricaMechanize is a continental platform dedicated to promoting sustainable agricultural 
+              mechanization across Africa. We bring together stakeholders to share knowledge, develop 
+              strategies, and accelerate the adoption of appropriate mechanization technologies that 
+              enhance productivity while preserving environmental sustainability.
+            </p>
+            <div className="flex justify-center gap-4">
+              <Button asChild size="lg">
+                <a href="/framework">
+                  Explore F-SAMA Framework
+                  <ArrowRight className="w-5 h-5 ml-2" />
+                </a>
+              </Button>
+              <Button variant="outline" size="lg" asChild>
+                <a href="/webinars">
+                  Join Our Webinars
+                  <ExternalLink className="w-5 h-5 ml-2" />
+                </a>
+              </Button>
+            </div>
+          </div>
+        </div>
+      </section>
 
       {/* Mission & Vision */}
-      <div className="container mx-auto px-6 mb-20">
-        <div className="grid md:grid-cols-2 gap-8 max-w-6xl mx-auto">
-          <Card className="text-center border-0 shadow-lg p-8">
-            <div className="w-16 h-16 mx-auto mb-6 bg-gradient-to-br from-green-500 to-blue-500 rounded-full flex items-center justify-center text-white">
-              <Target className="w-8 h-8" />
-            </div>
-            <CardTitle className="text-2xl mb-4 text-gray-800 dark:text-gray-200">Our Mission</CardTitle>
-            <p className="text-gray-600 dark:text-gray-300 leading-relaxed">
-              To accelerate the adoption of sustainable agricultural mechanization technologies 
-              and practices that improve food security, enhance farmer livelihoods, and promote 
-              environmental stewardship across Africa.
-            </p>
-          </Card>
-          
-          <Card className="text-center border-0 shadow-lg p-8">
-            <div className="w-16 h-16 mx-auto mb-6 bg-gradient-to-br from-blue-500 to-purple-500 rounded-full flex items-center justify-center text-white">
-              <Globe className="w-8 h-8" />
-            </div>
-            <CardTitle className="text-2xl mb-4 text-gray-800 dark:text-gray-200">Our Vision</CardTitle>
-            <p className="text-gray-600 dark:text-gray-300 leading-relaxed">
-              A prosperous Africa where sustainable agricultural mechanization drives economic growth, 
-              food security, and environmental sustainability, empowering farmers to thrive in 
-              harmonious balance with nature.
-            </p>
-          </Card>
-        </div>
-      </div>
-
-      {/* Core Values */}
-      <div className="container mx-auto px-6 mb-20">
-        <h2 className="text-3xl font-bold text-center mb-12 text-gray-800 dark:text-gray-200">
-          Our Core Values
-        </h2>
-        <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
-          {values.map((value, index) => (
-            <Card key={index} className="text-center border-0 shadow-lg hover:shadow-xl transition-shadow duration-300">
-              <CardHeader className="pb-4">
-                <div className="w-16 h-16 mx-auto mb-4 bg-gradient-to-br from-green-500 to-blue-500 rounded-full flex items-center justify-center text-white">
-                  {value.icon}
+      <section className="py-16">
+        <div className="container mx-auto px-6">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
+            <Card className="p-8 bg-gradient-to-br from-primary/5 to-secondary/5 border-2 border-primary/20">
+              <CardHeader className="p-0 mb-6">
+                <div className="flex items-center gap-3 mb-4">
+                  <Target className="w-8 h-8 text-primary" />
+                  <CardTitle className="text-2xl">Our Mission</CardTitle>
                 </div>
-                <CardTitle className="text-lg text-gray-800 dark:text-gray-200">
-                  {value.title}
-                </CardTitle>
               </CardHeader>
-              <CardContent>
-                <p className="text-gray-600 dark:text-gray-300 leading-relaxed">
-                  {value.description}
+              <CardContent className="p-0">
+                <p className="text-lg leading-relaxed text-gray-700 dark:text-gray-300">
+                  To accelerate sustainable agricultural mechanization across Africa by providing 
+                  a collaborative platform for knowledge sharing, capacity building, and strategic 
+                  guidance that enables all farmers to access appropriate mechanization technologies 
+                  and services.
                 </p>
               </CardContent>
             </Card>
-          ))}
-        </div>
-      </div>
 
-      {/* Achievements */}
-      <div className="container mx-auto px-6 mb-20">
-        <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-xl p-8 border-0">
-          <h2 className="text-3xl font-bold text-center mb-12 text-gray-800 dark:text-gray-200">
-            Our Impact
-          </h2>
-          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8 text-center">
-            {achievements.map((achievement, index) => (
-              <div key={index} className="p-6">
-                <div className="text-4xl font-bold text-green-600 mb-2">
-                  {achievement.number}
+            <Card className="p-8 bg-gradient-to-br from-secondary/5 to-primary/5 border-2 border-secondary/20">
+              <CardHeader className="p-0 mb-6">
+                <div className="flex items-center gap-3 mb-4">
+                  <Globe className="w-8 h-8 text-secondary" />
+                  <CardTitle className="text-2xl">Our Vision</CardTitle>
                 </div>
-                <div className="text-lg font-semibold text-gray-800 dark:text-gray-200 mb-2">
-                  {achievement.label}
-                </div>
-                <p className="text-gray-600 dark:text-gray-300 text-sm">
-                  {achievement.description}
+              </CardHeader>
+              <CardContent className="p-0">
+                <p className="text-lg leading-relaxed text-gray-700 dark:text-gray-300">
+                  An Africa where sustainable agricultural mechanization drives food security, 
+                  rural prosperity, and economic transformation while preserving environmental 
+                  sustainability and promoting social equity across all farming systems.
                 </p>
-              </div>
+              </CardContent>
+            </Card>
+          </div>
+        </div>
+      </section>
+
+      {/* Key Objectives */}
+      <section className="py-16 bg-gray-50 dark:bg-gray-900">
+        <div className="container mx-auto px-6">
+          <div className="text-center mb-12">
+            <h2 className="text-3xl font-bold mb-4">Our Objectives</h2>
+            <p className="text-xl text-gray-600 dark:text-gray-300">
+              Core objectives driving our work in sustainable agricultural mechanization
+            </p>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+            {objectives.map((objective, index) => (
+              <Card key={index} className="text-center p-6 hover:shadow-lg transition-all duration-300 border-2 border-primary/20">
+                <CardContent className="p-0">
+                  <div className="w-12 h-12 bg-gradient-to-br from-primary to-secondary rounded-lg flex items-center justify-center text-white mx-auto mb-4">
+                    {objective.icon}
+                  </div>
+                  <h4 className="font-semibold mb-3">{objective.title}</h4>
+                  <p className="text-sm text-gray-600 dark:text-gray-300 leading-relaxed">
+                    {objective.description}
+                  </p>
+                </CardContent>
+              </Card>
             ))}
           </div>
         </div>
-      </div>
+      </section>
 
-      {/* Timeline */}
-      <div className="container mx-auto px-6 mb-20">
-        <h2 className="text-3xl font-bold text-center mb-12 text-gray-800 dark:text-gray-200">
-          Our Journey
-        </h2>
-        <div className="max-w-4xl mx-auto">
-          {milestones.map((milestone, index) => (
-            <div key={index} className="flex items-start mb-8 last:mb-0">
-              <div className="flex-shrink-0 w-20 h-20 bg-gradient-to-br from-green-500 to-blue-500 rounded-full flex items-center justify-center text-white font-bold text-sm mr-6">
-                {milestone.year}
-              </div>
-              <div className="flex-1 pt-2">
-                <h3 className="text-xl font-semibold mb-2 text-gray-800 dark:text-gray-200">
-                  {milestone.title}
-                </h3>
-                <p className="text-gray-600 dark:text-gray-300 leading-relaxed">
-                  {milestone.description}
-                </p>
-              </div>
-            </div>
-          ))}
-        </div>
-      </div>
+      {/* Key Features */}
+      <section className="py-16">
+        <div className="container mx-auto px-6">
+          <div className="text-center mb-12">
+            <h2 className="text-3xl font-bold mb-4">Key Features</h2>
+            <p className="text-xl text-gray-600 dark:text-gray-300">
+              What makes AfricaMechanize unique in supporting agricultural mechanization
+            </p>
+          </div>
 
-      {/* Team Section */}
-      <div className="container mx-auto px-6 mb-20">
-        <h2 className="text-3xl font-bold text-center mb-12 text-gray-800 dark:text-gray-200">
-          Leadership Team
-        </h2>
-        <div className="grid md:grid-cols-3 gap-8 max-w-6xl mx-auto">
-          {teamMembers.map((member, index) => (
-            <Card key={index} className="text-center border-0 shadow-lg hover:shadow-xl transition-all duration-300">
-              <CardHeader className="pb-4">
-                <div className="w-32 h-32 mx-auto mb-4 bg-gradient-to-br from-green-100 to-blue-100 dark:from-green-900 dark:to-blue-900 rounded-full overflow-hidden">
-                  <div className="w-full h-full bg-gradient-to-br from-green-200 to-blue-200 dark:from-green-800 dark:to-blue-800" />
-                </div>
-                <CardTitle className="text-xl text-gray-800 dark:text-gray-200">
-                  {member.name}
-                </CardTitle>
-                <p className="text-green-600 font-semibold">{member.role}</p>
-              </CardHeader>
-              <CardContent>
-                <p className="text-gray-600 dark:text-gray-300 mb-4 leading-relaxed">
-                  {member.bio}
-                </p>
-                <div className="flex justify-center gap-3">
-                  <Button size="sm" variant="outline">
-                    <Linkedin className="w-4 h-4" />
-                  </Button>
-                  <Button size="sm" variant="outline">
-                    <Twitter className="w-4 h-4" />
-                  </Button>
-                  <Button size="sm" variant="outline">
-                    <Mail className="w-4 h-4" />
-                  </Button>
-                </div>
-              </CardContent>
-            </Card>
-          ))}
-        </div>
-      </div>
-
-      {/* Call to Action */}
-      <div className="container mx-auto px-6 text-center">
-        <div className="bg-gradient-to-r from-green-600 to-blue-600 rounded-2xl p-12 text-white">
-          <h2 className="text-3xl font-bold mb-4">
-            Join Our Mission
-          </h2>
-          <p className="text-xl mb-8 opacity-90 max-w-2xl mx-auto">
-            Together, we can transform African agriculture and create a sustainable future 
-            for millions of farmers across the continent. Join us in this vital mission.
-          </p>
-          <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <Button size="lg" variant="secondary" className="px-8 py-3 text-lg font-semibold">
-              Become a Partner
-            </Button>
-            <Button size="lg" variant="outline" className="px-8 py-3 text-lg font-semibold bg-white/10 border-white/30 text-white hover:bg-white/20">
-              <Heart className="w-5 h-5 mr-2" />
-              Support Our Work
-            </Button>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+            {keyFeatures.map((feature, index) => (
+              <Card key={index} className="group hover:shadow-lg transition-all duration-300">
+                <CardHeader className="pb-4">
+                  <div className="flex items-start gap-4">
+                    <div className="w-10 h-10 bg-gradient-to-br from-primary to-secondary rounded-lg flex items-center justify-center text-white flex-shrink-0">
+                      {feature.icon}
+                    </div>
+                    <div className="flex-1">
+                      <CardTitle className="text-xl group-hover:text-primary transition-colors mb-2">
+                        {feature.title}
+                      </CardTitle>
+                      <CardDescription className="text-base leading-relaxed">
+                        {feature.description}
+                      </CardDescription>
+                    </div>
+                  </div>
+                </CardHeader>
+              </Card>
+            ))}
           </div>
         </div>
-      </div>
+      </section>
+
+      {/* Partners */}
+      <section className="py-16 bg-gray-50 dark:bg-gray-900">
+        <div className="container mx-auto px-6">
+          <div className="text-center mb-12">
+            <h2 className="text-3xl font-bold mb-4">Our Partners</h2>
+            <p className="text-xl text-gray-600 dark:text-gray-300">
+              Collaborating with key stakeholders across Africa and globally
+            </p>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+            {partners.map((partner, index) => (
+              <Card key={index} className="p-6 hover:shadow-lg transition-all duration-300">
+                <CardHeader className="p-0 mb-4">
+                  <div className="flex items-center justify-between">
+                    <CardTitle className="text-lg">{partner.name}</CardTitle>
+                    <Badge variant="outline">{partner.role}</Badge>
+                  </div>
+                </CardHeader>
+                <CardContent className="p-0">
+                  <p className="text-gray-600 dark:text-gray-300">
+                    {partner.description}
+                  </p>
+                </CardContent>
+              </Card>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Timeline */}
+      <section className="py-16">
+        <div className="container mx-auto px-6">
+          <div className="text-center mb-12">
+            <h2 className="text-3xl font-bold mb-4">Our Journey</h2>
+            <p className="text-xl text-gray-600 dark:text-gray-300">
+              Key milestones in the development of AfricaMechanize
+            </p>
+          </div>
+
+          <div className="max-w-4xl mx-auto">
+            <div className="space-y-8">
+              {timeline.map((item, index) => (
+                <div key={index} className="flex gap-6">
+                  <div className="flex-shrink-0">
+                    <div className="w-12 h-12 bg-gradient-to-br from-primary to-secondary rounded-full flex items-center justify-center text-white font-bold">
+                      {item.year}
+                    </div>
+                  </div>
+                  <Card className="flex-1 p-6 hover:shadow-lg transition-all duration-300">
+                    <CardHeader className="p-0 mb-3">
+                      <CardTitle className="text-lg">{item.event}</CardTitle>
+                    </CardHeader>
+                    <CardContent className="p-0">
+                      <p className="text-gray-600 dark:text-gray-300">
+                        {item.description}
+                      </p>
+                    </CardContent>
+                  </Card>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Call to Action */}
+      <section className="py-16 bg-gradient-to-r from-primary/5 to-secondary/5">
+        <div className="container mx-auto px-6">
+          <div className="max-w-4xl mx-auto text-center">
+            <h2 className="text-3xl font-bold mb-6">Join the Movement</h2>
+            <p className="text-xl text-gray-600 dark:text-gray-300 mb-8">
+              Be part of Africa's agricultural transformation through sustainable mechanization. 
+              Connect with us, participate in our programs, and contribute to building a more 
+              food-secure and prosperous continent.
+            </p>
+            <div className="flex justify-center gap-4">
+              <Button size="lg" asChild>
+                <a href="/contact">
+                  Get Involved
+                  <ArrowRight className="w-5 h-5 ml-2" />
+                </a>
+              </Button>
+              <Button variant="outline" size="lg" asChild>
+                <a href="/news">
+                  Latest Updates
+                  <ExternalLink className="w-5 h-5 ml-2" />
+                </a>
+              </Button>
+            </div>
+          </div>
+        </div>
+      </section>
     </div>
   );
 }

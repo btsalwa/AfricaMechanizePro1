@@ -12,7 +12,7 @@ import Events from "./pages/Events";
 import Resources from "./pages/Resources";
 import About from "./pages/About";
 import Contact from "./pages/Contact";
-import NewsPage from "./pages/NewsPage";
+import News from "./pages/News";
 import NotFound from "./pages/not-found";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
@@ -27,7 +27,6 @@ import SustainableSystems from "./pages/framework/SustainableSystems";
 import SocialSustainability from "./pages/framework/SocialSustainability";
 import Mechanization from "./pages/framework/Mechanization";
 import HumanResources from "./pages/framework/HumanResources";
-import News from "./pages/News";
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
 
@@ -43,7 +42,7 @@ function Router() {
           <Route path="/resources" component={Resources} />
           <Route path="/about" component={About} />
           <Route path="/contact" component={Contact} />
-          <Route path="/news" component={NewsPage} />
+          <Route path="/news" component={News} />
           <Route path="/login" component={Login} />
           <Route path="/register" component={Register} />
           <Route path="/verify-email" component={EmailVerification} />
@@ -57,7 +56,6 @@ function Router() {
           <Route path="/framework/mechanization" component={Mechanization} />
           <Route path="/framework/social-sustainability" component={SocialSustainability} />
           <Route path="/framework/human-resources" component={HumanResources} />
-          <Route path="/news" component={News} />
           <Route component={NotFound} />
         </Switch>
       </main>

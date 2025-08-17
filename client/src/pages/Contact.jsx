@@ -1,105 +1,66 @@
 import { useState } from "react";
-import { useMutation } from "@tanstack/react-query";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
-import { Badge } from "@/components/ui/badge";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useToast } from "@/hooks/use-toast";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { apiRequest } from "@/lib/queryClient";
 import { 
-  MapPin, Phone, Mail, Clock, Send, MessageCircle, 
-  Users, Calendar, ExternalLink, CheckCircle 
+  Mail, 
+  Phone, 
+  MapPin, 
+  Globe, 
+  Send, 
+  Clock,
+  Users,
+  MessageSquare,
+  ExternalLink
 } from "lucide-react";
 
 export default function Contact() {
-  const { toast } = useToast();
   const [formData, setFormData] = useState({
     name: "",
     email: "",
     organization: "",
+    country: "",
     subject: "",
-    message: "",
-    type: "general"
+    category: "",
+    message: ""
   });
 
-  const contactInfo = [
-    {
-      icon: <MapPin className="w-6 h-6" />,
-      title: "Headquarters",
-      details: ["123 Agricultural Drive", "Nairobi, Kenya", "P.O. Box 12345"]
-    },
-    {
-      icon: <Phone className="w-6 h-6" />,
-      title: "Phone",
-      details: ["+254 20 123 4567", "+254 20 123 4568"]
-    },
-    {
-      icon: <Mail className="w-6 h-6" />,
-      title: "Email",
-      details: ["info@africamechanize.org", "partnerships@africamechanize.org"]
-    },
-    {
-      icon: <Clock className="w-6 h-6" />,
-      title: "Office Hours",
-      details: ["Monday - Friday", "8:00 AM - 5:00 PM EAT"]
-    }
-  ];
+  const { toast } = useToast();
+  const queryClient = useQueryClient();
 
-  const contactTypes = [
-    { value: "general", label: "General Inquiry" },
-    { value: "partnership", label: "Partnership Opportunity" },
-    { value: "support", label: "Technical Support" },
-    { value: "media", label: "Media & Press" },
-    { value: "careers", label: "Career Opportunities" }
-  ];
-
-  const regionalOffices = [
-    {
-      region: "West Africa",
-      city: "Accra, Ghana",
-      email: "westafrica@africamechanize.org",
-      phone: "+233 30 123 4567"
-    },
-    {
-      region: "East Africa",
-      city: "Nairobi, Kenya",
-      email: "eastafrica@africamechanize.org",
-      phone: "+254 20 123 4567"
-    },
-    {
-      region: "Southern Africa",
-      city: "Johannesburg, South Africa",
-      email: "southernafrica@africamechanize.org",
-      phone: "+27 11 123 4567"
-    }
-  ];
-
-  const submitContact = useMutation({
+  const contactMutation = useMutation({
     mutationFn: async (data) => {
-      const response = await fetch("/api/contacts", {
+      return apiRequest("/api/contacts", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
         body: JSON.stringify(data),
+        headers: {
+          "Content-Type": "application/json",
+        },
       });
-      if (!response.ok) throw new Error("Failed to submit");
-      return response.json();
     },
     onSuccess: () => {
       toast({
-        title: "Message Sent!",
-        description: "Thank you for contacting us. We'll get back to you soon.",
+        title: "Message Sent",
+        description: "Thank you for your message. We'll get back to you soon!",
       });
       setFormData({
         name: "",
         email: "",
         organization: "",
+        country: "",
         subject: "",
-        message: "",
-        type: "general"
+        category: "",
+        message: ""
       });
+      queryClient.invalidateQueries(["/api/contacts"]);
     },
-    onError: () => {
+    onError: (error) => {
       toast({
         title: "Error",
         description: "Failed to send message. Please try again.",
@@ -110,139 +71,247 @@ export default function Contact() {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    submitContact.mutate(formData);
+    if (!formData.name || !formData.email || !formData.subject || !formData.message) {
+      toast({
+        title: "Missing Information",
+        description: "Please fill in all required fields.",
+        variant: "destructive",
+      });
+      return;
+    }
+    contactMutation.mutate(formData);
   };
 
   const handleInputChange = (field, value) => {
     setFormData(prev => ({ ...prev, [field]: value }));
   };
 
+  const contactInfo = [
+    {
+      icon: <Mail className="w-6 h-6" />,
+      title: "Email Us",
+      details: "info@africamechanize.org",
+      description: "General inquiries and information",
+      action: "mailto:info@africamechanize.org"
+    },
+    {
+      icon: <Globe className="w-6 h-6" />,
+      title: "Visit Our Website",
+      details: "africamechanize.org",
+      description: "Access resources and latest updates",
+      action: "https://africamechanize.org"
+    },
+    {
+      icon: <Users className="w-6 h-6" />,
+      title: "Join Our Network",
+      details: "Connect with stakeholders",
+      description: "Participate in webinars and events",
+      action: "/webinars"
+    },
+    {
+      icon: <MessageSquare className="w-6 h-6" />,
+      title: "Follow Us",
+      details: "Social Media",
+      description: "Stay updated on social platforms",
+      action: "#"
+    }
+  ];
+
+  const inquiryTypes = [
+    "General Information",
+    "Partnership Opportunities",
+    "Webinar Participation",
+    "Framework Implementation",
+    "Technical Support",
+    "Policy Development",
+    "Research Collaboration",
+    "Media Inquiries"
+  ];
+
+  const faqItems = [
+    {
+      question: "How can I participate in AfricaMechanize webinars?",
+      answer: "You can register for upcoming webinars through our webinars page. All webinars are free and open to anyone interested in agricultural mechanization."
+    },
+    {
+      question: "Is the F-SAMA framework available for download?",
+      answer: "Yes, the complete F-SAMA framework is available in our Resources section in both English and French versions."
+    },
+    {
+      question: "How can our organization become a partner?",
+      answer: "Please contact us through this form selecting 'Partnership Opportunities' as your inquiry type, and we'll provide information about partnership possibilities."
+    },
+    {
+      question: "Do you provide technical assistance for mechanization projects?",
+      answer: "We can provide guidance and connect you with relevant experts. Please describe your specific needs in your message."
+    }
+  ];
+
   return (
-    <div className="min-h-screen py-20 bg-gradient-to-br from-gray-50 to-green-50 dark:from-gray-900 dark:to-gray-800">
-      <div className="container mx-auto px-6">
-        {/* Header */}
-        <div className="text-center mb-16">
-          <Badge className="mb-4 px-4 py-2 bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200">
-            Get In Touch
-          </Badge>
-          <h1 className="text-4xl md:text-5xl font-bold mb-6 bg-gradient-to-r from-green-600 to-blue-600 bg-clip-text text-transparent">
-            Contact Africa Mechanize
-          </h1>
-          <p className="text-xl text-gray-600 dark:text-gray-300 max-w-3xl mx-auto">
-            We'd love to hear from you. Whether you have questions about our programs, 
-            want to explore partnerships, or need support, we're here to help.
-          </p>
+    <div className="min-h-screen bg-gradient-to-b from-gray-50 to-white dark:from-gray-900 dark:to-gray-800 pt-24">
+      {/* Header */}
+      <section className="py-16 bg-gradient-to-r from-primary/10 to-secondary/10">
+        <div className="container mx-auto px-6">
+          <div className="max-w-4xl mx-auto text-center">
+            <h1 className="text-4xl md:text-5xl font-bold mb-6 bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">
+              Contact Us
+            </h1>
+            <p className="text-xl text-gray-600 dark:text-gray-300 mb-8">
+              Get in touch with the AfricaMechanize team. We're here to support your journey 
+              in sustainable agricultural mechanization, answer your questions, and explore 
+              partnership opportunities.
+            </p>
+          </div>
         </div>
+      </section>
 
-        <div className="grid lg:grid-cols-3 gap-12 max-w-7xl mx-auto">
-          {/* Contact Form */}
-          <div className="lg:col-span-2">
-            <Card className="border-0 shadow-xl">
-              <CardHeader>
-                <CardTitle className="text-2xl flex items-center gap-2">
-                  <MessageCircle className="w-6 h-6 text-green-600" />
-                  Send us a Message
-                </CardTitle>
-                <p className="text-gray-600 dark:text-gray-300">
-                  Fill out the form below and we'll get back to you within 24 hours.
-                </p>
-              </CardHeader>
-              <CardContent>
-                <form onSubmit={handleSubmit} className="space-y-6">
-                  {/* Contact Type */}
-                  <div>
-                    <Label htmlFor="type">Type of Inquiry</Label>
-                    <select
-                      id="type"
-                      value={formData.type}
-                      onChange={(e) => handleInputChange("type", e.target.value)}
-                      className="w-full mt-1 p-3 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100"
+      {/* Contact Information */}
+      <section className="py-16">
+        <div className="container mx-auto px-6">
+          <div className="text-center mb-12">
+            <h2 className="text-3xl font-bold mb-4">Get In Touch</h2>
+            <p className="text-xl text-gray-600 dark:text-gray-300">
+              Multiple ways to connect with us
+            </p>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-16">
+            {contactInfo.map((info, index) => (
+              <Card key={index} className="text-center p-6 hover:shadow-lg transition-all duration-300 group cursor-pointer"
+                    onClick={() => {
+                      if (info.action.startsWith('http') || info.action.startsWith('mailto:')) {
+                        window.open(info.action, '_blank');
+                      } else {
+                        window.location.href = info.action;
+                      }
+                    }}>
+                <CardContent className="p-0">
+                  <div className="w-12 h-12 bg-gradient-to-br from-primary to-secondary rounded-lg flex items-center justify-center text-white mx-auto mb-4 group-hover:scale-110 transition-transform">
+                    {info.icon}
+                  </div>
+                  <h4 className="font-semibold mb-2 group-hover:text-primary transition-colors">{info.title}</h4>
+                  <p className="text-sm font-medium mb-1">{info.details}</p>
+                  <p className="text-xs text-gray-600 dark:text-gray-300">{info.description}</p>
+                </CardContent>
+              </Card>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Contact Form */}
+      <section className="py-16 bg-gray-50 dark:bg-gray-900">
+        <div className="container mx-auto px-6">
+          <div className="max-w-4xl mx-auto">
+            <div className="text-center mb-12">
+              <h2 className="text-3xl font-bold mb-4">Send Us a Message</h2>
+              <p className="text-xl text-gray-600 dark:text-gray-300">
+                We'd love to hear from you. Fill out the form below and we'll get back to you as soon as possible.
+              </p>
+            </div>
+
+            <Card className="p-8">
+              <form onSubmit={handleSubmit} className="space-y-6">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  <div className="space-y-2">
+                    <Label htmlFor="name">Full Name *</Label>
+                    <Input
+                      id="name"
+                      value={formData.name}
+                      onChange={(e) => handleInputChange("name", e.target.value)}
+                      placeholder="Your full name"
                       required
-                    >
-                      {contactTypes.map((type) => (
-                        <option key={type.value} value={type.value}>
-                          {type.label}
-                        </option>
-                      ))}
-                    </select>
+                      data-testid="input-name"
+                    />
                   </div>
 
-                  {/* Name and Email */}
-                  <div className="grid md:grid-cols-2 gap-4">
-                    <div>
-                      <Label htmlFor="name">Full Name</Label>
-                      <Input
-                        id="name"
-                        type="text"
-                        value={formData.name}
-                        onChange={(e) => handleInputChange("name", e.target.value)}
-                        placeholder="Your full name"
-                        className="mt-1"
-                        required
-                      />
-                    </div>
-                    <div>
-                      <Label htmlFor="email">Email Address</Label>
-                      <Input
-                        id="email"
-                        type="email"
-                        value={formData.email}
-                        onChange={(e) => handleInputChange("email", e.target.value)}
-                        placeholder="your.email@example.com"
-                        className="mt-1"
-                        required
-                      />
-                    </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="email">Email Address *</Label>
+                    <Input
+                      id="email"
+                      type="email"
+                      value={formData.email}
+                      onChange={(e) => handleInputChange("email", e.target.value)}
+                      placeholder="your.email@example.com"
+                      required
+                      data-testid="input-email"
+                    />
                   </div>
+                </div>
 
-                  {/* Organization */}
-                  <div>
-                    <Label htmlFor="organization">Organization (Optional)</Label>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  <div className="space-y-2">
+                    <Label htmlFor="organization">Organization</Label>
                     <Input
                       id="organization"
-                      type="text"
                       value={formData.organization}
                       onChange={(e) => handleInputChange("organization", e.target.value)}
-                      placeholder="Your organization or company"
-                      className="mt-1"
+                      placeholder="Your organization"
+                      data-testid="input-organization"
                     />
                   </div>
 
-                  {/* Subject */}
-                  <div>
-                    <Label htmlFor="subject">Subject</Label>
+                  <div className="space-y-2">
+                    <Label htmlFor="country">Country</Label>
+                    <Input
+                      id="country"
+                      value={formData.country}
+                      onChange={(e) => handleInputChange("country", e.target.value)}
+                      placeholder="Your country"
+                      data-testid="input-country"
+                    />
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  <div className="space-y-2">
+                    <Label htmlFor="subject">Subject *</Label>
                     <Input
                       id="subject"
-                      type="text"
                       value={formData.subject}
                       onChange={(e) => handleInputChange("subject", e.target.value)}
-                      placeholder="Brief subject of your message"
-                      className="mt-1"
+                      placeholder="Message subject"
                       required
+                      data-testid="input-subject"
                     />
                   </div>
 
-                  {/* Message */}
-                  <div>
-                    <Label htmlFor="message">Message</Label>
-                    <Textarea
-                      id="message"
-                      value={formData.message}
-                      onChange={(e) => handleInputChange("message", e.target.value)}
-                      placeholder="Please provide details about your inquiry..."
-                      className="mt-1 min-h-[120px]"
-                      required
-                    />
+                  <div className="space-y-2">
+                    <Label htmlFor="category">Inquiry Type</Label>
+                    <Select value={formData.category} onValueChange={(value) => handleInputChange("category", value)}>
+                      <SelectTrigger data-testid="select-category">
+                        <SelectValue placeholder="Select inquiry type" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {inquiryTypes.map((type) => (
+                          <SelectItem key={type} value={type}>{type}</SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
                   </div>
+                </div>
 
-                  {/* Submit Button */}
-                  <Button
-                    type="submit"
-                    size="lg"
-                    className="w-full"
-                    disabled={submitContact.isPending}
+                <div className="space-y-2">
+                  <Label htmlFor="message">Message *</Label>
+                  <Textarea
+                    id="message"
+                    value={formData.message}
+                    onChange={(e) => handleInputChange("message", e.target.value)}
+                    placeholder="Please describe your inquiry or message in detail..."
+                    rows={6}
+                    required
+                    data-testid="textarea-message"
+                  />
+                </div>
+
+                <div className="flex justify-center">
+                  <Button 
+                    type="submit" 
+                    size="lg" 
+                    disabled={contactMutation.isPending}
+                    data-testid="button-submit-contact"
                   >
-                    {submitContact.isPending ? (
+                    {contactMutation.isPending ? (
                       "Sending..."
                     ) : (
                       <>
@@ -251,143 +320,58 @@ export default function Contact() {
                       </>
                     )}
                   </Button>
-                </form>
-              </CardContent>
-            </Card>
-          </div>
-
-          {/* Contact Information */}
-          <div className="space-y-6">
-            {/* Contact Details */}
-            <Card className="border-0 shadow-lg">
-              <CardHeader>
-                <CardTitle className="text-xl">Contact Information</CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-6">
-                {contactInfo.map((info, index) => (
-                  <div key={index} className="flex items-start gap-4">
-                    <div className="w-12 h-12 bg-gradient-to-br from-green-500 to-blue-500 rounded-lg flex items-center justify-center text-white flex-shrink-0">
-                      {info.icon}
-                    </div>
-                    <div>
-                      <h3 className="font-semibold text-gray-800 dark:text-gray-200 mb-1">
-                        {info.title}
-                      </h3>
-                      {info.details.map((detail, idx) => (
-                        <p key={idx} className="text-gray-600 dark:text-gray-300 text-sm">
-                          {detail}
-                        </p>
-                      ))}
-                    </div>
-                  </div>
-                ))}
-              </CardContent>
-            </Card>
-
-            {/* Regional Offices */}
-            <Card className="border-0 shadow-lg">
-              <CardHeader>
-                <CardTitle className="text-xl">Regional Offices</CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                {regionalOffices.map((office, index) => (
-                  <div key={index} className="p-4 bg-gray-50 dark:bg-gray-700 rounded-lg">
-                    <h3 className="font-semibold text-gray-800 dark:text-gray-200 mb-2">
-                      {office.region}
-                    </h3>
-                    <p className="text-sm text-gray-600 dark:text-gray-300 mb-1">
-                      {office.city}
-                    </p>
-                    <p className="text-sm text-gray-600 dark:text-gray-300 mb-1">
-                      {office.email}
-                    </p>
-                    <p className="text-sm text-gray-600 dark:text-gray-300">
-                      {office.phone}
-                    </p>
-                  </div>
-                ))}
-              </CardContent>
-            </Card>
-
-            {/* Quick Actions */}
-            <Card className="border-0 shadow-lg">
-              <CardHeader>
-                <CardTitle className="text-xl">Quick Actions</CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-3">
-                <Button variant="outline" className="w-full justify-start">
-                  <Calendar className="w-4 h-4 mr-2" />
-                  Schedule a Meeting
-                </Button>
-                <Button variant="outline" className="w-full justify-start">
-                  <Users className="w-4 h-4 mr-2" />
-                  Partnership Inquiry
-                </Button>
-                <Button variant="outline" className="w-full justify-start">
-                  <ExternalLink className="w-4 h-4 mr-2" />
-                  Media Kit Download
-                </Button>
-              </CardContent>
+                </div>
+              </form>
             </Card>
           </div>
         </div>
+      </section>
 
-        {/* FAQ Section */}
-        <div className="mt-20 text-center">
-          <h2 className="text-3xl font-bold mb-8 text-gray-800 dark:text-gray-200">
-            Frequently Asked Questions
-          </h2>
-          <div className="grid md:grid-cols-2 gap-8 max-w-4xl mx-auto">
-            <Card className="text-left border-0 shadow-lg">
-              <CardHeader>
-                <CardTitle className="text-lg">How can I become a partner?</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <p className="text-gray-600 dark:text-gray-300">
-                  We welcome partnerships with organizations that share our mission. 
-                  Please use the partnership inquiry form above or contact our partnerships team directly.
-                </p>
-              </CardContent>
-            </Card>
-            
-            <Card className="text-left border-0 shadow-lg">
-              <CardHeader>
-                <CardTitle className="text-lg">Do you offer training programs?</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <p className="text-gray-600 dark:text-gray-300">
-                  Yes, we offer various training programs on sustainable agricultural mechanization. 
-                  Check our events page for upcoming workshops and webinars.
-                </p>
-              </CardContent>
-            </Card>
-            
-            <Card className="text-left border-0 shadow-lg">
-              <CardHeader>
-                <CardTitle className="text-lg">How can I access your resources?</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <p className="text-gray-600 dark:text-gray-300">
-                  Most of our resources are freely available in our resource library. 
-                  Some specialized materials may require registration or partnership.
-                </p>
-              </CardContent>
-            </Card>
-            
-            <Card className="text-left border-0 shadow-lg">
-              <CardHeader>
-                <CardTitle className="text-lg">Do you have job opportunities?</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <p className="text-gray-600 dark:text-gray-300">
-                  We regularly post job openings on our website and social media channels. 
-                  You can also send your CV for future opportunities.
-                </p>
-              </CardContent>
-            </Card>
+      {/* FAQ Section */}
+      <section className="py-16">
+        <div className="container mx-auto px-6">
+          <div className="max-w-4xl mx-auto">
+            <div className="text-center mb-12">
+              <h2 className="text-3xl font-bold mb-4">Frequently Asked Questions</h2>
+              <p className="text-xl text-gray-600 dark:text-gray-300">
+                Find quick answers to common questions
+              </p>
+            </div>
+
+            <div className="space-y-6">
+              {faqItems.map((faq, index) => (
+                <Card key={index} className="p-6 hover:shadow-lg transition-all duration-300">
+                  <CardHeader className="p-0 mb-4">
+                    <CardTitle className="text-lg text-primary">{faq.question}</CardTitle>
+                  </CardHeader>
+                  <CardContent className="p-0">
+                    <p className="text-gray-600 dark:text-gray-300 leading-relaxed">
+                      {faq.answer}
+                    </p>
+                  </CardContent>
+                </Card>
+              ))}
+            </div>
           </div>
         </div>
-      </div>
+      </section>
+
+      {/* Response Time */}
+      <section className="py-16 bg-gradient-to-r from-primary/5 to-secondary/5">
+        <div className="container mx-auto px-6">
+          <div className="max-w-2xl mx-auto text-center">
+            <Clock className="w-12 h-12 mx-auto mb-4 text-primary" />
+            <h3 className="text-2xl font-bold mb-4">Response Time</h3>
+            <p className="text-lg text-gray-600 dark:text-gray-300 mb-6">
+              We typically respond to all inquiries within 2-3 business days. For urgent matters 
+              related to ongoing webinars or events, please mention this in your message subject line.
+            </p>
+            <p className="text-sm text-gray-500 dark:text-gray-400">
+              Business hours: Monday - Friday, 9:00 AM - 5:00 PM (various time zones across Africa)
+            </p>
+          </div>
+        </div>
+      </section>
     </div>
   );
 }
