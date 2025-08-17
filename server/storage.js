@@ -222,6 +222,40 @@ export class DatabaseStorage {
     return contact;
   }
 
+  async updateUser(id, userData) {
+    const [user] = await db
+      .update(users)
+      .set({ ...userData, updatedAt: new Date() })
+      .where(eq(users.id, id))
+      .returning();
+    return user;
+  }
+
+  async deleteContact(id) {
+    await db.delete(contactForms).where(eq(contactForms.id, id));
+  }
+
+  async createWebinar(webinarData) {
+    const [webinar] = await db
+      .insert(webinars)
+      .values(webinarData)
+      .returning();
+    return webinar;
+  }
+
+  async updateWebinar(id, webinarData) {
+    const [webinar] = await db
+      .update(webinars)
+      .set({ ...webinarData, updatedAt: new Date() })
+      .where(eq(webinars.id, id))
+      .returning();
+    return webinar;
+  }
+
+  async deleteWebinar(id) {
+    await db.delete(webinars).where(eq(webinars.id, id));
+  }
+
   // Webinars methods
   async getAllWebinars() {
     return await db.select().from(webinars);

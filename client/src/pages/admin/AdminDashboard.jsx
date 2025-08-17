@@ -68,10 +68,19 @@ export default function AdminDashboard() {
   const { toast } = useToast();
   const queryClient = useQueryClient();
   const [selectedUser, setSelectedUser] = useState(null);
+  const [editingUser, setEditingUser] = useState(null);
   const [editingWebinar, setEditingWebinar] = useState(null);
   const [statsFormData, setStatsFormData] = useState({});
-  const [userSearch, setUserSearch] = useState("");
   const [contactFilter, setContactFilter] = useState("all");
+  const [userSearch, setUserSearch] = useState("");
+  const [newWebinarData, setNewWebinarData] = useState({
+    title: "",
+    description: "",
+    date: "",
+    time: "",
+    speaker: "",
+    meetingLink: ""
+  });
 
   const getAuthHeaders = () => {
     const token = localStorage.getItem("adminToken");
@@ -596,10 +605,122 @@ export default function AdminDashboard() {
                       Create and manage webinars and events
                     </CardDescription>
                   </div>
-                  <Button data-testid="button-create-webinar">
-                    <Plus className="w-4 h-4 mr-2" />
-                    New Webinar
-                  </Button>
+                  <Dialog>
+                    <DialogTrigger asChild>
+                      <Button data-testid="button-create-webinar">
+                        <Plus className="w-4 h-4 mr-2" />
+                        New Webinar
+                      </Button>
+                    </DialogTrigger>
+                    <DialogContent className="sm:max-w-lg">
+                      <DialogHeader>
+                        <DialogTitle>Create New Webinar</DialogTitle>
+                        <DialogDescription>
+                          Add a new educational webinar to the platform
+                        </DialogDescription>
+                      </DialogHeader>
+                      <div className="space-y-4">
+                        <div>
+                          <Label>Title</Label>
+                          <Input 
+                            placeholder="Webinar title"
+                            value={newWebinarData.title}
+                            onChange={(e) => setNewWebinarData({...newWebinarData, title: e.target.value})}
+                          />
+                        </div>
+                        <div>
+                          <Label>Description</Label>
+                          <Textarea 
+                            placeholder="Webinar description"
+                            value={newWebinarData.description}
+                            onChange={(e) => setNewWebinarData({...newWebinarData, description: e.target.value})}
+                          />
+                        </div>
+                        <div className="grid grid-cols-2 gap-4">
+                          <div>
+                            <Label>Date</Label>
+                            <Input 
+                              type="date"
+                              value={newWebinarData.date}
+                              onChange={(e) => setNewWebinarData({...newWebinarData, date: e.target.value})}
+                            />
+                          </div>
+                          <div>
+                            <Label>Time</Label>
+                            <Input 
+                              type="time"
+                              value={newWebinarData.time}
+                              onChange={(e) => setNewWebinarData({...newWebinarData, time: e.target.value})}
+                            />
+                          </div>
+                        </div>
+                        <div>
+                          <Label>Speaker</Label>
+                          <Input 
+                            placeholder="Speaker name"
+                            value={newWebinarData.speaker}
+                            onChange={(e) => setNewWebinarData({...newWebinarData, speaker: e.target.value})}
+                          />
+                        </div>
+                        <div>
+                          <Label>Meeting Link</Label>
+                          <Input 
+                            placeholder="https://zoom.us/..."
+                            value={newWebinarData.meetingLink}
+                            onChange={(e) => setNewWebinarData({...newWebinarData, meetingLink: e.target.value})}
+                          />
+                        </div>
+                        <Button 
+                          className="w-full"
+                          onClick={async () => {
+                            try {
+                              const webinarData = {
+                                title: newWebinarData.title,
+                                description: newWebinarData.description,
+                                scheduledDate: `${newWebinarData.date} ${newWebinarData.time}`,
+                                speakerName: newWebinarData.speaker,
+                                meetingLink: newWebinarData.meetingLink,
+                                status: "upcoming"
+                              };
+                              
+                              const response = await fetch("/api/admin/webinars", {
+                                method: "POST",
+                                headers: {
+                                  "Content-Type": "application/json",
+                                  ...getAuthHeaders(),
+                                },
+                                body: JSON.stringify(webinarData),
+                              });
+                              
+                              if (response.ok) {
+                                toast({ title: "Webinar created successfully" });
+                                refetchWebinars();
+                                refetchStats();
+                                setNewWebinarData({
+                                  title: "",
+                                  description: "",
+                                  date: "",
+                                  time: "",
+                                  speaker: "",
+                                  meetingLink: ""
+                                });
+                              } else {
+                                throw new Error("Failed to create webinar");
+                              }
+                            } catch (error) {
+                              toast({
+                                title: "Create failed",
+                                description: error.message,
+                                variant: "destructive",
+                              });
+                            }
+                          }}
+                        >
+                          Create Webinar
+                        </Button>
+                      </div>
+                    </DialogContent>
+                  </Dialog>
                 </CardHeader>
                 <CardContent>
                   <div className="space-y-4">
@@ -618,9 +739,132 @@ export default function AdminDashboard() {
                           <Button size="sm" variant="outline" data-testid={`button-view-webinar-${webinar.id}`}>
                             <Eye className="w-3 h-3" />
                           </Button>
-                          <Button size="sm" variant="outline" data-testid={`button-edit-webinar-${webinar.id}`}>
-                            <Edit className="w-3 h-3" />
-                          </Button>
+                          <Dialog>
+                            <DialogTrigger asChild>
+                              <Button 
+                                size="sm" 
+                                variant="outline" 
+                                onClick={() => setEditingWebinar(webinar)}
+                                data-testid={`button-edit-webinar-${webinar.id}`}
+                              >
+                                <Edit className="w-3 h-3" />
+                              </Button>
+                            </DialogTrigger>
+                            <DialogContent className="sm:max-w-lg">
+                              <DialogHeader>
+                                <DialogTitle>Edit Webinar</DialogTitle>
+                                <DialogDescription>
+                                  Update webinar information and settings
+                                </DialogDescription>
+                              </DialogHeader>
+                              {editingWebinar && (
+                                <div className="space-y-4">
+                                  <div>
+                                    <Label>Title</Label>
+                                    <Input
+                                      value={editingWebinar.title || ""}
+                                      onChange={(e) => setEditingWebinar({...editingWebinar, title: e.target.value})}
+                                    />
+                                  </div>
+                                  <div>
+                                    <Label>Description</Label>
+                                    <Textarea
+                                      value={editingWebinar.description || ""}
+                                      onChange={(e) => setEditingWebinar({...editingWebinar, description: e.target.value})}
+                                    />
+                                  </div>
+                                  <div>
+                                    <Label>Status</Label>
+                                    <Select
+                                      value={editingWebinar.status}
+                                      onValueChange={(value) => setEditingWebinar({...editingWebinar, status: value})}
+                                    >
+                                      <SelectTrigger>
+                                        <SelectValue />
+                                      </SelectTrigger>
+                                      <SelectContent>
+                                        <SelectItem value="upcoming">Upcoming</SelectItem>
+                                        <SelectItem value="completed">Completed</SelectItem>
+                                        <SelectItem value="cancelled">Cancelled</SelectItem>
+                                      </SelectContent>
+                                    </Select>
+                                  </div>
+                                  <div className="flex justify-between">
+                                    <AlertDialog>
+                                      <AlertDialogTrigger asChild>
+                                        <Button variant="destructive" size="sm">
+                                          <Trash2 className="w-3 h-3 mr-1" />
+                                          Delete
+                                        </Button>
+                                      </AlertDialogTrigger>
+                                      <AlertDialogContent>
+                                        <AlertDialogHeader>
+                                          <AlertDialogTitle>Delete Webinar</AlertDialogTitle>
+                                          <AlertDialogDescription>
+                                            Are you sure? This action cannot be undone.
+                                          </AlertDialogDescription>
+                                        </AlertDialogHeader>
+                                        <AlertDialogFooter>
+                                          <AlertDialogCancel>Cancel</AlertDialogCancel>
+                                          <AlertDialogAction
+                                            onClick={async () => {
+                                              try {
+                                                await fetch(`/api/admin/webinars/${editingWebinar.id}`, {
+                                                  method: "DELETE",
+                                                  headers: getAuthHeaders(),
+                                                });
+                                                toast({ title: "Webinar deleted successfully" });
+                                                refetchWebinars();
+                                                setEditingWebinar(null);
+                                              } catch (error) {
+                                                toast({
+                                                  title: "Delete failed",
+                                                  description: error.message,
+                                                  variant: "destructive",
+                                                });
+                                              }
+                                            }}
+                                            className="bg-destructive text-destructive-foreground"
+                                          >
+                                            Delete
+                                          </AlertDialogAction>
+                                        </AlertDialogFooter>
+                                      </AlertDialogContent>
+                                    </AlertDialog>
+                                    <Button
+                                      onClick={async () => {
+                                        try {
+                                          await fetch(`/api/admin/webinars/${editingWebinar.id}`, {
+                                            method: "PUT",
+                                            headers: {
+                                              "Content-Type": "application/json",
+                                              ...getAuthHeaders(),
+                                            },
+                                            body: JSON.stringify({
+                                              title: editingWebinar.title,
+                                              description: editingWebinar.description,
+                                              status: editingWebinar.status,
+                                            }),
+                                          });
+                                          toast({ title: "Webinar updated successfully" });
+                                          refetchWebinars();
+                                          setEditingWebinar(null);
+                                        } catch (error) {
+                                          toast({
+                                            title: "Update failed",
+                                            description: error.message,
+                                            variant: "destructive",
+                                          });
+                                        }
+                                      }}
+                                    >
+                                      Save Changes
+                                    </Button>
+                                  </div>
+                                </div>
+                              )}
+                            </DialogContent>
+                          </Dialog>
                         </div>
                       </div>
                     ))}
@@ -699,9 +943,46 @@ export default function AdminDashboard() {
                             <Mail className="w-3 h-3 mr-1" />
                             Reply
                           </Button>
-                          <Button size="sm" variant="outline">
-                            <Trash2 className="w-3 h-3" />
-                          </Button>
+                          <AlertDialog>
+                            <AlertDialogTrigger asChild>
+                              <Button size="sm" variant="outline">
+                                <Trash2 className="w-3 h-3" />
+                              </Button>
+                            </AlertDialogTrigger>
+                            <AlertDialogContent>
+                              <AlertDialogHeader>
+                                <AlertDialogTitle>Delete Contact</AlertDialogTitle>
+                                <AlertDialogDescription>
+                                  Are you sure you want to delete this contact message? This action cannot be undone.
+                                </AlertDialogDescription>
+                              </AlertDialogHeader>
+                              <AlertDialogFooter>
+                                <AlertDialogCancel>Cancel</AlertDialogCancel>
+                                <AlertDialogAction
+                                  onClick={async () => {
+                                    try {
+                                      await fetch(`/api/admin/contacts/${contact.id}`, {
+                                        method: "DELETE",
+                                        headers: getAuthHeaders(),
+                                      });
+                                      toast({ title: "Contact deleted successfully" });
+                                      refetchContacts();
+                                      refetchStats();
+                                    } catch (error) {
+                                      toast({
+                                        title: "Delete failed",
+                                        description: error.message,
+                                        variant: "destructive",
+                                      });
+                                    }
+                                  }}
+                                  className="bg-destructive text-destructive-foreground"
+                                >
+                                  Delete
+                                </AlertDialogAction>
+                              </AlertDialogFooter>
+                            </AlertDialogContent>
+                          </AlertDialog>
                         </div>
                       </div>
                     ))}

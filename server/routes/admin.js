@@ -219,6 +219,53 @@ router.put("/contacts/:id", verifyAdminToken, async (req, res) => {
   }
 });
 
+// Delete contact
+router.delete("/contacts/:id", verifyAdminToken, async (req, res) => {
+  try {
+    const contactId = parseInt(req.params.id);
+    await storage.deleteContact(contactId);
+    res.json({ message: "Contact deleted successfully" });
+  } catch (error) {
+    console.error("Delete contact error:", error);
+    res.status(500).json({ error: "Failed to delete contact" });
+  }
+});
+
+// Webinar management
+router.post("/webinars", verifyAdminToken, async (req, res) => {
+  try {
+    const webinarData = req.body;
+    const webinar = await storage.createWebinar(webinarData);
+    res.json(webinar);
+  } catch (error) {
+    console.error("Create webinar error:", error);
+    res.status(500).json({ error: "Failed to create webinar" });
+  }
+});
+
+router.put("/webinars/:id", verifyAdminToken, async (req, res) => {
+  try {
+    const webinarId = parseInt(req.params.id);
+    const webinarData = req.body;
+    const webinar = await storage.updateWebinar(webinarId, webinarData);
+    res.json(webinar);
+  } catch (error) {
+    console.error("Update webinar error:", error);
+    res.status(500).json({ error: "Failed to update webinar" });
+  }
+});
+
+router.delete("/webinars/:id", verifyAdminToken, async (req, res) => {
+  try {
+    const webinarId = parseInt(req.params.id);
+    await storage.deleteWebinar(webinarId);
+    res.json({ message: "Webinar deleted successfully" });
+  } catch (error) {
+    console.error("Delete webinar error:", error);
+    res.status(500).json({ error: "Failed to delete webinar" });
+  }
+});
+
 // Update site statistics
 router.post("/update-stats", verifyAdminToken, async (req, res) => {
   try {
