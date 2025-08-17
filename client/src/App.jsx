@@ -27,6 +27,9 @@ import SustainableSystems from "./pages/framework/SustainableSystems";
 import SocialSustainability from "./pages/framework/SocialSustainability";
 import Mechanization from "./pages/framework/Mechanization";
 import HumanResources from "./pages/framework/HumanResources";
+import AdminLogin from "./pages/admin/AdminLogin";
+import AdminResetPassword from "./pages/admin/AdminResetPassword";
+import AdminDashboard from "./pages/admin/AdminDashboard";
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
 
@@ -56,6 +59,9 @@ function Router() {
           <Route path="/framework/mechanization" component={Mechanization} />
           <Route path="/framework/social-sustainability" component={SocialSustainability} />
           <Route path="/framework/human-resources" component={HumanResources} />
+          <Route path="/admin/login" component={AdminLogin} />
+          <Route path="/admin/reset-password" component={AdminResetPassword} />
+          <Route path="/admin/dashboard" component={AdminDashboard} />
           <Route component={NotFound} />
         </Switch>
       </main>

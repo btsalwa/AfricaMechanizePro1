@@ -1,9 +1,9 @@
 import { 
   users, frameworkElements, newsletterSubscriptions, contactForms, 
-  webinars, webinarResources, webinarRecordings, webinarRegistrations, statistics
+  webinars, webinarResources, webinarRecordings, webinarRegistrations, statistics, adminUsers
 } from "../shared/schema.js";
 import { db } from "./db.js";
-import { eq } from "drizzle-orm";
+import { eq, sql } from "drizzle-orm";
 
 export class DatabaseStorage {
   // User methods
@@ -157,6 +157,56 @@ export class DatabaseStorage {
       })
       .returning();
     return stats;
+  }
+
+  // Admin user methods
+  async getAdminUser(username) {
+    const [admin] = await db.select().from(adminUsers).where(eq(adminUsers.username, username));
+    return admin || undefined;
+  }
+
+  async getAdminUserByEmail(email) {
+    const [admin] = await db.select().from(adminUsers).where(eq(adminUsers.email, email));
+    return admin || undefined;
+  }
+
+  async createAdminUser(insertAdminUser) {
+    const [admin] = await db
+      .insert(adminUsers)
+      .values(insertAdminUser)
+      .returning();
+    return admin;
+  }
+
+  async updateAdminUser(id, updateData) {
+    const [admin] = await db
+      .update(adminUsers)
+      .set({ ...updateData, updatedAt: new Date() })
+      .where(eq(adminUsers.id, id))
+      .returning();
+    return admin;
+  }
+
+  async getAdminStats() {
+    const [userCount] = await db.select({ count: sql`count(*)` }).from(users);
+    const [webinarCount] = await db.select({ count: sql`count(*)` }).from(webinars).where(eq(webinars.status, 'upcoming'));
+    const [contactCount] = await db.select({ count: sql`count(*)` }).from(contactForms).where(eq(contactForms.status, 'new'));
+    const [newsletterCount] = await db.select({ count: sql`count(*)` }).from(newsletterSubscriptions).where(eq(newsletterSubscriptions.isActive, true));
+
+    return {
+      totalUsers: parseInt(userCount.count) || 0,
+      activeWebinars: parseInt(webinarCount.count) || 0,
+      contactForms: parseInt(contactCount.count) || 0,
+      newsletterSubs: parseInt(newsletterCount.count) || 0,
+    };
+  }
+
+  async getAllUsers() {
+    return await db.select().from(users).orderBy(sql`created_at DESC`);
+  }
+
+  async getAllContacts() {
+    return await db.select().from(contactForms).orderBy(sql`created_at DESC`);
   }
 
   // Webinars methods

@@ -5,6 +5,7 @@ import passport from "passport";
 import { authHelpers, requireAuth, requireEmailVerification, requireAdmin } from "./auth.js";
 import { sendWelcomeEmail } from "./emailService.js";
 import webinarRoutes from "./routes/webinars.js";
+import adminRoutes from "./routes/admin.js";
 import { 
   insertFrameworkElementSchema, insertNewsletterSubscriptionSchema, insertContactFormSchema,
   registerSchema, loginSchema, forgotPasswordSchema, resetPasswordSchema
@@ -309,6 +310,9 @@ export async function registerRoutes(app) {
 
   // Mount webinar routes
   router.use("/api/webinars", webinarRoutes);
+  
+  // Mount admin routes
+  router.use("/api/admin", adminRoutes);
 
   // Reading Materials endpoints
   router.get("/api/materials", async (req, res) => {

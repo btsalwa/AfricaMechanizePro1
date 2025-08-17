@@ -143,6 +143,22 @@ export const statistics = pgTable("statistics", {
   updatedAt: timestamp("updated_at").defaultNow(),
 });
 
+// Admin Users
+export const adminUsers = pgTable("admin_users", {
+  id: serial("id").primaryKey(),
+  username: varchar("username", { length: 50 }).unique().notNull(),
+  email: varchar("email", { length: 255 }).unique().notNull(),
+  passwordHash: varchar("password_hash", { length: 255 }).notNull(),
+  fullName: varchar("full_name", { length: 255 }),
+  role: varchar("role", { length: 20 }).default("admin"), // admin, super_admin
+  isActive: boolean("is_active").default(true),
+  lastLoginAt: timestamp("last_login_at"),
+  resetPasswordToken: varchar("reset_password_token", { length: 255 }),
+  resetPasswordExpires: timestamp("reset_password_expires"),
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+});
+
 // Insert schemas
 export const insertUserSchema = createInsertSchema(users).omit({
   id: true,
@@ -198,6 +214,13 @@ export const insertStatisticsSchema = createInsertSchema(statistics).omit({
   updatedAt: true,
 });
 
+export const insertAdminUserSchema = createInsertSchema(adminUsers).omit({
+  id: true,
+  createdAt: true,
+  updatedAt: true,
+  lastLoginAt: true,
+});
+
 // Types
 export type User = typeof users.$inferSelect;
 export type InsertUser = z.infer<typeof insertUserSchema>;
@@ -225,6 +248,9 @@ export type InsertContactForm = z.infer<typeof insertContactFormSchema>;
 
 export type Statistics = typeof statistics.$inferSelect;
 export type InsertStatistics = z.infer<typeof insertStatisticsSchema>;
+
+export type AdminUser = typeof adminUsers.$inferSelect;
+export type InsertAdminUser = z.infer<typeof insertAdminUserSchema>;
 
 // Auth schemas for routes
 export const registerSchema = z.object({
