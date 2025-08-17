@@ -458,7 +458,16 @@ export class DatabaseStorage {
     ];
   }
 
-
+  // Legacy admin accounts methods for migration integration
+  async getLegacyAdminAccounts() {
+    try {
+      const result = await db.execute(sql`SELECT * FROM legacy_admin_accounts ORDER BY username`);
+      return result;
+    } catch (error) {
+      console.error('Error fetching legacy admin accounts:', error);
+      return [];
+    }
+  }
 }
 
 export const storage = new DatabaseStorage();

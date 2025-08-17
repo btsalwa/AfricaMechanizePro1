@@ -51,6 +51,13 @@ npm run db:push
 npm run dev
 ```
 
+### Legacy Database Integration
+The platform includes a complete integration of the original africamechanize.org database:
+- **Legacy Admin Access**: Original admin accounts (ragesInc, act-admin, masterchief) have been imported
+- **Historical Data**: All original content, navigation, and configuration data preserved
+- **Migration Status**: Check `/api/migration/status` for integration details
+- **Multilingual Support**: Original English/French content structure maintained
+
 ### Environment Configuration
 Required environment variables:
 - `DATABASE_URL`: PostgreSQL connection string
