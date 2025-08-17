@@ -565,6 +565,47 @@ export async function registerRoutes(app) {
     }
   });
 
+  // Legacy content access endpoints
+  router.get("/api/legacy/resources", async (req, res) => {
+    try {
+      const resources = await db.select().from(legacyResources).orderBy(desc(legacyResources.id));
+      res.json({ success: true, data: resources });
+    } catch (error) {
+      console.error('Error fetching legacy resources:', error);
+      res.status(500).json({ success: false, error: error.message });
+    }
+  });
+
+  router.get("/api/legacy/webinar-attendees", async (req, res) => {
+    try {
+      const attendees = await db.select().from(legacyWebinarAttendees).orderBy(desc(legacyWebinarAttendees.id));
+      res.json({ success: true, data: attendees });
+    } catch (error) {
+      console.error('Error fetching legacy webinar attendees:', error);
+      res.status(500).json({ success: false, error: error.message });
+    }
+  });
+
+  router.get("/api/legacy/projects", async (req, res) => {
+    try {
+      const projects = await db.select().from(legacyProjects).orderBy(desc(legacyProjects.budgetAmount));
+      res.json({ success: true, data: projects });
+    } catch (error) {
+      console.error('Error fetching legacy projects:', error);
+      res.status(500).json({ success: false, error: error.message });
+    }
+  });
+
+  router.get("/api/legacy/membership", async (req, res) => {
+    try {
+      const membership = await db.select().from(legacyMembership).orderBy(desc(legacyMembership.id));
+      res.json({ success: true, data: membership });
+    } catch (error) {
+      console.error('Error fetching legacy membership:', error);
+      res.status(500).json({ success: false, error: error.message });
+    }
+  });
+
   app.use(express.json());
   app.use(router);
 

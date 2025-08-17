@@ -30,6 +30,7 @@ import HumanResources from "./pages/framework/HumanResources";
 import AdminLogin from "./pages/admin/AdminLogin";
 import AdminResetPassword from "./pages/admin/AdminResetPassword";
 import AdminDashboard from "./pages/admin/AdminDashboard";
+import LegacyContent from "./pages/LegacyContent";
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
 
@@ -62,6 +63,7 @@ function Router() {
           <Route path="/admin/login" component={AdminLogin} />
           <Route path="/admin/reset-password" component={AdminResetPassword} />
           <Route path="/admin/dashboard" component={AdminDashboard} />
+          <Route path="/legacy-content" component={LegacyContent} />
           <Route component={NotFound} />
         </Switch>
       </main>

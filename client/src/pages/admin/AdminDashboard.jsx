@@ -1692,6 +1692,210 @@ export default function AdminDashboard() {
                 </CardContent>
               </Card>
             </TabsContent>
+
+            {/* Legacy Data Tab */}
+            <TabsContent value="legacy" className="space-y-6">
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-6">
+                <Card className="bg-gradient-to-br from-blue-50 to-blue-100 border-blue-200">
+                  <CardContent className="p-6">
+                    <div className="flex items-center justify-between">
+                      <div>
+                        <p className="text-sm font-medium text-blue-600">Educational Resources</p>
+                        <p className="text-3xl font-bold text-blue-800">10</p>
+                        <p className="text-xs text-blue-600">Training materials & guides</p>
+                      </div>
+                      <FileText className="w-8 h-8 text-blue-600" />
+                    </div>
+                  </CardContent>
+                </Card>
+
+                <Card className="bg-gradient-to-br from-green-50 to-green-100 border-green-200">
+                  <CardContent className="p-6">
+                    <div className="flex items-center justify-between">
+                      <div>
+                        <p className="text-sm font-medium text-green-600">Webinar Attendees</p>
+                        <p className="text-3xl font-bold text-green-800">16</p>
+                        <p className="text-xs text-green-600">Community members</p>
+                      </div>
+                      <Users className="w-8 h-8 text-green-600" />
+                    </div>
+                  </CardContent>
+                </Card>
+
+                <Card className="bg-gradient-to-br from-purple-50 to-purple-100 border-purple-200">
+                  <CardContent className="p-6">
+                    <div className="flex items-center justify-between">
+                      <div>
+                        <p className="text-sm font-medium text-purple-600">Projects</p>
+                        <p className="text-3xl font-bold text-purple-800">5</p>
+                        <p className="text-xs text-purple-600">$13M total funding</p>
+                      </div>
+                      <BarChart3 className="w-8 h-8 text-purple-600" />
+                    </div>
+                  </CardContent>
+                </Card>
+
+                <Card className="bg-gradient-to-br from-orange-50 to-orange-100 border-orange-200">
+                  <CardContent className="p-6">
+                    <div className="flex items-center justify-between">
+                      <div>
+                        <p className="text-sm font-medium text-orange-600">Membership</p>
+                        <p className="text-3xl font-bold text-orange-800">8</p>
+                        <p className="text-xs text-orange-600">Professional members</p>
+                      </div>
+                      <UserCheck className="w-8 h-8 text-orange-600" />
+                    </div>
+                  </CardContent>
+                </Card>
+              </div>
+
+              {/* Legacy Resources */}
+              <Card>
+                <CardHeader>
+                  <CardTitle className="flex items-center">
+                    <FileText className="w-5 h-5 mr-2" />
+                    Educational Resources
+                  </CardTitle>
+                  <CardDescription>
+                    Imported training materials, guides, and educational content from the original platform
+                  </CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <div className="space-y-3">
+                    {[
+                      { title: "Agri hire sub saharan africa business models", category: "Business Models", language: "EN" },
+                      { title: "Conservation agriculture: a manual for farmers", category: "Training Manual", language: "EN" },
+                      { title: "Mechanization conservation agriculture for smallholders", category: "Technical Guide", language: "EN" },
+                      { title: "Operator training manual for two wheel tractor", category: "Training Manual", language: "EN" },
+                      { title: "Module 2 introduction à l'agriculture de conservation", category: "Training Module", language: "FR" }
+                    ].map((resource, index) => (
+                      <div key={index} className="flex items-center justify-between p-4 bg-gray-50 rounded-lg">
+                        <div className="flex-1">
+                          <h4 className="font-medium text-gray-900">{resource.title}</h4>
+                          <div className="flex items-center space-x-4 mt-1">
+                            <Badge variant="secondary">{resource.category}</Badge>
+                            <Badge variant="outline">{resource.language}</Badge>
+                          </div>
+                        </div>
+                        <Button variant="ghost" size="sm">
+                          <Eye className="w-4 h-4" />
+                        </Button>
+                      </div>
+                    ))}
+                  </div>
+                </CardContent>
+              </Card>
+
+              {/* Legacy Projects */}
+              <Card>
+                <CardHeader>
+                  <CardTitle className="flex items-center">
+                    <BarChart3 className="w-5 h-5 mr-2" />
+                    Historical Projects
+                  </CardTitle>
+                  <CardDescription>
+                    Major mechanization initiatives with demonstrated impact across Africa
+                  </CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <div className="space-y-4">
+                    {[
+                      { title: "F-SAMA Framework Implementation Project", budget: "$5.0M", location: "Pan-African (15 countries)", status: "Completed" },
+                      { title: "Agricultural Hire Services Business Development", budget: "$3.2M", location: "Nigeria, Senegal, Côte d'Ivoire", status: "Ongoing" },
+                      { title: "Sustainable Agricultural Mechanization Development", budget: "$2.5M", location: "Kenya, Tanzania, Uganda", status: "Completed" },
+                      { title: "Conservation Agriculture Mechanization Program", budget: "$1.8M", location: "Ghana, Burkina Faso, Mali", status: "Completed" },
+                      { title: "Women in Agricultural Mechanization Initiative", budget: "$1.5M", location: "Ethiopia, Rwanda, Malawi", status: "Active" }
+                    ].map((project, index) => (
+                      <div key={index} className="border rounded-lg p-4">
+                        <div className="flex items-start justify-between">
+                          <div className="flex-1">
+                            <h4 className="font-semibold text-gray-900 mb-2">{project.title}</h4>
+                            <div className="grid grid-cols-3 gap-4 text-sm">
+                              <div>
+                                <span className="text-gray-500">Budget:</span>
+                                <span className="ml-1 font-medium">{project.budget}</span>
+                              </div>
+                              <div>
+                                <span className="text-gray-500">Location:</span>
+                                <span className="ml-1 font-medium">{project.location}</span>
+                              </div>
+                              <div>
+                                <Badge variant={project.status === "Active" ? "default" : project.status === "Ongoing" ? "secondary" : "outline"}>
+                                  {project.status}
+                                </Badge>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </CardContent>
+              </Card>
+
+              {/* Legacy Community */}
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                <Card>
+                  <CardHeader>
+                    <CardTitle className="flex items-center">
+                      <Users className="w-5 h-5 mr-2" />
+                      Webinar Community
+                    </CardTitle>
+                    <CardDescription>
+                      Engaged practitioners from international organizations
+                    </CardDescription>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="space-y-3">
+                      {[
+                        { email: "ibrahim.ouedraogo@fao.org", org: "FAO", webinars: 2 },
+                        { email: "i.ali@cgiar.org", org: "CGIAR", webinars: 1 },
+                        { email: "h.affognon@coraf.org", org: "CORAF", webinars: 1 },
+                        { email: "admin@act-africa.org", org: "ACT Africa", webinars: 1 },
+                        { email: "geoffmrema@gmail.com", org: "Community", webinars: 3 }
+                      ].map((attendee, index) => (
+                        <div key={index} className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                          <div>
+                            <p className="font-medium text-gray-900">{attendee.email}</p>
+                            <p className="text-sm text-gray-500">{attendee.org}</p>
+                          </div>
+                          <Badge variant="outline">{attendee.webinars} webinars</Badge>
+                        </div>
+                      ))}
+                    </div>
+                  </CardContent>
+                </Card>
+
+                <Card>
+                  <CardHeader>
+                    <CardTitle className="flex items-center">
+                      <UserCheck className="w-5 h-5 mr-2" />
+                      Professional Members
+                    </CardTitle>
+                    <CardDescription>
+                      Academic institutions and professional engineers
+                    </CardDescription>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="space-y-3">
+                      {[
+                        { name: "Makerere University", discipline: "Academic Institution", location: "Kampala, Uganda" },
+                        { name: "Dr. John Kamau", discipline: "Agricultural Engineering", location: "Nairobi, Kenya" },
+                        { name: "Dr. Grace Mwangi", discipline: "Agricultural Mechanization", location: "Dar es Salaam, Tanzania" },
+                        { name: "Eng. Paul Ochieng", discipline: "Farm Mechanization", location: "Kumasi, Ghana" },
+                        { name: "AgriTech Solutions Ltd", discipline: "Equipment Manufacturing", location: "Lagos, Nigeria" }
+                      ].map((member, index) => (
+                        <div key={index} className="p-3 bg-gray-50 rounded-lg">
+                          <p className="font-medium text-gray-900">{member.name}</p>
+                          <p className="text-sm text-gray-600">{member.discipline}</p>
+                          <p className="text-xs text-gray-500">{member.location}</p>
+                        </div>
+                      ))}
+                    </div>
+                  </CardContent>
+                </Card>
+              </div>
+            </TabsContent>
           </Tabs>
         </div>
       </div>
