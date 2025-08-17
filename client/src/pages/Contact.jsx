@@ -158,8 +158,8 @@ export default function Contact() {
             </h1>
             <p className="text-xl text-gray-600 dark:text-gray-300 mb-8">
               Get in touch with the AfricaMechanize team. We're here to support your journey 
-              in sustainable agricultural mechanization, answer your questions, and explore 
-              partnership opportunities.
+              in sustainable agricultural mechanization, answer your questions about our 42 educational resources, 
+              and explore partnership opportunities with our international network.
             </p>
           </div>
         </div>

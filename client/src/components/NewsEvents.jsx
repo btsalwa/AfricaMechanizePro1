@@ -10,6 +10,16 @@ export const NewsEvents = () => {
     enabled: true,
   });
 
+  // Fetch legacy projects for display
+  const { data: legacyProjectsData } = useQuery({
+    queryKey: ["/api/legacy/projects"],
+    queryFn: async () => {
+      const response = await fetch("/api/legacy/projects");
+      if (!response.ok) throw new Error("Failed to fetch legacy projects");
+      return response.json();
+    },
+  });
+
   // Default events if API doesn't return data
   const defaultEvents = [
     {

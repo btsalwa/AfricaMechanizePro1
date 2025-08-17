@@ -137,11 +137,11 @@ export const Hero = () => {
           </Button>
         </div>
 
-        {/* Feature Pills */}
+        {/* Enhanced Feature Pills with Legacy Data */}
         <div className={`flex flex-wrap gap-3 justify-center mb-12 transition-all duration-1000 delay-700 ${
           isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-10"
         }`}>
-          {["10 Key Elements", "25+ Countries", "Expert Network", "Sustainable Future"].map((pill, index) => (
+          {["10 F-SAMA Elements", "54+ Countries", "42 Legacy Resources", "$13M Project Portfolio", "Expert Network"].map((pill, index) => (
             <div 
               key={pill}
               className="px-4 py-2 bg-white/10 backdrop-blur-sm rounded-full border border-white/20 text-white/90 text-sm font-medium hover:bg-white/20 transition-all duration-300 cursor-pointer"

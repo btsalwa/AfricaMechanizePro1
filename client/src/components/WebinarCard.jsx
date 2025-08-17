@@ -72,16 +72,11 @@ export const WebinarCard = ({ webinar, variant = "default" }) => {
               </div>
               <h3 className="font-semibold text-sm text-gray-900 dark:text-gray-100 mb-1 line-clamp-2">
                 {webinar.slug ? (
-                  <Link 
-                    href={`/webinars/${webinar.slug}`}
-                    className="hover:text-primary transition-colors"
-                  >
+                  <Link href={`/webinars/${webinar.slug}`} className="hover:text-primary transition-colors">
                     {webinar.title}
                   </Link>
                 ) : (
-                  <span className="text-gray-600 dark:text-gray-300">
-                    {webinar.title}
-                  </span>
+                  webinar.title
                 )}
               </h3>
               <div className="flex items-center text-xs text-gray-500 dark:text-gray-400 space-x-3">

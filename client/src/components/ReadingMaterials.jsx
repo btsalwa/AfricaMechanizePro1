@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useQuery } from "@tanstack/react-query";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -6,6 +7,16 @@ import { BookOpen, Download, Clock, User, Eye, Star, ArrowRight } from "lucide-r
 
 export const ReadingMaterials = () => {
   const [selectedCategory, setSelectedCategory] = useState("all");
+
+  // Fetch legacy resources to feature
+  const { data: legacyResourcesData } = useQuery({
+    queryKey: ["/api/legacy/resources"],
+    queryFn: async () => {
+      const response = await fetch("/api/legacy/resources");
+      if (!response.ok) throw new Error("Failed to fetch legacy resources");
+      return response.json();
+    },
+  });
 
   const readingMaterials = [
     {

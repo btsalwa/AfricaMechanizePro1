@@ -68,8 +68,9 @@ export default function Framework() {
         </h1>
         <p className="text-xl text-gray-600 dark:text-gray-300 max-w-4xl mx-auto leading-relaxed">
           A comprehensive approach to transforming African agriculture through sustainable, 
-          inclusive, and climate-smart mechanization strategies that empower farmers and 
-          strengthen food systems across the continent.
+          inclusive, and climate-smart mechanization strategies. Built on proven methodologies 
+          from international partnerships with FAO, CGIAR, ACT Africa, and featuring insights 
+          from our extensive educational resource library.
         </p>
       </div>
 

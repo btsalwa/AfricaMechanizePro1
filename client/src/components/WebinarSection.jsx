@@ -47,8 +47,8 @@ export const WebinarSection = () => {
             Educational Webinars
           </h2>
           <p className="text-xl text-gray-600 dark:text-gray-300 max-w-3xl mx-auto">
-            Join our expert-led webinars to learn about sustainable agricultural mechanization, 
-            innovative farming techniques, and the latest industry developments.
+            Join our expert-led webinars featuring speakers from FAO, CGIAR, ACT Africa, and leading agricultural institutions. 
+            Access current sessions plus archived content from the original platform.
           </p>
         </div>
 

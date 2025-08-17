@@ -18,7 +18,7 @@ export const Footer = () => {
               </div>
             </div>
             <p className="text-gray-300 mb-6">
-              Empowering African agriculture through sustainable mechanization solutions and innovative partnerships.
+              Empowering African agriculture through sustainable mechanization solutions, featuring 42 educational resources from the established Africa Mechanize platform and expert partnerships with FAO, CGIAR, and ACT Africa.
             </p>
             <div className="flex space-x-4">
               <a href="#" className="text-gray-400 hover:text-primary transition-colors">

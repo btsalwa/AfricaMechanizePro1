@@ -87,7 +87,7 @@ export const NewsletterSignup = () => {
               Thank You!
             </h2>
             <p className="text-xl mb-8 opacity-90 max-w-2xl mx-auto">
-              You've successfully joined our newsletter. Stay tuned for the latest updates on sustainable agricultural mechanization in Africa.
+              You've successfully joined our community! Stay tuned for exclusive updates from our 42 educational resources, expert insights from international partnerships, and the latest developments in sustainable agricultural mechanization across Africa.
             </p>
             
             <div className="flex flex-col sm:flex-row gap-4 justify-center">

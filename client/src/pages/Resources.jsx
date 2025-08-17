@@ -41,12 +41,13 @@ export default function Resources() {
   const legacyResources = (legacyResourcesData?.data || []).map(resource => ({
     id: `legacy-${resource.id}`,
     title: resource.title,
-    description: resource.description || `Professional ${resource.category} material imported from the original Africa Mechanize platform.`,
+    description: resource.description || `Professional ${resource.category} material from the established Africa Mechanize educational library featuring proven methodologies and expert insights.`,
     type: resource.category,
     language: resource.language,
-    category: "Legacy Content",
+    category: "Legacy Educational Content",
     isLegacy: true,
-    icon: <FileText className="w-5 h-5" />
+    featured: true,
+    icon: <BookOpen className="w-5 h-5" />
   }));
 
   // Current platform resources

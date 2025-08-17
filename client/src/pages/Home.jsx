@@ -28,7 +28,7 @@ export default function Home() {
                 </Badge>
               </div>
               <span className="text-sm text-gray-700 dark:text-gray-300">
-                All 42 resources from original africamechanize.org successfully imported
+                All 42 educational resources from original africamechanize.org platform successfully imported and integrated
               </span>
             </div>
             <Link href="/legacy-content">

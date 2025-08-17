@@ -74,6 +74,16 @@ export default function AdminDashboard() {
   const [contactFilter, setContactFilter] = useState("all");
   const [userSearch, setUserSearch] = useState("");
   
+  // Fetch legacy data for admin management
+  const { data: legacyData } = useQuery({
+    queryKey: ["/api/legacy/data"],
+    queryFn: async () => {
+      const response = await fetch("/api/legacy/data");
+      if (!response.ok) throw new Error("Failed to fetch legacy data");
+      return response.json();
+    },
+  });
+  
   // Content Management States
   const [activeTab, setActiveTab] = useState("dashboard");
   const [isCreateNewsEventOpen, setIsCreateNewsEventOpen] = useState(false);
@@ -134,14 +144,14 @@ export default function AdminDashboard() {
     },
   });
 
-  // Legacy Data Integration Query
-  const { data: legacyData, refetch: refetchLegacyData } = useQuery({
+  // Migration status query (avoiding duplicate legacyData variable)
+  const { data: migrationStatus, refetch: refetchMigrationStatus } = useQuery({
     queryKey: ["/api/migration/status"],
     queryFn: async () => {
       const response = await fetch("/api/migration/status", {
         headers: getAuthHeaders(),
       });
-      if (!response.ok) throw new Error("Failed to fetch legacy data");
+      if (!response.ok) throw new Error("Failed to fetch migration status");
       return response.json();
     },
   });

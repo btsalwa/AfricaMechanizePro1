@@ -47,9 +47,9 @@ export default function Webinars() {
               F-SAMA Webinar Series
             </h1>
             <p className="text-xl text-gray-600 dark:text-gray-300 mb-8 leading-relaxed">
-              Join our comprehensive webinar series on the Framework for Sustainable Agricultural 
-              Mechanization in Africa. Learn from experts, share experiences, and advance sustainable 
-              mechanization practices across the continent.
+              Join our comprehensive webinar series featuring international experts from FAO, CGIAR, 
+              ACT Africa, and leading universities. Access current sessions plus archived presentations 
+              from our established educational platform to advance sustainable mechanization practices.
             </p>
             <div className="flex flex-wrap justify-center gap-4 text-sm">
               <Badge variant="secondary" className="px-4 py-2">

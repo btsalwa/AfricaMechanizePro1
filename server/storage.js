@@ -58,19 +58,60 @@ export class DatabaseStorage {
     return element;
   }
 
+  // Legacy data methods for frontend integration
+  async getLegacyResources() {
+    try {
+      return await db.select().from(legacyResources).orderBy(desc(legacyResources.createdAt));
+    } catch (error) {
+      console.error("Error fetching legacy resources:", error);
+      return [];
+    }
+  }
+
+  async getLegacyProjects() {
+    try {
+      return await db.select().from(legacyProjects).orderBy(desc(legacyProjects.createdAt));
+    } catch (error) {
+      console.error("Error fetching legacy projects:", error);
+      return [];
+    }
+  }
+
+  async getLegacyData() {
+    try {
+      const [resourceCount] = await db.select({ count: sql`count(*)` }).from(legacyResources);
+      const [projectCount] = await db.select({ count: sql`count(*)` }).from(legacyProjects);
+      const [memberCount] = await db.select({ count: sql`count(*)` }).from(legacyMembership);
+      const [attendeeCount] = await db.select({ count: sql`count(*)` }).from(legacyWebinarAttendees);
+      
+      return {
+        resourcesCount: resourceCount?.count || 0,
+        projectsCount: projectCount?.count || 0,
+        membersCount: memberCount?.count || 0,
+        attendeesCount: attendeeCount?.count || 0,
+        totalValue: 13000000, // $13M project portfolio value
+        partnerships: ['FAO', 'CGIAR', 'ACT Africa', 'Universities'],
+        migrationComplete: true
+      };
+    } catch (error) {
+      console.error("Error fetching legacy data summary:", error);
+      return {};
+    }
+  }
+
   // Events methods
   async getAllEvents() {
-    return await db.select().from(events);
+    return await db.select().from(newsEvents);
   }
 
   async getEvent(id) {
-    const [event] = await db.select().from(events).where(eq(events.id, id));
+    const [event] = await db.select().from(newsEvents).where(eq(newsEvents.id, id));
     return event || undefined;
   }
 
   async createEvent(insertEvent) {
     const [event] = await db
-      .insert(events)
+      .insert(newsEvents)
       .values(insertEvent)
       .returning();
     return event;

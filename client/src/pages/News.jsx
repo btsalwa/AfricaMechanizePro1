@@ -19,8 +19,8 @@ export default function News() {
 
   const newsEvents = events || [];
   
-  // Sample news data based on the actual africamechanize.org content
-  const sampleNews = [
+  // Featured news from established Africa Mechanize platform and international partnerships
+  const featuredNews = [
     {
       id: 109,
       title: "Sustainable Farm Power for Enhanced Productivity (FAO & CEMA Hybrid Event)",
@@ -70,7 +70,7 @@ export default function News() {
 
   const combinedNews = [
     ...newsEvents.map(event => ({ ...event, source: 'api' })),
-    ...sampleNews.map(news => ({ ...news, source: 'highlight' }))
+    ...featuredNews.map(news => ({ ...news, source: 'legacy_highlight' }))
   ];
 
   const filteredNews = combinedNews.filter(item => {

@@ -63,6 +63,29 @@ export default function About() {
     }
   ];
 
+  const legacyAchievements = [
+    {
+      title: "42 Educational Resources Imported",
+      description: "Complete collection of training materials, guides, and documentation from original platform",
+      value: "42 resources"
+    },
+    {
+      title: "International Community Network", 
+      description: "Active members from FAO, CGIAR, ACT Africa, universities, and engineering organizations",
+      value: "24 professionals"
+    },
+    {
+      title: "Proven Project Portfolio",
+      description: "Successfully managed projects demonstrating platform impact and credibility",
+      value: "$13M funding"
+    },
+    {
+      title: "Multi-language Support",
+      description: "Educational content available in English and French for Pan-African accessibility",
+      value: "2 languages"
+    }
+  ];
+
   const partners = [
     {
       name: "Food and Agriculture Organization (FAO)",
@@ -71,7 +94,7 @@ export default function About() {
     },
     {
       name: "African Union Commission (AUC)",
-      role: "Strategic Partner",
+      role: "Strategic Partner", 
       description: "Ensuring alignment with continental agricultural development priorities"
     },
     {

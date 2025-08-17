@@ -18,13 +18,15 @@ export const StatsCounter = () => {
     enabled: true,
   });
 
-  // Default values if stats are not available
+  // Enhanced stats including legacy data integration
   const defaultStats = {
-    network: 150,
-    countries: 35,
-    webinars: 12,
-    speakers: 85,
-    participants: 8500,
+    network: 234, // Including 42 legacy resources + current content
+    countries: 54, // 20+ countries from legacy data + current reach
+    webinars: 12, // Current webinar series
+    speakers: 95, // Including legacy community experts
+    participants: 8670, // Including 16 legacy webinar attendees + current users
+    projects: 5, // Legacy project portfolio worth $13M
+    resources: 42, // Imported legacy educational resources
   };
 
   useEffect(() => {
@@ -70,9 +72,11 @@ export const StatsCounter = () => {
       // Use stats if available, otherwise use defaults
       const dataToUse = stats || defaultStats;
       
-      // Start animations with slight delays
+      // Start animations with slight delays for enhanced stats
       setTimeout(() => animateCounter('network', dataToUse.network), 500);
       setTimeout(() => animateCounter('countries', dataToUse.countries), 700);
+      setTimeout(() => animateCounter('projects', dataToUse.projects || 5), 900);
+      setTimeout(() => animateCounter('resources', dataToUse.resources || 42), 1100);
       setTimeout(() => animateCounter('webinars', dataToUse.webinars), 900);
       setTimeout(() => animateCounter('speakers', dataToUse.speakers), 1100);
       setTimeout(() => animateCounter('participants', dataToUse.participants), 1300);

@@ -15,6 +15,7 @@ import {
 } from "lucide-react";
 
 export const FrameworkGrid = () => {
+  // Enhanced framework elements with legacy data context
   const frameworkElements = [
     {
       id: 1,

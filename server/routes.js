@@ -14,6 +14,37 @@ import {
 export async function registerRoutes(app) {
   const router = Router();
 
+  // Legacy data endpoints for frontend integration
+  router.get("/api/legacy/resources", async (req, res) => {
+    try {
+      const legacyResources = await storage.getLegacyResources();
+      res.json({ data: legacyResources || [] });
+    } catch (error) {
+      console.error("Error fetching legacy resources:", error);
+      res.status(500).json({ message: "Failed to fetch legacy resources" });
+    }
+  });
+
+  router.get("/api/legacy/projects", async (req, res) => {
+    try {
+      const legacyProjects = await storage.getLegacyProjects();
+      res.json({ data: legacyProjects || [] });
+    } catch (error) {
+      console.error("Error fetching legacy projects:", error);
+      res.status(500).json({ message: "Failed to fetch legacy projects" });
+    }
+  });
+
+  router.get("/api/legacy/data", async (req, res) => {
+    try {
+      const legacyData = await storage.getLegacyData();
+      res.json({ data: legacyData || {} });
+    } catch (error) {
+      console.error("Error fetching legacy data:", error);
+      res.status(500).json({ message: "Failed to fetch legacy data" });
+    }
+  });
+
   // Authentication endpoints
   router.post("/api/auth/register", async (req, res) => {
     try {

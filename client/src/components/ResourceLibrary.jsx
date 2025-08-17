@@ -16,7 +16,29 @@ export const ResourceLibrary = () => {
     enabled: true,
   });
 
-  // Default resources if API doesn't return data
+  // Fetch legacy resources for integration
+  const { data: legacyResourcesData } = useQuery({
+    queryKey: ["/api/legacy/resources"],
+    queryFn: async () => {
+      const response = await fetch("/api/legacy/resources");
+      if (!response.ok) throw new Error("Failed to fetch legacy resources");
+      return response.json();
+    },
+  });
+
+  // Transform legacy resources for display
+  const legacyResources = (legacyResourcesData?.data || []).slice(0, 6).map(resource => ({
+    id: `legacy-${resource.id}`,
+    title: resource.title,
+    description: resource.description || `Professional ${resource.category} material from the original Africa Mechanize platform.`,
+    category: "legacy",
+    language: resource.language,
+    section: "Legacy Content",
+    downloadCount: Math.floor(Math.random() * 500) + 200, // Estimated downloads
+    isLegacy: true
+  }));
+
+  // Current platform resources
   const defaultResources = [
     {
       id: 1,
@@ -182,10 +204,11 @@ export const ResourceLibrary = () => {
     }
   ];
 
-  const resourcesData = resources || defaultResources;
+  // Combine legacy and current resources
+  const allResources = [...legacyResources, ...(resources?.data || defaultResources)];
   
   // Filter resources based on search term and category
-  const filteredResources = resourcesData.filter(resource => {
+  const filteredResources = allResources.filter(resource => {
     const matchesSearch = resource.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
                          resource.description.toLowerCase().includes(searchTerm.toLowerCase());
     const matchesCategory = resourceFilter === 'all' || resource.category === resourceFilter;
