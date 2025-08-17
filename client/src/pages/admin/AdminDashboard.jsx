@@ -73,6 +73,18 @@ export default function AdminDashboard() {
   const [statsFormData, setStatsFormData] = useState({});
   const [contactFilter, setContactFilter] = useState("all");
   const [userSearch, setUserSearch] = useState("");
+  
+  // Content Management States
+  const [activeTab, setActiveTab] = useState("dashboard");
+  const [isCreateNewsEventOpen, setIsCreateNewsEventOpen] = useState(false);
+  const [isEditNewsEventOpen, setIsEditNewsEventOpen] = useState(false);
+  const [editingNewsEvent, setEditingNewsEvent] = useState(null);
+  const [isCreateResourceOpen, setIsCreateResourceOpen] = useState(false);
+  const [isEditResourceOpen, setIsEditResourceOpen] = useState(false);
+  const [editingResource, setEditingResource] = useState(null);
+  const [isCreateWebinarResourceOpen, setIsCreateWebinarResourceOpen] = useState(false);
+  const [isEditWebinarResourceOpen, setIsEditWebinarResourceOpen] = useState(false);
+  const [editingWebinarResource, setEditingWebinarResource] = useState(null);
   const [newWebinarData, setNewWebinarData] = useState({
     title: "",
     description: "",
@@ -122,6 +134,40 @@ export default function AdminDashboard() {
     },
   });
 
+  // Content Management Queries
+  const { data: newsEvents, refetch: refetchNewsEvents } = useQuery({
+    queryKey: ["/api/admin/news"],
+    queryFn: async () => {
+      const response = await fetch("/api/admin/news", {
+        headers: getAuthHeaders(),
+      });
+      if (!response.ok) throw new Error("Failed to fetch news events");
+      return response.json();
+    },
+  });
+
+  const { data: resources, refetch: refetchResources } = useQuery({
+    queryKey: ["/api/admin/resources"],
+    queryFn: async () => {
+      const response = await fetch("/api/admin/resources", {
+        headers: getAuthHeaders(),
+      });
+      if (!response.ok) throw new Error("Failed to fetch resources");
+      return response.json();
+    },
+  });
+
+  const { data: webinarResources, refetch: refetchWebinarResources } = useQuery({
+    queryKey: ["/api/admin/webinar-resources"],
+    queryFn: async () => {
+      const response = await fetch("/api/admin/webinar-resources", {
+        headers: getAuthHeaders(),
+      });
+      if (!response.ok) throw new Error("Failed to fetch webinar resources");
+      return response.json();
+    },
+  });
+
   const { data: contacts, refetch: refetchContacts } = useQuery({
     queryKey: ["/api/admin/contacts"],
     queryFn: async () => {
@@ -136,6 +182,8 @@ export default function AdminDashboard() {
   const { data: siteStats } = useQuery({
     queryKey: ["/api/statistics"],
   });
+
+
 
   const handleLogout = () => {
     localStorage.removeItem("adminToken");
@@ -418,13 +466,16 @@ export default function AdminDashboard() {
           </Card>
 
           {/* Management Tabs */}
-          <Tabs defaultValue="users" className="space-y-6">
-            <TabsList className="grid w-full grid-cols-5">
+          <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
+            <TabsList className="grid w-full grid-cols-8">
+              <TabsTrigger value="dashboard">Dashboard</TabsTrigger>
               <TabsTrigger value="users">Users</TabsTrigger>
               <TabsTrigger value="webinars">Webinars</TabsTrigger>
               <TabsTrigger value="contacts">Contacts</TabsTrigger>
+              <TabsTrigger value="news-events">News & Events</TabsTrigger>
+              <TabsTrigger value="resources">Resources</TabsTrigger>
+              <TabsTrigger value="webinar-resources">Webinar Files</TabsTrigger>
               <TabsTrigger value="content">Content</TabsTrigger>
-              <TabsTrigger value="settings">Settings</TabsTrigger>
             </TabsList>
 
             {/* Users Management */}
@@ -1084,6 +1135,307 @@ export default function AdminDashboard() {
                   </CardContent>
                 </Card>
               </div>
+            </TabsContent>
+
+            {/* News & Events Management */}
+            <TabsContent value="news-events" className="space-y-6">
+              <Card>
+                <CardHeader className="flex flex-row items-center justify-between">
+                  <div>
+                    <CardTitle>News & Events Management</CardTitle>
+                    <CardDescription>Create and manage news articles and events</CardDescription>
+                  </div>
+                  <Dialog open={isCreateNewsEventOpen} onOpenChange={setIsCreateNewsEventOpen}>
+                    <DialogTrigger asChild>
+                      <Button data-testid="button-create-news-event">
+                        <Plus className="w-4 h-4 mr-2" />
+                        Add News/Event
+                      </Button>
+                    </DialogTrigger>
+                    <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
+                      <DialogHeader>
+                        <DialogTitle>Create News/Event</DialogTitle>
+                        <DialogDescription>Add new news article or event</DialogDescription>
+                      </DialogHeader>
+                      <div className="space-y-4">
+                        <div>
+                          <Label htmlFor="title">Title</Label>
+                          <Input id="title" placeholder="Enter title..." data-testid="input-news-title" />
+                        </div>
+                        <div>
+                          <Label htmlFor="eventType">Type</Label>
+                          <Select>
+                            <SelectTrigger>
+                              <SelectValue placeholder="Select type" />
+                            </SelectTrigger>
+                            <SelectContent>
+                              <SelectItem value="news">News</SelectItem>
+                              <SelectItem value="conference">Conference</SelectItem>
+                              <SelectItem value="workshop">Workshop</SelectItem>
+                              <SelectItem value="meeting">Meeting</SelectItem>
+                              <SelectItem value="announcement">Announcement</SelectItem>
+                            </SelectContent>
+                          </Select>
+                        </div>
+                        <div>
+                          <Label htmlFor="content">Content</Label>
+                          <Textarea id="content" rows={6} placeholder="Enter content..." data-testid="textarea-news-content" />
+                        </div>
+                        <div className="grid grid-cols-2 gap-4">
+                          <div>
+                            <Label htmlFor="eventDate">Event Date</Label>
+                            <Input id="eventDate" type="datetime-local" data-testid="input-event-date" />
+                          </div>
+                          <div>
+                            <Label htmlFor="location">Location</Label>
+                            <Input id="location" placeholder="Event location..." data-testid="input-event-location" />
+                          </div>
+                        </div>
+                        <Button data-testid="button-save-news-event">
+                          Create News/Event
+                        </Button>
+                      </div>
+                    </DialogContent>
+                  </Dialog>
+                </CardHeader>
+                <CardContent>
+                  <div className="space-y-4">
+                    {newsEvents?.map((item) => (
+                      <div key={item.id} className="p-4 border rounded-lg hover:bg-gray-50 dark:hover:bg-gray-800">
+                        <div className="flex items-start justify-between">
+                          <div className="flex-1">
+                            <div className="flex items-center space-x-2 mb-2">
+                              <h4 className="font-medium">{item.title}</h4>
+                              <Badge variant="outline">{item.eventType}</Badge>
+                              <Badge variant={item.status === "published" ? "default" : "secondary"}>
+                                {item.status}
+                              </Badge>
+                            </div>
+                            <p className="text-sm text-muted-foreground mb-2">
+                              {item.excerpt || item.content?.substring(0, 150) + '...'}
+                            </p>
+                            {item.eventDate && (
+                              <p className="text-xs text-muted-foreground">
+                                Event Date: {new Date(item.eventDate).toLocaleDateString()}
+                              </p>
+                            )}
+                          </div>
+                          <div className="flex items-center space-x-2">
+                            <Button size="sm" variant="outline" data-testid={`button-edit-news-${item.id}`}>
+                              <Edit className="w-3 h-3" />
+                            </Button>
+                            <Button size="sm" variant="outline" data-testid={`button-delete-news-${item.id}`}>
+                              <Trash2 className="w-3 h-3" />
+                            </Button>
+                          </div>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </CardContent>
+              </Card>
+            </TabsContent>
+
+            {/* Resources Management */}
+            <TabsContent value="resources" className="space-y-6">
+              <Card>
+                <CardHeader className="flex flex-row items-center justify-between">
+                  <div>
+                    <CardTitle>Resources Management</CardTitle>
+                    <CardDescription>Manage documents, guides, and other resources</CardDescription>
+                  </div>
+                  <Dialog open={isCreateResourceOpen} onOpenChange={setIsCreateResourceOpen}>
+                    <DialogTrigger asChild>
+                      <Button data-testid="button-create-resource">
+                        <Plus className="w-4 h-4 mr-2" />
+                        Add Resource
+                      </Button>
+                    </DialogTrigger>
+                    <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
+                      <DialogHeader>
+                        <DialogTitle>Create Resource</DialogTitle>
+                        <DialogDescription>Add new resource or document</DialogDescription>
+                      </DialogHeader>
+                      <div className="space-y-4">
+                        <div>
+                          <Label htmlFor="resourceTitle">Title</Label>
+                          <Input id="resourceTitle" placeholder="Enter resource title..." data-testid="input-resource-title" />
+                        </div>
+                        <div>
+                          <Label htmlFor="resourceType">Type</Label>
+                          <Select>
+                            <SelectTrigger>
+                              <SelectValue placeholder="Select type" />
+                            </SelectTrigger>
+                            <SelectContent>
+                              <SelectItem value="document">Document</SelectItem>
+                              <SelectItem value="video">Video</SelectItem>
+                              <SelectItem value="tool">Tool</SelectItem>
+                              <SelectItem value="link">Link</SelectItem>
+                              <SelectItem value="research">Research</SelectItem>
+                              <SelectItem value="guide">Guide</SelectItem>
+                            </SelectContent>
+                          </Select>
+                        </div>
+                        <div>
+                          <Label htmlFor="resourceDescription">Description</Label>
+                          <Textarea id="resourceDescription" rows={4} placeholder="Enter description..." data-testid="textarea-resource-description" />
+                        </div>
+                        <div className="grid grid-cols-2 gap-4">
+                          <div>
+                            <Label htmlFor="fileUrl">File URL</Label>
+                            <Input id="fileUrl" placeholder="https://..." data-testid="input-resource-url" />
+                          </div>
+                          <div>
+                            <Label htmlFor="category">Category</Label>
+                            <Input id="category" placeholder="Resource category..." data-testid="input-resource-category" />
+                          </div>
+                        </div>
+                        <Button data-testid="button-save-resource">
+                          Create Resource
+                        </Button>
+                      </div>
+                    </DialogContent>
+                  </Dialog>
+                </CardHeader>
+                <CardContent>
+                  <div className="space-y-4">
+                    {resources?.map((resource) => (
+                      <div key={resource.id} className="p-4 border rounded-lg hover:bg-gray-50 dark:hover:bg-gray-800">
+                        <div className="flex items-start justify-between">
+                          <div className="flex-1">
+                            <div className="flex items-center space-x-2 mb-2">
+                              <h4 className="font-medium">{resource.title}</h4>
+                              <Badge variant="outline">{resource.resourceType}</Badge>
+                              {resource.category && (
+                                <Badge variant="secondary">{resource.category}</Badge>
+                              )}
+                            </div>
+                            <p className="text-sm text-muted-foreground mb-2">
+                              {resource.description?.substring(0, 150) + '...'}
+                            </p>
+                            <div className="flex items-center space-x-4 text-xs text-muted-foreground">
+                              <span>Downloads: {resource.downloadCount || 0}</span>
+                              {resource.author && <span>By: {resource.author}</span>}
+                            </div>
+                          </div>
+                          <div className="flex items-center space-x-2">
+                            <Button size="sm" variant="outline" data-testid={`button-edit-resource-${resource.id}`}>
+                              <Edit className="w-3 h-3" />
+                            </Button>
+                            <Button size="sm" variant="outline" data-testid={`button-delete-resource-${resource.id}`}>
+                              <Trash2 className="w-3 h-3" />
+                            </Button>
+                          </div>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </CardContent>
+              </Card>
+            </TabsContent>
+
+            {/* Webinar Resources Management */}
+            <TabsContent value="webinar-resources" className="space-y-6">
+              <Card>
+                <CardHeader className="flex flex-row items-center justify-between">
+                  <div>
+                    <CardTitle>Webinar Presentations & Downloads</CardTitle>
+                    <CardDescription>Manage webinar presentations, slides, and downloadable materials</CardDescription>
+                  </div>
+                  <Dialog open={isCreateWebinarResourceOpen} onOpenChange={setIsCreateWebinarResourceOpen}>
+                    <DialogTrigger asChild>
+                      <Button data-testid="button-create-webinar-resource">
+                        <Plus className="w-4 h-4 mr-2" />
+                        Add Webinar Resource
+                      </Button>
+                    </DialogTrigger>
+                    <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
+                      <DialogHeader>
+                        <DialogTitle>Create Webinar Resource</DialogTitle>
+                        <DialogDescription>Add presentation or downloadable material for a webinar</DialogDescription>
+                      </DialogHeader>
+                      <div className="space-y-4">
+                        <div>
+                          <Label htmlFor="webinarSelect">Webinar</Label>
+                          <Select>
+                            <SelectTrigger>
+                              <SelectValue placeholder="Select webinar" />
+                            </SelectTrigger>
+                            <SelectContent>
+                              {webinars?.map((webinar) => (
+                                <SelectItem key={webinar.id} value={webinar.id.toString()}>
+                                  {webinar.title}
+                                </SelectItem>
+                              ))}
+                            </SelectContent>
+                          </Select>
+                        </div>
+                        <div>
+                          <Label htmlFor="resourceTitle">Resource Title</Label>
+                          <Input id="resourceTitle" placeholder="Enter resource title..." data-testid="input-webinar-resource-title" />
+                        </div>
+                        <div>
+                          <Label htmlFor="webinarResourceType">Type</Label>
+                          <Select>
+                            <SelectTrigger>
+                              <SelectValue placeholder="Select type" />
+                            </SelectTrigger>
+                            <SelectContent>
+                              <SelectItem value="presentation">Presentation</SelectItem>
+                              <SelectItem value="download">Download</SelectItem>
+                              <SelectItem value="link">Link</SelectItem>
+                              <SelectItem value="video">Video</SelectItem>
+                            </SelectContent>
+                          </Select>
+                        </div>
+                        <div>
+                          <Label htmlFor="webinarResourceUrl">File URL</Label>
+                          <Input id="webinarResourceUrl" placeholder="https://..." data-testid="input-webinar-resource-url" />
+                        </div>
+                        <div>
+                          <Label htmlFor="webinarResourceDescription">Description</Label>
+                          <Textarea id="webinarResourceDescription" rows={3} placeholder="Enter description..." data-testid="textarea-webinar-resource-description" />
+                        </div>
+                        <Button data-testid="button-save-webinar-resource">
+                          Create Webinar Resource
+                        </Button>
+                      </div>
+                    </DialogContent>
+                  </Dialog>
+                </CardHeader>
+                <CardContent>
+                  <div className="space-y-4">
+                    {webinarResources?.map((resource) => (
+                      <div key={resource.id} className="p-4 border rounded-lg hover:bg-gray-50 dark:hover:bg-gray-800">
+                        <div className="flex items-start justify-between">
+                          <div className="flex-1">
+                            <div className="flex items-center space-x-2 mb-2">
+                              <h4 className="font-medium">{resource.title}</h4>
+                              <Badge variant="outline">{resource.resourceType}</Badge>
+                            </div>
+                            <p className="text-sm text-muted-foreground mb-2">
+                              {resource.description}
+                            </p>
+                            <div className="flex items-center space-x-4 text-xs text-muted-foreground">
+                              <span>Downloads: {resource.downloadCount || 0}</span>
+                              <span>Webinar ID: {resource.webinarId}</span>
+                            </div>
+                          </div>
+                          <div className="flex items-center space-x-2">
+                            <Button size="sm" variant="outline" data-testid={`button-edit-webinar-resource-${resource.id}`}>
+                              <Edit className="w-3 h-3" />
+                            </Button>
+                            <Button size="sm" variant="outline" data-testid={`button-delete-webinar-resource-${resource.id}`}>
+                              <Trash2 className="w-3 h-3" />
+                            </Button>
+                          </div>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </CardContent>
+              </Card>
             </TabsContent>
 
             {/* Settings */}

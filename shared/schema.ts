@@ -143,6 +143,51 @@ export const statistics = pgTable("statistics", {
   updatedAt: timestamp("updated_at").defaultNow(),
 });
 
+// News & Events
+export const newsEvents = pgTable("news_events", {
+  id: serial("id").primaryKey(),
+  title: varchar("title", { length: 255 }).notNull(),
+  slug: varchar("slug", { length: 255 }).unique().notNull(),
+  content: text("content").notNull(),
+  excerpt: varchar("excerpt", { length: 500 }),
+  eventType: varchar("event_type", { length: 50 }).notNull(), // news, conference, workshop, meeting, announcement
+  eventDate: timestamp("event_date"),
+  eventLocation: varchar("event_location", { length: 255 }),
+  eventOrganizer: varchar("event_organizer", { length: 255 }),
+  featuredImage: varchar("featured_image", { length: 500 }),
+  author: varchar("author", { length: 255 }),
+  tags: text("tags").array(),
+  category: varchar("category", { length: 100 }),
+  status: varchar("status", { length: 20 }).default("published"), // draft, published, archived
+  isPublic: boolean("is_public").default(true),
+  viewCount: integer("view_count").default(0),
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+});
+
+// General Resources (beyond webinar-specific resources)
+export const resources = pgTable("resources", {
+  id: serial("id").primaryKey(),
+  title: varchar("title", { length: 255 }).notNull(),
+  description: text("description"),
+  resourceType: varchar("resource_type", { length: 50 }).notNull(), // document, video, tool, link, research, guide
+  category: varchar("category", { length: 100 }),
+  fileUrl: varchar("file_url", { length: 500 }),
+  fileName: varchar("file_name", { length: 255 }),
+  fileSize: integer("file_size"), // in bytes
+  language: varchar("language", { length: 10 }).default("en"),
+  downloadCount: integer("download_count").default(0),
+  requiresAuth: boolean("requires_auth").default(false),
+  isPublic: boolean("is_public").default(true),
+  tags: text("tags").array(),
+  author: varchar("author", { length: 255 }),
+  publishedDate: timestamp("published_date").defaultNow(),
+  featuredImage: varchar("featured_image", { length: 500 }),
+  sortOrder: integer("sort_order").default(0),
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+});
+
 // Admin Users
 export const adminUsers = pgTable("admin_users", {
   id: serial("id").primaryKey(),
@@ -214,6 +259,20 @@ export const insertStatisticsSchema = createInsertSchema(statistics).omit({
   updatedAt: true,
 });
 
+export const insertNewsEventSchema = createInsertSchema(newsEvents).omit({
+  id: true,
+  createdAt: true,
+  updatedAt: true,
+  viewCount: true,
+});
+
+export const insertResourceSchema = createInsertSchema(resources).omit({
+  id: true,
+  createdAt: true,
+  updatedAt: true,
+  downloadCount: true,
+});
+
 export const insertAdminUserSchema = createInsertSchema(adminUsers).omit({
   id: true,
   createdAt: true,
@@ -248,6 +307,12 @@ export type InsertContactForm = z.infer<typeof insertContactFormSchema>;
 
 export type Statistics = typeof statistics.$inferSelect;
 export type InsertStatistics = z.infer<typeof insertStatisticsSchema>;
+
+export type NewsEvent = typeof newsEvents.$inferSelect;
+export type InsertNewsEvent = z.infer<typeof insertNewsEventSchema>;
+
+export type Resource = typeof resources.$inferSelect;
+export type InsertResource = z.infer<typeof insertResourceSchema>;
 
 export type AdminUser = typeof adminUsers.$inferSelect;
 export type InsertAdminUser = z.infer<typeof insertAdminUserSchema>;

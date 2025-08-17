@@ -278,4 +278,160 @@ router.post("/update-stats", verifyAdminToken, async (req, res) => {
   }
 });
 
+// =====================
+// NEWS & EVENTS MANAGEMENT
+// =====================
+
+// Get all news & events
+router.get("/news-events", verifyAdminToken, async (req, res) => {
+  try {
+    const newsEvents = await storage.getAllNewsEvents();
+    res.json(newsEvents);
+  } catch (error) {
+    console.error("Get news & events error:", error);
+    res.status(500).json({ error: "Failed to fetch news & events" });
+  }
+});
+
+// Create news & event
+router.post("/news-events", verifyAdminToken, async (req, res) => {
+  try {
+    const newsEventData = req.body;
+    const newsEvent = await storage.createNewsEvent(newsEventData);
+    res.json(newsEvent);
+  } catch (error) {
+    console.error("Create news & event error:", error);
+    res.status(500).json({ error: "Failed to create news & event" });
+  }
+});
+
+// Update news & event
+router.put("/news-events/:id", verifyAdminToken, async (req, res) => {
+  try {
+    const newsEventId = parseInt(req.params.id);
+    const newsEventData = req.body;
+    const newsEvent = await storage.updateNewsEvent(newsEventId, newsEventData);
+    res.json(newsEvent);
+  } catch (error) {
+    console.error("Update news & event error:", error);
+    res.status(500).json({ error: "Failed to update news & event" });
+  }
+});
+
+// Delete news & event
+router.delete("/news-events/:id", verifyAdminToken, async (req, res) => {
+  try {
+    const newsEventId = parseInt(req.params.id);
+    await storage.deleteNewsEvent(newsEventId);
+    res.json({ message: "News & event deleted successfully" });
+  } catch (error) {
+    console.error("Delete news & event error:", error);
+    res.status(500).json({ error: "Failed to delete news & event" });
+  }
+});
+
+// =====================
+// RESOURCES MANAGEMENT
+// =====================
+
+// Get all resources
+router.get("/resources", verifyAdminToken, async (req, res) => {
+  try {
+    const resources = await storage.getAllResources();
+    res.json(resources);
+  } catch (error) {
+    console.error("Get resources error:", error);
+    res.status(500).json({ error: "Failed to fetch resources" });
+  }
+});
+
+// Create resource
+router.post("/resources", verifyAdminToken, async (req, res) => {
+  try {
+    const resourceData = req.body;
+    const resource = await storage.createResource(resourceData);
+    res.json(resource);
+  } catch (error) {
+    console.error("Create resource error:", error);
+    res.status(500).json({ error: "Failed to create resource" });
+  }
+});
+
+// Update resource
+router.put("/resources/:id", verifyAdminToken, async (req, res) => {
+  try {
+    const resourceId = parseInt(req.params.id);
+    const resourceData = req.body;
+    const resource = await storage.updateResource(resourceId, resourceData);
+    res.json(resource);
+  } catch (error) {
+    console.error("Update resource error:", error);
+    res.status(500).json({ error: "Failed to update resource" });
+  }
+});
+
+// Delete resource
+router.delete("/resources/:id", verifyAdminToken, async (req, res) => {
+  try {
+    const resourceId = parseInt(req.params.id);
+    await storage.deleteResource(resourceId);
+    res.json({ message: "Resource deleted successfully" });
+  } catch (error) {
+    console.error("Delete resource error:", error);
+    res.status(500).json({ error: "Failed to delete resource" });
+  }
+});
+
+// =====================
+// WEBINAR RESOURCES MANAGEMENT
+// =====================
+
+// Get all webinar resources
+router.get("/webinar-resources", verifyAdminToken, async (req, res) => {
+  try {
+    const webinarResources = await storage.getAllWebinarResources();
+    res.json(webinarResources);
+  } catch (error) {
+    console.error("Get webinar resources error:", error);
+    res.status(500).json({ error: "Failed to fetch webinar resources" });
+  }
+});
+
+// Create webinar resource
+router.post("/webinar-resources", verifyAdminToken, async (req, res) => {
+  try {
+    const resourceData = req.body;
+    const resource = await storage.createWebinarResource(resourceData);
+    res.json(resource);
+  } catch (error) {
+    console.error("Create webinar resource error:", error);
+    res.status(500).json({ error: "Failed to create webinar resource" });
+  }
+});
+
+// Update webinar resource
+router.put("/webinar-resources/:id", verifyAdminToken, async (req, res) => {
+  try {
+    const resourceId = parseInt(req.params.id);
+    const resourceData = req.body;
+    const resource = await storage.updateWebinarResource(resourceId, resourceData);
+    res.json(resource);
+  } catch (error) {
+    console.error("Update webinar resource error:", error);
+    res.status(500).json({ error: "Failed to update webinar resource" });
+  }
+});
+
+// Delete webinar resource
+router.delete("/webinar-resources/:id", verifyAdminToken, async (req, res) => {
+  try {
+    const resourceId = parseInt(req.params.id);
+    await storage.deleteWebinarResource(resourceId);
+    res.json({ message: "Webinar resource deleted successfully" });
+  } catch (error) {
+    console.error("Delete webinar resource error:", error);
+    res.status(500).json({ error: "Failed to delete webinar resource" });
+  }
+});
+
 export default router;

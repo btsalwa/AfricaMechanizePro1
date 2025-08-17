@@ -1,9 +1,9 @@
 import { 
   users, frameworkElements, newsletterSubscriptions, contactForms, 
-  webinars, webinarResources, webinarRecordings, webinarRegistrations, statistics, adminUsers
+  webinars, webinarResources, webinarRecordings, webinarRegistrations, statistics, adminUsers, newsEvents, resources
 } from "../shared/schema.js";
 import { db } from "./db.js";
-import { eq, sql } from "drizzle-orm";
+import { eq, sql, desc } from "drizzle-orm";
 
 export class DatabaseStorage {
   // User methods
@@ -316,6 +316,121 @@ export class DatabaseStorage {
 
   async deleteReadingMaterial(id) {
     await db.delete(readingMaterials).where(eq(readingMaterials.id, id));
+  }
+
+  // News & Events Management
+  async getAllNewsEvents() {
+    return await db.select().from(newsEvents).orderBy(desc(newsEvents.createdAt));
+  }
+
+  async getNewsEventById(id) {
+    const [newsEvent] = await db.select().from(newsEvents).where(eq(newsEvents.id, id));
+    return newsEvent;
+  }
+
+  async createNewsEvent(newsEventData) {
+    const [newsEvent] = await db
+      .insert(newsEvents)
+      .values(newsEventData)
+      .returning();
+    return newsEvent;
+  }
+
+  async updateNewsEvent(id, newsEventData) {
+    const [newsEvent] = await db
+      .update(newsEvents)
+      .set({ ...newsEventData, updatedAt: new Date() })
+      .where(eq(newsEvents.id, id))
+      .returning();
+    return newsEvent;
+  }
+
+  async deleteNewsEvent(id) {
+    await db.delete(newsEvents).where(eq(newsEvents.id, id));
+  }
+
+  // General Resources Management (using existing table structure)
+  async getAllResources() {
+    return await db.select().from(resources).orderBy(desc(resources.createdAt));
+  }
+
+  async getResourceById(id) {
+    const [resource] = await db.select().from(resources).where(eq(resources.id, id));
+    return resource;
+  }
+
+  async createResource(resourceData) {
+    // Map new schema fields to existing table columns
+    const existingTableData = {
+      title: resourceData.title,
+      description: resourceData.description,
+      type: resourceData.resourceType || resourceData.type, // map resourceType to type
+      category: resourceData.category,
+      file_url: resourceData.fileUrl || resourceData.file_url,
+      language: resourceData.language || 'en',
+    };
+    
+    const [resource] = await db
+      .insert(resources)
+      .values(existingTableData)
+      .returning();
+    return resource;
+  }
+
+  async updateResource(id, resourceData) {
+    // Map new schema fields to existing table columns
+    const existingTableData = {
+      title: resourceData.title,
+      description: resourceData.description,
+      type: resourceData.resourceType || resourceData.type,
+      category: resourceData.category,
+      file_url: resourceData.fileUrl || resourceData.file_url,
+      language: resourceData.language || 'en',
+      updated_at: new Date()
+    };
+    
+    const [resource] = await db
+      .update(resources)
+      .set(existingTableData)
+      .where(eq(resources.id, id))
+      .returning();
+    return resource;
+  }
+
+  async deleteResource(id) {
+    await db.delete(resources).where(eq(resources.id, id));
+  }
+
+  // Webinar Resources Management
+  async getWebinarResourcesByWebinarId(webinarId) {
+    return await db.select().from(webinarResources)
+      .where(eq(webinarResources.webinarId, webinarId))
+      .orderBy(webinarResources.sortOrder);
+  }
+
+  async getAllWebinarResources() {
+    return await db.select().from(webinarResources).orderBy(desc(webinarResources.createdAt));
+  }
+
+  async createWebinarResource(resourceData) {
+    const [resource] = await db
+      .insert(webinarResources)
+      .values(resourceData)
+      .returning();
+    return resource;
+  }
+
+  async updateWebinarResource(id, resourceData) {
+    const [resource] = await db
+      .update(webinarResources)
+      .set(resourceData)
+      .where(eq(webinarResources.id, id))
+      .returning();
+    return resource;
+  }
+
+  async deleteWebinarResource(id) {
+    await db.delete(webinarResources).where(eq(webinarResources.id, id));
   }
 
   // Mock data methods for new features (to be replaced with real DB methods when schema is ready)
