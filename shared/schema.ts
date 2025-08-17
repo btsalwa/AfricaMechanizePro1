@@ -210,9 +210,15 @@ export type InsertContactForm = z.infer<typeof insertContactFormSchema>;
 // Auth schemas for routes
 export const registerSchema = z.object({
   email: z.string().email(),
-  password: z.string().min(8),
-  firstName: z.string().optional(),
-  lastName: z.string().optional(),
+  password: z.string().min(6),
+  confirmPassword: z.string().min(6),
+  firstName: z.string().min(1, "First name is required"),
+  lastName: z.string().min(1, "Last name is required"),
+  organization: z.string().optional(),
+  country: z.string().optional(),
+}).refine((data) => data.password === data.confirmPassword, {
+  message: "Passwords don't match",
+  path: ["confirmPassword"],
 });
 
 export const loginSchema = z.object({

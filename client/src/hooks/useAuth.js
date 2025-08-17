@@ -1,4 +1,5 @@
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { useToast } from "@/hooks/use-toast";
 
 export function useAuth() {
   const { data: user, isLoading } = useQuery({
@@ -13,41 +14,12 @@ export function useAuth() {
   };
 }
 
-export function useLogout() {
-  const logout = () => {
-    window.location.href = '/api/auth/logout';
-  };
-
-  return { logout };
-}
-
-export function useForgotPassword() {
-  const sendResetLink = async (email) => {
-    try {
-      const response = await fetch('/api/auth/forgot-password', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ email }),
-      });
-      
-      if (!response.ok) {
-        throw new Error('Failed to send reset link');
-      }
-      
-      return { success: true };
-    } catch (error) {
-      throw new Error(error.message || 'Failed to send reset link');
-    }
-  };
-
-  return { sendResetLink };
-}
-
 export function useLogin() {
-  const login = async (credentials) => {
-    try {
+  const { toast } = useToast();
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async (credentials) => {
       const response = await fetch('/api/auth/login', {
         method: 'POST',
         headers: {
@@ -61,23 +33,33 @@ export function useLogin() {
         throw new Error(error.message || 'Login failed');
       }
       
-      const data = await response.json();
-      
-      // Redirect to home or intended page
-      window.location.href = '/';
-      
-      return data;
-    } catch (error) {
-      throw new Error(error.message || 'Login failed');
-    }
-  };
-
-  return { login };
+      return response.json();
+    },
+    onSuccess: (data) => {
+      toast({
+        title: "Login successful",
+        description: "Welcome back!",
+      });
+      // Refresh user data
+      queryClient.invalidateQueries({ queryKey: ["/api/auth/user"] });
+      // Redirect after successful login
+      setTimeout(() => window.location.href = '/', 100);
+    },
+    onError: (error) => {
+      toast({
+        title: "Login failed",
+        description: error.message || "Invalid credentials",
+        variant: "destructive",
+      });
+    },
+  });
 }
 
 export function useRegister() {
-  const register = async (userData) => {
-    try {
+  const { toast } = useToast();
+
+  return useMutation({
+    mutationFn: async (userData) => {
       const response = await fetch('/api/auth/register', {
         method: 'POST',
         headers: {
@@ -91,18 +73,94 @@ export function useRegister() {
         throw new Error(error.message || 'Registration failed');
       }
       
-      const data = await response.json();
-      
-      // Redirect to login or verification page
-      window.location.href = '/login';
-      
-      return data;
-    } catch (error) {
-      throw new Error(error.message || 'Registration failed');
-    }
-  };
+      return response.json();
+    },
+    onSuccess: (data) => {
+      toast({
+        title: "Registration successful",
+        description: "Please check your email to verify your account.",
+      });
+    },
+    onError: (error) => {
+      toast({
+        title: "Registration failed",
+        description: error.message || "Please try again",
+        variant: "destructive",
+      });
+    },
+  });
+}
 
-  return { register };
+export function useForgotPassword() {
+  const { toast } = useToast();
+
+  return useMutation({
+    mutationFn: async (email) => {
+      const response = await fetch('/api/auth/forgot-password', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ email }),
+      });
+      
+      if (!response.ok) {
+        const error = await response.json();
+        throw new Error(error.message || 'Failed to send reset link');
+      }
+      
+      return response.json();
+    },
+    onSuccess: () => {
+      toast({
+        title: "Reset link sent",
+        description: "Check your email for password reset instructions.",
+      });
+    },
+    onError: (error) => {
+      toast({
+        title: "Failed to send reset link",
+        description: error.message || "Please try again",
+        variant: "destructive",
+      });
+    },
+  });
+}
+
+export function useLogout() {
+  const { toast } = useToast();
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async () => {
+      const response = await fetch('/api/auth/logout', {
+        method: 'POST',
+      });
+      
+      if (!response.ok) {
+        throw new Error('Logout failed');
+      }
+      
+      return response.json();
+    },
+    onSuccess: () => {
+      toast({
+        title: "Logged out",
+        description: "You have been successfully logged out.",
+      });
+      // Clear user data
+      queryClient.removeQueries({ queryKey: ["/api/auth/user"] });
+      // Redirect to home
+      window.location.href = '/';
+    },
+    onError: (error) => {
+      toast({
+        title: "Logout failed",
+        description: error.message || "Please try again",
+        variant: "destructive",
+      });
+    },
+  });
 }
 
 export function useResetPassword() {
