@@ -8,7 +8,7 @@ import { useAuth } from "@/hooks/useAuth";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
-import { 
+import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
@@ -23,7 +23,21 @@ import {
 //   DialogTitle,
 //   DialogTrigger,
 // } from "@/components/ui/dialog";
-import { Sprout, Menu, X, LogIn, UserPlus, ChevronDown, Search, Globe, Users, Calendar, BookOpen, Bell, Star } from "lucide-react";
+import {
+  Sprout,
+  Menu,
+  X,
+  LogIn,
+  UserPlus,
+  ChevronDown,
+  Search,
+  Globe,
+  Users,
+  Calendar,
+  BookOpen,
+  Bell,
+  Star,
+} from "lucide-react";
 
 export const Header = () => {
   const [location] = useLocation();
@@ -44,26 +58,38 @@ export const Header = () => {
 
   const navItems = [
     { href: "/", label: "Home" },
-    { 
-      href: "/framework", 
-      label: "Framework", 
+    {
+      href: "/framework",
+      label: "Framework",
       dropdown: [
         { href: "/framework/farm-power", label: "Farm Power" },
-        { href: "/framework/innovative-financing", label: "Innovative Financing" },
-        { href: "/framework/sustainable-systems", label: "Sustainable Systems" },
-        { href: "/framework/mechanization", label: "Sustainable Mechanization" },
-        { href: "/framework/social-sustainability", label: "Social Sustainability" },
+        {
+          href: "/framework/innovative-financing",
+          label: "Innovative Financing",
+        },
+        {
+          href: "/framework/sustainable-systems",
+          label: "Sustainable Systems",
+        },
+        {
+          href: "/framework/mechanization",
+          label: "Sustainable Mechanization",
+        },
+        {
+          href: "/framework/social-sustainability",
+          label: "Social Sustainability",
+        },
         { href: "/framework/human-resources", label: "Human Resources" },
-      ]
+      ],
     },
-    { 
-      href: "/webinars", 
-      label: "Webinars", 
+    {
+      href: "/webinars",
+      label: "Webinars",
       dropdown: [
         { href: "/webinars", label: "All Webinars" },
         { href: "/webinars/upcoming", label: "Upcoming" },
         { href: "/webinars/presentations", label: "Downloads" },
-      ]
+      ],
     },
     { href: "/news", label: "News" },
     { href: "/resources", label: "Resources" },
@@ -74,7 +100,11 @@ export const Header = () => {
   const quickSearchResults = [
     { title: "F-SAMA Framework", href: "/resources", type: "Document" },
     { title: "Upcoming Webinars", href: "/webinars/upcoming", type: "Events" },
-    { title: "Farm Power Solutions", href: "/framework/farm-power", type: "Framework" },
+    {
+      title: "Farm Power Solutions",
+      href: "/framework/farm-power",
+      type: "Framework",
+    },
     { title: "Latest Newsletter", href: "/resources", type: "Publication" },
   ];
 
@@ -90,26 +120,34 @@ export const Header = () => {
   return (
     <>
       {/* Scroll Progress Indicator */}
-      <div 
+      <div
         className="fixed top-0 left-0 w-full h-1 bg-gradient-to-r from-primary via-secondary to-primary z-50 transform-gpu transition-transform duration-300"
-        style={{ transform: `scaleX(${scrollProgress / 100})`, transformOrigin: 'left' }}
+        style={{
+          transform: `scaleX(${scrollProgress / 100})`,
+          transformOrigin: "left",
+        }}
       />
-      
-      {/* Announcement Bar */}
-      <div className="bg-gradient-to-r from-primary to-secondary text-white text-center py-2 text-sm relative z-50">
-        <div className="container mx-auto px-6 flex items-center justify-center gap-2">
-          <Star className="w-4 h-4" />
-          <span>Join our next webinar on Agricultural Mechanization - Register now!</span>
-          <Link href="/webinars/upcoming" className="underline hover:no-underline">
+
+      {/* Compact Announcement Bar */}
+      <div className="bg-gradient-to-r from-primary to-secondary text-white text-center py-1 text-xs relative z-40">
+        <div className="container mx-auto px-4 flex items-center justify-center gap-2">
+          <div className="w-1.5 h-1.5 bg-red-400 rounded-full animate-pulse"></div>
+          <span>
+            Join our next webinar on Agricultural Mechanization - Register now!
+          </span>
+          <Link
+            href="/webinars/upcoming"
+            className="underline hover:no-underline"
+          >
             Learn More
           </Link>
         </div>
       </div>
-      
-      <header 
-        className={`fixed top-8 w-full z-40 transition-all duration-300 ${
-          isScrolled 
-            ? "bg-white/95 dark:bg-gray-900/95 backdrop-blur-md shadow-xl border-b border-gray-200/50 dark:border-gray-700/50" 
+
+      <header
+        className={`fixed top-6 w-full z-40 transition-all duration-300 ${
+          isScrolled
+            ? "bg-white/95 dark:bg-gray-900/95 backdrop-blur-md shadow-xl border-b border-gray-200/50 dark:border-gray-700/50"
             : "bg-white/80 dark:bg-gray-900/80 backdrop-blur-sm shadow-lg"
         }`}
       >
@@ -130,17 +168,22 @@ export const Header = () => {
             {/* Compact Desktop Navigation */}
             <div className="hidden lg:flex items-center space-x-1">
               {navItems.map((item) => {
-                const isActive = location === item.href || (item.dropdown && item.dropdown.some(sub => location === sub.href));
-                
+                const isActive =
+                  location === item.href ||
+                  (item.dropdown &&
+                    item.dropdown.some((sub) => location === sub.href));
+
                 if (item.dropdown) {
                   return (
                     <DropdownMenu key={item.label}>
                       <DropdownMenuTrigger asChild>
-                        <Button 
-                          variant="ghost" 
+                        <Button
+                          variant="ghost"
                           size="sm"
                           className={`font-medium ${
-                            isActive ? "text-primary" : "text-gray-700 dark:text-gray-300 hover:text-primary"
+                            isActive
+                              ? "text-primary"
+                              : "text-gray-700 dark:text-gray-300 hover:text-primary"
                           }`}
                         >
                           {item.label}
@@ -150,7 +193,7 @@ export const Header = () => {
                       <DropdownMenuContent align="start" className="w-56">
                         {item.dropdown.map((dropdownItem) => (
                           <DropdownMenuItem key={dropdownItem.href} asChild>
-                            <Link 
+                            <Link
                               href={dropdownItem.href}
                               className="cursor-pointer"
                             >
@@ -162,14 +205,14 @@ export const Header = () => {
                     </DropdownMenu>
                   );
                 }
-                
+
                 return (
                   <Link
                     key={item.href}
                     href={item.href}
                     className={`px-3 py-2 text-sm font-medium transition-colors rounded-md ${
-                      isActive 
-                        ? "text-primary bg-primary/10" 
+                      isActive
+                        ? "text-primary bg-primary/10"
                         : "text-gray-700 dark:text-gray-300 hover:text-primary hover:bg-primary/5"
                     }`}
                   >
@@ -182,11 +225,11 @@ export const Header = () => {
             {/* Compact Controls */}
             <div className="flex items-center space-x-1">
               {/* Search - Desktop only */}
-              <Button 
-                variant="ghost" 
-                size="sm" 
+              <Button
+                variant="ghost"
+                size="sm"
                 className="hidden xl:flex"
-                onClick={() => window.location.href = '/resources'}
+                onClick={() => (window.location.href = "/resources")}
                 data-testid="button-search"
               >
                 <Search className="w-4 h-4" />
@@ -194,7 +237,7 @@ export const Header = () => {
 
               <LanguageToggle />
               <ThemeToggle />
-              
+
               {/* Authentication */}
               {!isLoading && (
                 <div className="hidden lg:flex items-center space-x-1">
@@ -202,13 +245,22 @@ export const Header = () => {
                     <UserMenu />
                   ) : (
                     <>
-                      <Button variant="ghost" size="sm" asChild data-testid="button-header-login">
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        asChild
+                        data-testid="button-header-login"
+                      >
                         <Link href="/login">
                           <LogIn className="w-4 h-4 lg:mr-1" />
                           <span className="hidden xl:inline">Sign In</span>
                         </Link>
                       </Button>
-                      <Button size="sm" asChild data-testid="button-header-register">
+                      <Button
+                        size="sm"
+                        asChild
+                        data-testid="button-header-register"
+                      >
                         <Link href="/register">
                           <UserPlus className="w-4 h-4 lg:mr-1" />
                           <span className="hidden xl:inline">Join</span>
@@ -218,7 +270,7 @@ export const Header = () => {
                   )}
                 </div>
               )}
-              
+
               {/* Mobile Menu Toggle */}
               <button
                 onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
@@ -242,20 +294,29 @@ export const Header = () => {
                     className="flex items-center gap-2 p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
                   >
                     <Search className="w-4 h-4 text-gray-500" />
-                    <span className="text-gray-700 dark:text-gray-300">Search Resources</span>
+                    <span className="text-gray-700 dark:text-gray-300">
+                      Search Resources
+                    </span>
                   </Link>
                 </div>
 
                 <div className="p-4 space-y-1">
                   {navItems.map((item) => {
-                    const isActive = location === item.href || (item.dropdown && item.dropdown.some(sub => location === sub.href));
-                    
+                    const isActive =
+                      location === item.href ||
+                      (item.dropdown &&
+                        item.dropdown.some((sub) => location === sub.href));
+
                     if (item.dropdown) {
                       return (
                         <div key={item.label} className="space-y-1">
-                          <div className={`p-3 rounded-lg font-medium ${
-                            isActive ? "bg-primary/10 text-primary" : "text-gray-700 dark:text-gray-300"
-                          }`}>
+                          <div
+                            className={`p-3 rounded-lg font-medium ${
+                              isActive
+                                ? "bg-primary/10 text-primary"
+                                : "text-gray-700 dark:text-gray-300"
+                            }`}
+                          >
                             {item.label}
                           </div>
                           <div className="ml-4 space-y-1">
@@ -264,8 +325,8 @@ export const Header = () => {
                                 key={subItem.href}
                                 href={subItem.href}
                                 className={`block p-2 rounded-md text-sm transition-colors ${
-                                  location === subItem.href 
-                                    ? "bg-primary/10 text-primary font-medium" 
+                                  location === subItem.href
+                                    ? "bg-primary/10 text-primary font-medium"
                                     : "text-gray-600 dark:text-gray-400 hover:text-primary hover:bg-primary/5"
                                 }`}
                                 onClick={() => setMobileMenuOpen(false)}
@@ -277,14 +338,14 @@ export const Header = () => {
                         </div>
                       );
                     }
-                    
+
                     return (
                       <Link
                         key={item.href}
                         href={item.href}
                         className={`block p-3 rounded-lg font-medium transition-colors ${
-                          isActive 
-                            ? "bg-primary/10 text-primary" 
+                          isActive
+                            ? "bg-primary/10 text-primary"
                             : "text-gray-700 dark:text-gray-300 hover:text-primary hover:bg-primary/5"
                         }`}
                         onClick={() => setMobileMenuOpen(false)}
@@ -293,7 +354,7 @@ export const Header = () => {
                       </Link>
                     );
                   })}
-                  
+
                   {/* Mobile Authentication */}
                   {!isLoading && (
                     <div className="border-t border-gray-200 dark:border-gray-700 pt-4 mt-4 space-y-2">
@@ -304,8 +365,8 @@ export const Header = () => {
                               {user?.firstName || user?.email}
                             </div>
                           </div>
-                          <Link 
-                            href="/profile" 
+                          <Link
+                            href="/profile"
                             onClick={() => setMobileMenuOpen(false)}
                             className="block p-2 rounded-lg text-gray-700 dark:text-gray-300 hover:text-primary hover:bg-primary/5 transition-colors"
                             data-testid="mobile-link-profile"
@@ -315,16 +376,16 @@ export const Header = () => {
                         </div>
                       ) : (
                         <div className="space-y-2">
-                          <Link 
-                            href="/login" 
+                          <Link
+                            href="/login"
                             onClick={() => setMobileMenuOpen(false)}
                             className="block p-3 text-center bg-primary text-white rounded-lg font-medium"
                             data-testid="mobile-button-login"
                           >
                             Sign In
                           </Link>
-                          <Link 
-                            href="/register" 
+                          <Link
+                            href="/register"
                             onClick={() => setMobileMenuOpen(false)}
                             className="block p-3 text-center border border-primary text-primary rounded-lg font-medium"
                             data-testid="mobile-button-register"
