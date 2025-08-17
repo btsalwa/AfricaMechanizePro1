@@ -438,16 +438,18 @@ export async function registerRoutes(app) {
   // Legacy data migration endpoints
   router.post("/api/migration/import-legacy-data", async (req, res) => {
     try {
-      // Get legacy admin accounts that were already imported
-      const legacyAccounts = await storage.getLegacyAdminAccounts();
-      console.log('Import legacy data - accounts:', legacyAccounts);
+      const { LegacyDataImporter } = await import('./legacyDataImporter.js');
+      const importer = new LegacyDataImporter();
       
-      // Ensure legacyAccounts is an array
-      const accountsArray = Array.isArray(legacyAccounts) ? legacyAccounts : [];
+      // Execute the comprehensive import
+      const importResults = await importer.importAllLegacyContent();
+      
+      // Get updated legacy admin accounts
+      const legacyAccounts = await storage.getLegacyAdminAccounts();
       
       res.json({
         success: true,
-        message: 'Legacy data migration status',
+        message: 'Legacy data import completed successfully',
         summary: {
           adminAccountsImported: legacyAccounts.length,
           legacyAdminAccounts: legacyAccounts.map(acc => ({
@@ -458,15 +460,17 @@ export async function registerRoutes(app) {
             legacyId: acc.legacy_admin_id,
             isActive: acc.is_active
           })),
+          contentImported: importResults.importedCounts,
           migrationStatus: 'completed',
-          note: 'Legacy admin accounts from original africamechanize.org database have been imported and are active'
+          note: 'Comprehensive legacy data import from original africamechanize.org database completed',
+          timestamp: importResults.timestamp
         }
       });
     } catch (error) {
       console.error('Import legacy data error:', error);
       res.status(500).json({
         success: false,
-        message: 'Migration status check failed',
+        message: 'Legacy data import failed',
         error: error.message
       });
     }

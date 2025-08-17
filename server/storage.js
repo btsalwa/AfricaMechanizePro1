@@ -1,6 +1,7 @@
 import { 
   users, frameworkElements, newsletterSubscriptions, contactForms, 
-  webinars, webinarResources, webinarRecordings, webinarRegistrations, statistics, adminUsers, newsEvents, resources
+  webinars, webinarResources, webinarRecordings, webinarRegistrations, statistics, adminUsers, newsEvents, resources,
+  legacyAdminAccounts, legacyResources, legacyWebinarAttendees, legacyProjects, legacyMembership
 } from "../shared/schema.js";
 import { db } from "./db.js";
 import { eq, sql, desc } from "drizzle-orm";

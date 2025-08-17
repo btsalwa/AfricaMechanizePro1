@@ -204,6 +204,21 @@ export const adminUsers = pgTable("admin_users", {
   updatedAt: timestamp("updated_at").defaultNow(),
 });
 
+// Legacy Admin Accounts from Original Database
+export const legacyAdminAccounts = pgTable("legacy_admin_accounts", {
+  id: serial("id").primaryKey(),
+  legacyAdminId: integer("legacy_admin_id").unique(),
+  username: varchar("username", { length: 100 }),
+  email: varchar("email", { length: 255 }),
+  fullName: varchar("full_name", { length: 255 }),
+  passwordHash: varchar("password_hash", { length: 255 }),
+  adminType: integer("admin_type"),
+  lastLogin: timestamp("last_login"),
+  isActive: boolean("is_active").default(true),
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow()
+});
+
 // Legacy Resource Library from Original Database
 export const legacyResources = pgTable("legacy_resources", {
   id: serial("id").primaryKey(),
