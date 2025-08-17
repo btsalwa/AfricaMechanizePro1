@@ -29,11 +29,8 @@ export default function AdminResetPassword() {
 
   const resetMutation = useMutation({
     mutationFn: async (data) => {
-      const response = await apiRequest("/api/admin/reset-password", {
-        method: "POST",
-        body: JSON.stringify(data),
-      });
-      return response;
+      const response = await apiRequest("POST", "/api/admin/reset-password", data);
+      return await response.json();
     },
     onSuccess: () => {
       setEmailSent(true);
