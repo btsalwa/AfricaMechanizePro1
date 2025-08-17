@@ -365,6 +365,7 @@ export class DatabaseStorage {
       title: resourceData.title,
       description: resourceData.description,
       type: resourceData.resourceType || resourceData.type, // map resourceType to type
+      resource_type: resourceData.resourceType || resourceData.type, // ensure compatibility
       category: resourceData.category,
       file_url: resourceData.fileUrl || resourceData.file_url,
       language: resourceData.language || 'en',
@@ -383,6 +384,7 @@ export class DatabaseStorage {
       title: resourceData.title,
       description: resourceData.description,
       type: resourceData.resourceType || resourceData.type,
+      resource_type: resourceData.resourceType || resourceData.type, // ensure compatibility
       category: resourceData.category,
       file_url: resourceData.fileUrl || resourceData.file_url,
       language: resourceData.language || 'en',
