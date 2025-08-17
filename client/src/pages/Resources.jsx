@@ -27,8 +27,30 @@ export default function Resources() {
     queryKey: ["/api/webinars"],
   });
 
-  // Sample resources based on actual africamechanize.org content
-  const resources = [
+  // Fetch legacy resources
+  const { data: legacyResourcesData } = useQuery({
+    queryKey: ["/api/legacy/resources"],
+    queryFn: async () => {
+      const response = await fetch("/api/legacy/resources");
+      if (!response.ok) throw new Error("Failed to fetch legacy resources");
+      return response.json();
+    },
+  });
+
+  // Transform legacy resources into display format
+  const legacyResources = (legacyResourcesData?.data || []).map(resource => ({
+    id: `legacy-${resource.id}`,
+    title: resource.title,
+    description: resource.description || `Professional ${resource.category} material imported from the original Africa Mechanize platform.`,
+    type: resource.category,
+    language: resource.language,
+    category: "Legacy Content",
+    isLegacy: true,
+    icon: <FileText className="w-5 h-5" />
+  }));
+
+  // Current platform resources
+  const currentResources = [
     {
       id: 1,
       title: "Sustainable Agricultural Mechanization - A Framework for Africa",
@@ -94,28 +116,31 @@ export default function Resources() {
   // Additional resource categories
   const resourceCategories = [
     {
+      name: "Legacy Educational Resources",
+      count: legacyResources.length,
+      description: "Professional training materials imported from original Africa Mechanize platform"
+    },
+    {
       name: "Framework Documents",
-      count: resources.filter(r => r.type === "Framework Document").length,
+      count: currentResources.filter(r => r.type === "Framework Document").length,
       description: "Core documents outlining the F-SAMA framework and strategic guidelines"
     },
     {
       name: "Webinar Materials",
-      count: resources.filter(r => r.type.includes("Webinar")).length,
+      count: currentResources.filter(r => r.type.includes("Webinar")).length,
       description: "Presentations, recordings, and materials from AfricaMechanize webinars"
     },
     {
       name: "Publications",
-      count: resources.filter(r => r.type === "Newsletter").length,
+      count: currentResources.filter(r => r.type === "Newsletter").length,
       description: "Newsletters, reports, and research publications"
-    },
-    {
-      name: "Policy Documents",
-      count: resources.filter(r => r.type === "Concept Note").length,
-      description: "Policy briefs, concept notes, and strategic documents"
     }
   ];
 
-  const filteredResources = resources.filter(resource => {
+  // Combine all resources
+  const allResources = [...legacyResources, ...currentResources];
+
+  const filteredResources = allResources.filter(resource => {
     const matchesSearch = searchTerm === "" || 
       resource.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
       resource.description.toLowerCase().includes(searchTerm.toLowerCase());
@@ -126,8 +151,8 @@ export default function Resources() {
     return matchesSearch && matchesLanguage && matchesType;
   });
 
-  const languages = [...new Set(resources.map(r => r.language))];
-  const types = [...new Set(resources.map(r => r.type))];
+  const languages = [...new Set(allResources.map(r => r.language))];
+  const types = [...new Set(allResources.map(r => r.type))];
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-gray-50 to-white dark:from-gray-900 dark:to-gray-800 pt-24">
@@ -146,6 +171,62 @@ export default function Resources() {
           </div>
         </div>
       </section>
+
+      {/* Legacy Resources Highlight */}
+      {legacyResources.length > 0 && (
+        <section className="py-12 bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-blue-900/20 dark:to-indigo-900/20">
+          <div className="container mx-auto px-6">
+            <div className="text-center mb-8">
+              <Badge className="mb-4 bg-blue-100 text-blue-700 border-blue-200">
+                ✨ Imported from Original Platform
+              </Badge>
+              <h2 className="text-3xl font-bold text-gray-900 dark:text-white mb-4">
+                Professional Educational Resources
+              </h2>
+              <p className="text-gray-600 dark:text-gray-300 max-w-2xl mx-auto">
+                Access {legacyResources.length} professional training materials and guides imported 
+                from the original Africa Mechanize platform, including multi-language resources 
+                from international organizations.
+              </p>
+            </div>
+            
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 max-w-6xl mx-auto">
+              {legacyResources.slice(0, 6).map((resource) => (
+                <Card key={resource.id} className="hover:shadow-lg transition-all duration-300 border-blue-200">
+                  <CardHeader className="pb-3">
+                    <div className="flex items-center justify-between">
+                      <Badge variant="outline" className="text-xs">{resource.language}</Badge>
+                      <Badge className="bg-blue-100 text-blue-700">{resource.type}</Badge>
+                    </div>
+                    <CardTitle className="text-lg leading-tight">{resource.title}</CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <p className="text-gray-600 dark:text-gray-300 text-sm mb-4 line-clamp-3">
+                      {resource.description}
+                    </p>
+                    <div className="flex items-center justify-between">
+                      <span className="text-xs text-blue-600 font-medium">Legacy Content</span>
+                      <Button size="sm" variant="outline" className="h-8">
+                        <ExternalLink className="w-3 h-3 mr-1" />
+                        View
+                      </Button>
+                    </div>
+                  </CardContent>
+                </Card>
+              ))}
+            </div>
+            
+            {legacyResources.length > 6 && (
+              <div className="text-center mt-8">
+                <Button variant="outline" size="lg">
+                  View All {legacyResources.length} Legacy Resources
+                  <ArrowRight className="w-4 h-4 ml-2" />
+                </Button>
+              </div>
+            )}
+          </div>
+        </section>
+      )}
 
       {/* Resource Categories Overview */}
       <section className="py-16">

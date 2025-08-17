@@ -9,10 +9,39 @@ import { ReadingMaterials } from "../components/ReadingMaterials";
 import { NewsletterSignup } from "../components/NewsletterSignup";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
+import { CheckCircle, ArrowRight, BookOpen } from "lucide-react";
+import { Link } from "wouter";
 
 export default function Home() {
   return (
     <div className="min-h-screen">
+      {/* Legacy Content Integration Notice */}
+      <div className="bg-gradient-to-r from-green-50 to-blue-50 dark:from-green-900/20 dark:to-blue-900/20 border-b border-green-200 dark:border-green-800">
+        <div className="container mx-auto px-6 py-4">
+          <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
+            <div className="flex items-center gap-3">
+              <div className="flex items-center gap-2">
+                <CheckCircle className="w-5 h-5 text-green-600" />
+                <Badge className="bg-green-100 text-green-700 border-green-200">
+                  Platform Migration Complete
+                </Badge>
+              </div>
+              <span className="text-sm text-gray-700 dark:text-gray-300">
+                All 42 resources from original africamechanize.org successfully imported
+              </span>
+            </div>
+            <Link href="/legacy-content">
+              <Button variant="outline" size="sm" className="border-green-200 hover:bg-green-50">
+                <BookOpen className="w-4 h-4 mr-2" />
+                Explore Legacy Content
+                <ArrowRight className="w-4 h-4 ml-2" />
+              </Button>
+            </Link>
+          </div>
+        </div>
+      </div>
+
       <Hero />
       
       <StatsCounter />

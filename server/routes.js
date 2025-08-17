@@ -606,6 +606,78 @@ export async function registerRoutes(app) {
     }
   });
 
+  // Email campaign endpoints for re-engaging legacy community
+  router.post("/api/admin/email-campaign", requireAdmin, async (req, res) => {
+    try {
+      const { subject, message, targetAudience, templateType } = req.body;
+      
+      // Get target emails based on audience selection
+      let targetEmails = [];
+      
+      if (targetAudience === 'legacy-webinar-attendees') {
+        const attendees = await db.select({ 
+          email: legacyWebinarAttendees.email,
+          name: legacyWebinarAttendees.name 
+        }).from(legacyWebinarAttendees);
+        targetEmails = attendees.filter(a => a.email && a.email.includes('@'));
+      } else if (targetAudience === 'legacy-membership') {
+        const members = await db.select({
+          email: legacyMembership.email,
+          name: legacyMembership.name
+        }).from(legacyMembership);
+        targetEmails = members.filter(m => m.email && m.email.includes('@'));
+      }
+      
+      // For now, we'll just log the campaign (since SMTP is not configured)
+      console.log('📧 Email Campaign Created:', {
+        subject,
+        targetCount: targetEmails.length,
+        targetAudience,
+        message: message.substring(0, 100) + '...'
+      });
+      
+      // In a real implementation, we would:
+      // 1. Queue the emails for sending
+      // 2. Track campaign metrics
+      // 3. Handle bounces and unsubscribes
+      
+      res.json({ 
+        success: true, 
+        message: `Campaign prepared for ${targetEmails.length} recipients`,
+        targetCount: targetEmails.length,
+        targets: targetEmails.slice(0, 5).map(t => t.email) // Show first 5 for confirmation
+      });
+    } catch (error) {
+      console.error('Email campaign error:', error);
+      res.status(500).json({ success: false, error: error.message });
+    }
+  });
+
+  router.get("/api/admin/email-targets", requireAdmin, async (req, res) => {
+    try {
+      const webinarAttendees = await db.select().from(legacyWebinarAttendees);
+      const membership = await db.select().from(legacyMembership);
+      
+      const emailTargets = {
+        'legacy-webinar-attendees': {
+          count: webinarAttendees.filter(a => a.email && a.email.includes('@')).length,
+          description: 'Imported webinar attendees from FAO, CGIAR, ACT Africa and other organizations',
+          sample: webinarAttendees.slice(0, 3).map(a => a.email).filter(e => e && e.includes('@'))
+        },
+        'legacy-membership': {
+          count: membership.filter(m => m.email && m.email.includes('@')).length,
+          description: 'Professional members including academic institutions and engineers',
+          sample: membership.slice(0, 3).map(m => m.email).filter(e => e && e.includes('@'))
+        }
+      };
+      
+      res.json({ success: true, data: emailTargets });
+    } catch (error) {
+      console.error('Error fetching email targets:', error);
+      res.status(500).json({ success: false, error: error.message });
+    }
+  });
+
   app.use(express.json());
   app.use(router);
 

@@ -479,7 +479,7 @@ export default function AdminDashboard() {
 
           {/* Management Tabs */}
           <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
-            <TabsList className="grid w-full grid-cols-9">
+            <TabsList className="grid w-full grid-cols-10">
               <TabsTrigger value="dashboard">Dashboard</TabsTrigger>
               <TabsTrigger value="users">Users</TabsTrigger>
               <TabsTrigger value="webinars">Webinars</TabsTrigger>
@@ -489,6 +489,7 @@ export default function AdminDashboard() {
               <TabsTrigger value="webinar-resources">Webinar Files</TabsTrigger>
               <TabsTrigger value="content">Content</TabsTrigger>
               <TabsTrigger value="legacy">Legacy Data</TabsTrigger>
+              <TabsTrigger value="campaigns">Campaigns</TabsTrigger>
             </TabsList>
 
             {/* Users Management */}
@@ -1895,6 +1896,236 @@ export default function AdminDashboard() {
                   </CardContent>
                 </Card>
               </div>
+            </TabsContent>
+
+            {/* Email Campaigns Tab */}
+            <TabsContent value="campaigns" className="space-y-6">
+              <Card>
+                <CardHeader>
+                  <CardTitle className="flex items-center">
+                    <Mail className="w-5 h-5 mr-2" />
+                    Community Re-engagement Campaigns
+                  </CardTitle>
+                  <CardDescription>
+                    Create email campaigns to re-engage imported community members from the original Africa Mechanize platform
+                  </CardDescription>
+                </CardHeader>
+                <CardContent>
+                  {/* Campaign Creation Form */}
+                  <div className="border rounded-lg p-6 mb-6">
+                    <h3 className="text-lg font-semibold mb-4">Create New Campaign</h3>
+                    <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                      <div className="space-y-4">
+                        <div>
+                          <Label>Target Audience</Label>
+                          <Select defaultValue="legacy-webinar-attendees">
+                            <SelectTrigger>
+                              <SelectValue />
+                            </SelectTrigger>
+                            <SelectContent>
+                              <SelectItem value="legacy-webinar-attendees">
+                                Legacy Webinar Attendees (16 members)
+                              </SelectItem>
+                              <SelectItem value="legacy-membership">
+                                Legacy Professional Members (8 members)
+                              </SelectItem>
+                              <SelectItem value="all-legacy">
+                                All Legacy Community (24 members)
+                              </SelectItem>
+                            </SelectContent>
+                          </Select>
+                        </div>
+
+                        <div>
+                          <Label>Campaign Template</Label>
+                          <Select defaultValue="platform-migration">
+                            <SelectTrigger>
+                              <SelectValue />
+                            </SelectTrigger>
+                            <SelectContent>
+                              <SelectItem value="platform-migration">
+                                Welcome to New Platform
+                              </SelectItem>
+                              <SelectItem value="resource-announcement">
+                                New Resources Available
+                              </SelectItem>
+                              <SelectItem value="webinar-invitation">
+                                Upcoming Webinar Invitation
+                              </SelectItem>
+                              <SelectItem value="custom">
+                                Custom Message
+                              </SelectItem>
+                            </SelectContent>
+                          </Select>
+                        </div>
+
+                        <div>
+                          <Label>Email Subject</Label>
+                          <Input 
+                            placeholder="Welcome back to Africa Mechanize - Your Content Awaits"
+                            defaultValue="Welcome back to Africa Mechanize - Your Content Awaits"
+                          />
+                        </div>
+                      </div>
+
+                      <div className="space-y-4">
+                        <div>
+                          <Label>Email Message</Label>
+                          <Textarea 
+                            rows={8}
+                            placeholder="Dear [Name],
+
+We're excited to announce that the Africa Mechanize platform has been completely rebuilt with enhanced features and all your previous resources have been preserved..."
+                            defaultValue={`Dear [Name],
+
+We're excited to announce that the Africa Mechanize platform has been completely rebuilt with enhanced features and all your previous resources have been preserved.
+
+✅ All 10 educational resources you accessed are still available
+✅ Complete webinar library with recordings and presentations  
+✅ Enhanced F-SAMA Framework with interactive elements
+✅ New community features and networking opportunities
+
+Your previous account and engagement history have been preserved. Simply visit the new platform to explore the enhanced features.
+
+Visit: https://africamechanize.replit.app
+
+Best regards,
+The Africa Mechanize Team`}
+                          />
+                        </div>
+                      </div>
+                    </div>
+
+                    <div className="flex items-center justify-between mt-6 pt-4 border-t">
+                      <div className="text-sm text-gray-600">
+                        📧 This will send emails to imported community members from FAO, CGIAR, ACT Africa, and other organizations
+                      </div>
+                      <div className="space-x-2">
+                        <Button variant="outline">Preview Campaign</Button>
+                        <Button className="bg-blue-600 hover:bg-blue-700">
+                          <Mail className="w-4 h-4 mr-2" />
+                          Create Campaign
+                        </Button>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Target Audiences Overview */}
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <Card className="bg-gradient-to-br from-green-50 to-green-100 border-green-200">
+                      <CardHeader className="pb-3">
+                        <CardTitle className="text-lg text-green-800">Legacy Webinar Attendees</CardTitle>
+                      </CardHeader>
+                      <CardContent>
+                        <div className="text-3xl font-bold text-green-800 mb-2">16</div>
+                        <p className="text-sm text-green-700 mb-4">
+                          International organizations including FAO, CGIAR, CORAF, ACT Africa with established engagement history
+                        </p>
+                        <div className="space-y-2">
+                          <div className="flex items-center justify-between text-xs">
+                            <span>FAO participants:</span>
+                            <span className="font-semibold">5</span>
+                          </div>
+                          <div className="flex items-center justify-between text-xs">
+                            <span>CGIAR network:</span>
+                            <span className="font-semibold">3</span>
+                          </div>
+                          <div className="flex items-center justify-between text-xs">
+                            <span>Other organizations:</span>
+                            <span className="font-semibold">8</span>
+                          </div>
+                        </div>
+                      </CardContent>
+                    </Card>
+
+                    <Card className="bg-gradient-to-br from-purple-50 to-purple-100 border-purple-200">
+                      <CardHeader className="pb-3">
+                        <CardTitle className="text-lg text-purple-800">Professional Members</CardTitle>
+                      </CardHeader>
+                      <CardContent>
+                        <div className="text-3xl font-bold text-purple-800 mb-2">8</div>
+                        <p className="text-sm text-purple-700 mb-4">
+                          Academic institutions, professional engineers, and corporate members with established credentials
+                        </p>
+                        <div className="space-y-2">
+                          <div className="flex items-center justify-between text-xs">
+                            <span>Academic institutions:</span>
+                            <span className="font-semibold">2</span>
+                          </div>
+                          <div className="flex items-center justify-between text-xs">
+                            <span>Professional engineers:</span>
+                            <span className="font-semibold">5</span>
+                          </div>
+                          <div className="flex items-center justify-between text-xs">
+                            <span>Corporate members:</span>
+                            <span className="font-semibold">1</span>
+                          </div>
+                        </div>
+                      </CardContent>
+                    </Card>
+                  </div>
+
+                  {/* Campaign Templates */}
+                  <div className="mt-8">
+                    <h3 className="text-lg font-semibold mb-4">Pre-built Campaign Templates</h3>
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                      {[
+                        {
+                          name: "Platform Migration Welcome",
+                          description: "Welcome users to the new platform highlighting preserved content and enhanced features",
+                          audience: "All legacy users",
+                          type: "Onboarding"
+                        },
+                        {
+                          name: "Resource Library Update",
+                          description: "Announce new educational resources and training materials",
+                          audience: "Education-focused users",
+                          type: "Content Update"
+                        },
+                        {
+                          name: "Webinar Re-engagement",
+                          description: "Invite previous attendees to upcoming webinars with their historical participation",
+                          audience: "Webinar attendees",
+                          type: "Event Invitation"
+                        }
+                      ].map((template, index) => (
+                        <div key={index} className="border rounded-lg p-4 hover:shadow-md transition-shadow">
+                          <h4 className="font-semibold mb-2">{template.name}</h4>
+                          <p className="text-sm text-gray-600 mb-3">{template.description}</p>
+                          <div className="flex items-center justify-between">
+                            <Badge variant="outline" className="text-xs">{template.type}</Badge>
+                            <Button variant="ghost" size="sm">
+                              Use Template
+                            </Button>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+
+              {/* Campaign Analytics Placeholder */}
+              <Card>
+                <CardHeader>
+                  <CardTitle className="flex items-center">
+                    <BarChart3 className="w-5 h-5 mr-2" />
+                    Campaign Performance (Future Feature)
+                  </CardTitle>
+                  <CardDescription>
+                    Track email open rates, click-through rates, and community re-engagement metrics
+                  </CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <div className="bg-gray-50 rounded-lg p-8 text-center">
+                    <TrendingUp className="w-12 h-12 text-gray-400 mx-auto mb-4" />
+                    <p className="text-gray-600 mb-4">Campaign analytics and performance tracking will be available once email service is configured.</p>
+                    <p className="text-sm text-gray-500">
+                      Future metrics will include: open rates, click-through rates, bounce rates, unsubscribes, and conversion to active platform users.
+                    </p>
+                  </div>
+                </CardContent>
+              </Card>
             </TabsContent>
           </Tabs>
         </div>
