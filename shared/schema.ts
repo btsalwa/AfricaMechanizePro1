@@ -132,6 +132,17 @@ export const contactForms = pgTable("contact_forms", {
   createdAt: timestamp("created_at").defaultNow(),
 });
 
+// Statistics
+export const statistics = pgTable("statistics", {
+  id: serial("id").primaryKey(),
+  network: integer("network").notNull().default(0),
+  countries: integer("countries").notNull().default(0),
+  webinars: integer("webinars").notNull().default(0),
+  speakers: integer("speakers").notNull().default(0),
+  participants: integer("participants").notNull().default(0),
+  updatedAt: timestamp("updated_at").defaultNow(),
+});
+
 // Insert schemas
 export const insertUserSchema = createInsertSchema(users).omit({
   id: true,
@@ -182,6 +193,11 @@ export const insertContactFormSchema = createInsertSchema(contactForms).omit({
   createdAt: true,
 });
 
+export const insertStatisticsSchema = createInsertSchema(statistics).omit({
+  id: true,
+  updatedAt: true,
+});
+
 // Types
 export type User = typeof users.$inferSelect;
 export type InsertUser = z.infer<typeof insertUserSchema>;
@@ -206,6 +222,9 @@ export type InsertNewsletterSubscription = z.infer<typeof insertNewsletterSubscr
 
 export type ContactForm = typeof contactForms.$inferSelect;
 export type InsertContactForm = z.infer<typeof insertContactFormSchema>;
+
+export type Statistics = typeof statistics.$inferSelect;
+export type InsertStatistics = z.infer<typeof insertStatisticsSchema>;
 
 // Auth schemas for routes
 export const registerSchema = z.object({

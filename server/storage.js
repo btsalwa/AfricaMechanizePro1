@@ -1,6 +1,6 @@
 import { 
   users, frameworkElements, newsletterSubscriptions, contactForms, 
-  webinars, webinarResources, webinarRecordings, webinarRegistrations
+  webinars, webinarResources, webinarRecordings, webinarRegistrations, statistics
 } from "../shared/schema.js";
 import { db } from "./db.js";
 import { eq } from "drizzle-orm";
