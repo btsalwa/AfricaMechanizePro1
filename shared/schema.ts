@@ -204,6 +204,65 @@ export const adminUsers = pgTable("admin_users", {
   updatedAt: timestamp("updated_at").defaultNow(),
 });
 
+// Legacy Resource Library from Original Database
+export const legacyResources = pgTable("legacy_resources", {
+  id: serial("id").primaryKey(),
+  legacyId: integer("legacy_id").unique(),
+  title: varchar("title", { length: 500 }).notNull(),
+  description: text("description"),
+  contentType: varchar("content_type", { length: 50 }), // pdf, document, presentation, video
+  resourceCategory: varchar("resource_category", { length: 100 }),
+  fileUrl: varchar("file_url", { length: 500 }),
+  downloadCount: integer("download_count").default(0),
+  language: varchar("language", { length: 10 }).default("en"),
+  tags: text("tags").array(),
+  isPublic: boolean("is_public").default(true),
+  importedAt: timestamp("imported_at").defaultNow(),
+  originalDate: varchar("original_date", { length: 50 }),
+});
+
+// Legacy Webinar Attendee Data
+export const legacyWebinarAttendees = pgTable("legacy_webinar_attendees", {
+  id: serial("id").primaryKey(),
+  email: varchar("email", { length: 255 }).notNull(),
+  webinarId: varchar("webinar_id", { length: 50 }).notNull(),
+  registrationDate: timestamp("registration_date"),
+  attendanceStatus: varchar("attendance_status", { length: 20 }).default("registered"),
+  importedAt: timestamp("imported_at").defaultNow(),
+});
+
+// Legacy Project Data
+export const legacyProjects = pgTable("legacy_projects", {
+  id: serial("id").primaryKey(),
+  legacyId: integer("legacy_id").unique(),
+  title: varchar("title", { length: 250 }).notNull(),
+  description: text("description"),
+  location: varchar("location", { length: 125 }),
+  financialYear: varchar("financial_year", { length: 20 }),
+  budgetAmount: varchar("budget_amount", { length: 50 }),
+  budgetCurrency: varchar("budget_currency", { length: 100 }).default("USD"),
+  agency: text("agency"),
+  projectStatus: varchar("project_status", { length: 20 }),
+  remarks: text("remarks"),
+  departmentId: integer("department_id"),
+  importedAt: timestamp("imported_at").defaultNow(),
+  originalRecordDate: varchar("original_record_date", { length: 30 }),
+});
+
+// Legacy Membership Data
+export const legacyMembership = pgTable("legacy_membership", {
+  id: serial("id").primaryKey(),
+  legacyId: integer("legacy_id").unique(),
+  recordType: varchar("record_type", { length: 30 }).notNull(),
+  registrationNo: varchar("registration_no", { length: 10 }).notNull(),
+  registrationName: varchar("registration_name", { length: 150 }).notNull(),
+  discipline: varchar("discipline", { length: 50 }),
+  address: varchar("address", { length: 250 }),
+  gender: varchar("gender", { length: 20 }),
+  recordDate: varchar("record_date", { length: 20 }),
+  importedAt: timestamp("imported_at").defaultNow(),
+});
+
 // Insert schemas
 export const insertUserSchema = createInsertSchema(users).omit({
   id: true,
