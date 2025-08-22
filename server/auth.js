@@ -1,62 +1,71 @@
-import passport from 'passport';
-import { Strategy as LocalStrategy } from 'passport-local';
-import bcrypt from 'bcryptjs';
-import crypto from 'crypto';
-import { users } from '../shared/schema.js';
-import { db } from './db.js';
-import { eq, and, gt } from 'drizzle-orm';
-import { sendEmail } from './emailService.js';
+import passport from "passport";
+import { Strategy as LocalStrategy } from "passport-local";
+import bcrypt from "bcryptjs";
+import crypto from "crypto";
+import { users } from "../shared/schema.js";
+import { db } from "./db.js";
+import { eq, and, gt } from "drizzle-orm";
+import { sendEmail } from "./emailService.js";
 
 // Setup passport authentication
 export const setupAuth = async () => {
-// Configure local strategy
-passport.use(new LocalStrategy({
-  usernameField: 'email',
-  passwordField: 'password'
-}, async (email, password, done) => {
-  try {
-    // Find user by email
-    const [user] = await db.select().from(users).where(eq(users.email, email));
-    
-    if (!user) {
-      return done(null, false, { message: 'Invalid email or password' });
-    }
-    
-    if (user.isActive === false) {
-      return done(null, false, { message: 'Account is deactivated' });
-    }
-    
-    // Check password
-    const isValidPassword = await bcrypt.compare(password, user.password);
-    if (!isValidPassword) {
-      return done(null, false, { message: 'Invalid email or password' });
-    }
-    
-    // Update last login
-    await db.update(users)
-      .set({ lastLoginAt: new Date() })
-      .where(eq(users.id, user.id));
-    
-    return done(null, user);
-  } catch (error) {
-    return done(error);
-  }
-}));
+  // Configure local strategy
+  passport.use(
+    new LocalStrategy(
+      {
+        usernameField: "email",
+        passwordField: "password",
+      },
+      async (email, password, done) => {
+        try {
+          // Find user by email
+          const [user] = await db
+            .select()
+            .from(users)
+            .where(eq(users.email, email));
 
-// Serialize user for session
-passport.serializeUser((user, done) => {
-  done(null, user.id);
-});
+          if (!user) {
+            return done(null, false, { message: "Invalid email or password" });
+          }
 
-// Deserialize user from session
-passport.deserializeUser(async (id, done) => {
-  try {
-    const [user] = await db.select().from(users).where(eq(users.id, id));
-    done(null, user);
-  } catch (error) {
-    done(error);
-  }
-});
+          if (user.isActive === false) {
+            return done(null, false, { message: "Account is deactivated" });
+          }
+
+          // Check password
+          const isValidPassword = await bcrypt.compare(password, user.password);
+          if (!isValidPassword) {
+            return done(null, false, { message: "Invalid email or password" });
+          }
+
+          // Update last login
+          await db
+            .update(users)
+            .set({ lastLoginAt: new Date() })
+            .where(eq(users.id, user.id));
+
+          return done(null, user);
+        } catch (error) {
+          return done(error);
+        }
+      }
+    )
+  );
+
+  // Serialize user for session
+  passport.serializeUser((user, done) => {
+    done(null, user.id);
+  });
+
+  // Deserialize user from session
+  passport.deserializeUser(async (id, done) => {
+    try {
+      const [user] = await db.select().from(users).where(eq(users.id, id));
+      done(null, user);
+    } catch (error) {
+      done(error);
+    }
+  });
 }; // End of setupAuth function
 
 // Authentication helper functions
@@ -65,120 +74,134 @@ export const authHelpers = {
     const saltRounds = 12;
     return await bcrypt.hash(password, saltRounds);
   },
-  
+
   async comparePassword(password, hash) {
     return await bcrypt.compare(password, hash);
   },
-  
+
   generateToken() {
-    return crypto.randomBytes(32).toString('hex');
+    return crypto.randomBytes(32).toString("hex");
   },
-  
+
   async createUser(userData) {
     const hashedPassword = await this.hashPassword(userData.password);
     const emailVerificationToken = this.generateToken();
     const emailVerificationExpires = new Date(Date.now() + 24 * 60 * 60 * 1000); // 24 hours
-    
-    const [newUser] = await db.insert(users).values({
-      email: userData.email,
-      firstName: userData.firstName,
-      lastName: userData.lastName,
-      password: hashedPassword,
-      organization: userData.organization,
-      country: userData.country,
-      emailVerificationToken,
-      emailVerificationExpires,
-      isEmailVerified: false,
-      isActive: true,
-    }).returning();
-    
+
+    const [newUser] = await db
+      .insert(users)
+      .values({
+        email: userData.email,
+        firstName: userData.firstName,
+        lastName: userData.lastName,
+        password: hashedPassword,
+        organization: userData.organization,
+        country: userData.country,
+        emailVerificationToken,
+        emailVerificationExpires,
+        isEmailVerified: false,
+        isActive: true,
+      })
+      .returning();
+
     // Send verification email
-    if (process.env.NODE_ENV !== 'test') {
+    if (process.env.NODE_ENV !== "test") {
       await this.sendVerificationEmail(newUser.email, emailVerificationToken);
     }
-    
+
     return newUser;
   },
-  
+
   async verifyEmail(token) {
-    const [user] = await db.select().from(users).where(
-      and(
-        eq(users.emailVerificationToken, token),
-        gt(users.emailVerificationExpires, new Date())
-      )
-    );
-    
+    const [user] = await db
+      .select()
+      .from(users)
+      .where(
+        and(
+          eq(users.emailVerificationToken, token),
+          gt(users.emailVerificationExpires, new Date())
+        )
+      );
+
     if (!user) {
-      throw new Error('Invalid or expired verification token');
+      throw new Error("Invalid or expired verification token");
     }
-    
-    await db.update(users)
+
+    await db
+      .update(users)
       .set({
         isEmailVerified: true,
         emailVerificationToken: null,
         emailVerificationExpires: null,
       })
       .where(eq(users.id, user.id));
-    
+
     return user;
   },
-  
+
   async sendPasswordReset(email) {
     const [user] = await db.select().from(users).where(eq(users.email, email));
-    
+
     if (!user) {
-      throw new Error('User not found');
+      throw new Error("User not found");
     }
-    
+
     const resetToken = this.generateToken();
     const resetExpires = new Date(Date.now() + 60 * 60 * 1000); // 1 hour
-    
-    await db.update(users)
+
+    await db
+      .update(users)
       .set({
         passwordResetToken: resetToken,
         passwordResetExpires: resetExpires,
       })
       .where(eq(users.id, user.id));
-    
+
     // Send password reset email
-    if (process.env.NODE_ENV !== 'test') {
+    if (process.env.NODE_ENV !== "test") {
       await this.sendPasswordResetEmail(user.email, resetToken);
     }
-    
+
     return resetToken;
   },
-  
+
   async resetPassword(token, newPassword) {
-    const [user] = await db.select().from(users).where(
-      and(
-        eq(users.passwordResetToken, token),
-        gt(users.passwordResetExpires, new Date())
-      )
-    );
-    
+    const [user] = await db
+      .select()
+      .from(users)
+      .where(
+        and(
+          eq(users.passwordResetToken, token),
+          gt(users.passwordResetExpires, new Date())
+        )
+      );
+
     if (!user) {
-      throw new Error('Invalid or expired reset token');
+      throw new Error("Invalid or expired reset token");
     }
-    
+
     const hashedPassword = await this.hashPassword(newPassword);
-    
-    await db.update(users)
+
+    await db
+      .update(users)
       .set({
         password: hashedPassword,
         passwordResetToken: null,
         passwordResetExpires: null,
       })
       .where(eq(users.id, user.id));
-    
+
     return user;
   },
-  
+
   async sendVerificationEmail(email, token) {
-    const verificationUrl = `${process.env.BASE_URL || 'http://localhost:5000'}/verify-email?token=${token}`;
-    
+    const verificationUrl = `${
+      process.env.BASE_URL || "http://localhost:6000"
+    }/verify-email?token=${token}`;
+
     await sendEmail({
       to: email,
-      subject: 'Verify Your Email - Africa Mechanize',
+      subject: "Verify Your Email - Africa Mechanize",
       html: `
         <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
           <div style="background: linear-gradient(135deg, #22c55e, #16a34a); padding: 20px; text-align: center;">
@@ -206,16 +229,18 @@ export const authHelpers = {
             © 2025 Africa Mechanize. All rights reserved.
           </div>
         </div>
-      `
+      `,
     });
   },
-  
+
   async sendPasswordResetEmail(email, token) {
-    const resetUrl = `${process.env.BASE_URL || 'http://localhost:5000'}/reset-password?token=${token}`;
-    
+    const resetUrl = `${
+      process.env.BASE_URL || "http://localhost:5000"
+    }/reset-password?token=${token}`;
+
     await sendEmail({
       to: email,
-      subject: 'Reset Your Password - Africa Mechanize',
+      subject: "Reset Your Password - Africa Mechanize",
       html: `
         <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
           <div style="background: linear-gradient(135deg, #22c55e, #16a34a); padding: 20px; text-align: center;">
@@ -241,22 +266,22 @@ export const authHelpers = {
             © 2025 Africa Mechanize. All rights reserved.
           </div>
         </div>
-      `
+      `,
     });
-  }
+  },
 };
 
 // Middleware functions
 export const requireAuth = (req, res, next) => {
   if (!req.isAuthenticated || !req.isAuthenticated()) {
-    return res.status(401).json({ message: 'Authentication required' });
+    return res.status(401).json({ message: "Authentication required" });
   }
   next();
 };
 
 export const requireEmailVerification = (req, res, next) => {
   if (!req.user?.isEmailVerified) {
-    return res.status(403).json({ message: 'Email verification required' });
+    return res.status(403).json({ message: "Email verification required" });
   }
   next();
 };
@@ -264,10 +289,10 @@ export const requireEmailVerification = (req, res, next) => {
 export const requireRole = (role) => {
   return (req, res, next) => {
     if (!req.user || req.user.role !== role) {
-      return res.status(403).json({ message: 'Insufficient permissions' });
+      return res.status(403).json({ message: "Insufficient permissions" });
     }
     next();
   };
 };
 
-export const requireAdmin = requireRole('admin');
+export const requireAdmin = requireRole("admin");

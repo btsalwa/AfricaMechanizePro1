@@ -1,7 +1,21 @@
-import { 
-  users, frameworkElements, newsletterSubscriptions, contactForms, 
-  webinars, webinarResources, webinarRecordings, webinarRegistrations, statistics, adminUsers, newsEvents, resources,
-  legacyAdminAccounts, legacyResources, legacyWebinarAttendees, legacyProjects, legacyMembership
+import {
+  users,
+  frameworkElements,
+  newsletterSubscriptions,
+  contactForms,
+  webinars,
+  webinarResources,
+  webinarRecordings,
+  webinarRegistrations,
+  statistics,
+  adminUsers,
+  newsEvents,
+  resources,
+  legacyAdminAccounts,
+  legacyResources,
+  legacyWebinarAttendees,
+  legacyProjects,
+  legacyMembership,
 } from "../shared/schema.js";
 import { db } from "./db.js";
 import { eq, sql, desc } from "drizzle-orm";
@@ -14,15 +28,15 @@ export class DatabaseStorage {
   }
 
   async getUserByUsername(username) {
-    const [user] = await db.select().from(users).where(eq(users.username, username));
+    const [user] = await db
+      .select()
+      .from(users)
+      .where(eq(users.username, username));
     return user || undefined;
   }
 
   async createUser(insertUser) {
-    const [user] = await db
-      .insert(users)
-      .values(insertUser)
-      .returning();
+    const [user] = await db.insert(users).values(insertUser).returning();
     return user;
   }
 
@@ -46,7 +60,10 @@ export class DatabaseStorage {
   }
 
   async getFrameworkElement(id) {
-    const [element] = await db.select().from(frameworkElements).where(eq(frameworkElements.id, id));
+    const [element] = await db
+      .select()
+      .from(frameworkElements)
+      .where(eq(frameworkElements.id, id));
     return element || undefined;
   }
 
@@ -61,7 +78,10 @@ export class DatabaseStorage {
   // Legacy data methods for frontend integration
   async getLegacyResources() {
     try {
-      return await db.select().from(legacyResources).orderBy(desc(legacyResources.createdAt));
+      return await db
+        .select()
+        .from(legacyResources)
+        .orderBy(desc(legacyResources.id));
     } catch (error) {
       console.error("Error fetching legacy resources:", error);
       return [];
@@ -70,7 +90,10 @@ export class DatabaseStorage {
 
   async getLegacyProjects() {
     try {
-      return await db.select().from(legacyProjects).orderBy(desc(legacyProjects.createdAt));
+      return await db
+        .select()
+        .from(legacyProjects)
+        .orderBy(desc(legacyProjects.id));
     } catch (error) {
       console.error("Error fetching legacy projects:", error);
       return [];
@@ -79,19 +102,27 @@ export class DatabaseStorage {
 
   async getLegacyData() {
     try {
-      const [resourceCount] = await db.select({ count: sql`count(*)` }).from(legacyResources);
-      const [projectCount] = await db.select({ count: sql`count(*)` }).from(legacyProjects);
-      const [memberCount] = await db.select({ count: sql`count(*)` }).from(legacyMembership);
-      const [attendeeCount] = await db.select({ count: sql`count(*)` }).from(legacyWebinarAttendees);
-      
+      const [resourceCount] = await db
+        .select({ count: sql`count(*)` })
+        .from(legacyResources);
+      const [projectCount] = await db
+        .select({ count: sql`count(*)` })
+        .from(legacyProjects);
+      const [memberCount] = await db
+        .select({ count: sql`count(*)` })
+        .from(legacyMembership);
+      const [attendeeCount] = await db
+        .select({ count: sql`count(*)` })
+        .from(legacyWebinarAttendees);
+
       return {
         resourcesCount: resourceCount?.count || 0,
         projectsCount: projectCount?.count || 0,
         membersCount: memberCount?.count || 0,
         attendeesCount: attendeeCount?.count || 0,
         totalValue: 13000000, // $13M project portfolio value
-        partnerships: ['FAO', 'CGIAR', 'ACT Africa', 'Universities'],
-        migrationComplete: true
+        partnerships: ["FAO", "CGIAR", "ACT Africa", "Universities"],
+        migrationComplete: true,
       };
     } catch (error) {
       console.error("Error fetching legacy data summary:", error);
@@ -105,15 +136,15 @@ export class DatabaseStorage {
   }
 
   async getEvent(id) {
-    const [event] = await db.select().from(newsEvents).where(eq(newsEvents.id, id));
+    const [event] = await db
+      .select()
+      .from(newsEvents)
+      .where(eq(newsEvents.id, id));
     return event || undefined;
   }
 
   async createEvent(insertEvent) {
-    const [event] = await db
-      .insert(newsEvents)
-      .values(insertEvent)
-      .returning();
+    const [event] = await db.insert(newsEvents).values(insertEvent).returning();
     return event;
   }
 
@@ -136,12 +167,18 @@ export class DatabaseStorage {
   }
 
   async getResource(id) {
-    const [resource] = await db.select().from(resources).where(eq(resources.id, id));
+    const [resource] = await db
+      .select()
+      .from(resources)
+      .where(eq(resources.id, id));
     return resource || undefined;
   }
 
   async getResourcesByCategory(category) {
-    return await db.select().from(resources).where(eq(resources.category, category));
+    return await db
+      .select()
+      .from(resources)
+      .where(eq(resources.category, category));
   }
 
   async createResource(insertResource) {
@@ -195,7 +232,7 @@ export class DatabaseStorage {
       .values(insertStatistics)
       .onConflictDoUpdate({
         target: statistics.id,
-        set: insertStatistics
+        set: insertStatistics,
       })
       .returning();
     return stats;
@@ -203,12 +240,18 @@ export class DatabaseStorage {
 
   // Admin user methods
   async getAdminUser(username) {
-    const [admin] = await db.select().from(adminUsers).where(eq(adminUsers.username, username));
+    const [admin] = await db
+      .select()
+      .from(adminUsers)
+      .where(eq(adminUsers.username, username));
     return admin || undefined;
   }
 
   async getAdminUserByEmail(email) {
-    const [admin] = await db.select().from(adminUsers).where(eq(adminUsers.email, email));
+    const [admin] = await db
+      .select()
+      .from(adminUsers)
+      .where(eq(adminUsers.email, email));
     return admin || undefined;
   }
 
@@ -231,9 +274,18 @@ export class DatabaseStorage {
 
   async getAdminStats() {
     const [userCount] = await db.select({ count: sql`count(*)` }).from(users);
-    const [webinarCount] = await db.select({ count: sql`count(*)` }).from(webinars).where(eq(webinars.status, 'upcoming'));
-    const [contactCount] = await db.select({ count: sql`count(*)` }).from(contactForms).where(eq(contactForms.status, 'new'));
-    const [newsletterCount] = await db.select({ count: sql`count(*)` }).from(newsletterSubscriptions).where(eq(newsletterSubscriptions.isActive, true));
+    const [webinarCount] = await db
+      .select({ count: sql`count(*)` })
+      .from(webinars)
+      .where(eq(webinars.status, "upcoming"));
+    const [contactCount] = await db
+      .select({ count: sql`count(*)` })
+      .from(contactForms)
+      .where(eq(contactForms.status, "new"));
+    const [newsletterCount] = await db
+      .select({ count: sql`count(*)` })
+      .from(newsletterSubscriptions)
+      .where(eq(newsletterSubscriptions.isActive, true));
 
     return {
       totalUsers: parseInt(userCount.count) || 0,
@@ -244,11 +296,17 @@ export class DatabaseStorage {
   }
 
   async getAllUsers() {
-    return await db.select().from(users).orderBy(sql`created_at DESC`);
+    return await db
+      .select()
+      .from(users)
+      .orderBy(sql`created_at DESC`);
   }
 
   async getAllContacts() {
-    return await db.select().from(contactForms).orderBy(sql`created_at DESC`);
+    return await db
+      .select()
+      .from(contactForms)
+      .orderBy(sql`created_at DESC`);
   }
 
   async deleteUser(id) {
@@ -278,10 +336,7 @@ export class DatabaseStorage {
   }
 
   async createWebinar(webinarData) {
-    const [webinar] = await db
-      .insert(webinars)
-      .values(webinarData)
-      .returning();
+    const [webinar] = await db.insert(webinars).values(webinarData).returning();
     return webinar;
   }
 
@@ -304,7 +359,10 @@ export class DatabaseStorage {
   }
 
   async getWebinar(id) {
-    const [webinar] = await db.select().from(webinars).where(eq(webinars.id, id));
+    const [webinar] = await db
+      .select()
+      .from(webinars)
+      .where(eq(webinars.id, id));
     return webinar || undefined;
   }
 
@@ -335,7 +393,10 @@ export class DatabaseStorage {
   }
 
   async getReadingMaterial(id) {
-    const [material] = await db.select().from(readingMaterials).where(eq(readingMaterials.id, id));
+    const [material] = await db
+      .select()
+      .from(readingMaterials)
+      .where(eq(readingMaterials.id, id));
     return material || undefined;
   }
 
@@ -362,11 +423,17 @@ export class DatabaseStorage {
 
   // News & Events Management
   async getAllNewsEvents() {
-    return await db.select().from(newsEvents).orderBy(desc(newsEvents.createdAt));
+    return await db
+      .select()
+      .from(newsEvents)
+      .orderBy(desc(newsEvents.createdAt));
   }
 
   async getNewsEventById(id) {
-    const [newsEvent] = await db.select().from(newsEvents).where(eq(newsEvents.id, id));
+    const [newsEvent] = await db
+      .select()
+      .from(newsEvents)
+      .where(eq(newsEvents.id, id));
     return newsEvent;
   }
 
@@ -397,7 +464,10 @@ export class DatabaseStorage {
   }
 
   async getResourceById(id) {
-    const [resource] = await db.select().from(resources).where(eq(resources.id, id));
+    const [resource] = await db
+      .select()
+      .from(resources)
+      .where(eq(resources.id, id));
     return resource;
   }
 
@@ -410,9 +480,9 @@ export class DatabaseStorage {
       resource_type: resourceData.resourceType || resourceData.type, // ensure compatibility
       category: resourceData.category,
       file_url: resourceData.fileUrl || resourceData.file_url,
-      language: resourceData.language || 'en',
+      language: resourceData.language || "en",
     };
-    
+
     const [resource] = await db
       .insert(resources)
       .values(existingTableData)
@@ -429,10 +499,10 @@ export class DatabaseStorage {
       resource_type: resourceData.resourceType || resourceData.type, // ensure compatibility
       category: resourceData.category,
       file_url: resourceData.fileUrl || resourceData.file_url,
-      language: resourceData.language || 'en',
-      updated_at: new Date()
+      language: resourceData.language || "en",
+      updated_at: new Date(),
     };
-    
+
     const [resource] = await db
       .update(resources)
       .set(existingTableData)
@@ -447,13 +517,18 @@ export class DatabaseStorage {
 
   // Webinar Resources Management
   async getWebinarResourcesByWebinarId(webinarId) {
-    return await db.select().from(webinarResources)
+    return await db
+      .select()
+      .from(webinarResources)
       .where(eq(webinarResources.webinarId, webinarId))
       .orderBy(webinarResources.sortOrder);
   }
 
   async getAllWebinarResources() {
-    return await db.select().from(webinarResources).orderBy(desc(webinarResources.createdAt));
+    return await db
+      .select()
+      .from(webinarResources)
+      .orderBy(desc(webinarResources.createdAt));
   }
 
   async createWebinarResource(resourceData) {
@@ -480,64 +555,80 @@ export class DatabaseStorage {
   // Mock data methods for new features (to be replaced with real DB methods when schema is ready)
   async getAllPartners() {
     return [
-      { id: 1, name: "FAO", type: "organization", website: "https://www.fao.org", country: "Global" },
-      { id: 2, name: "African Union Commission", type: "organization", website: "https://au.int", country: "Continental" }
+      {
+        id: 1,
+        name: "FAO",
+        type: "organization",
+        website: "https://www.fao.org",
+        country: "Global",
+      },
+      {
+        id: 2,
+        name: "African Union Commission",
+        type: "organization",
+        website: "https://au.int",
+        country: "Continental",
+      },
     ];
   }
 
   async getAllConferences() {
     return [
-      { 
-        id: 1, 
-        title: "FAO Global Conference On Sustainable Agricultural Mechanization",
-        description: "Major international conference bringing together experts, policymakers, and practitioners to discuss the future of sustainable agricultural mechanization globally.",
+      {
+        id: 1,
+        title:
+          "FAO Global Conference On Sustainable Agricultural Mechanization",
+        description:
+          "Major international conference bringing together experts, policymakers, and practitioners to discuss the future of sustainable agricultural mechanization globally.",
         startDate: "2023-09-29",
         endDate: "2023-09-29",
         location: "Rome, Italy",
         isVirtual: false,
-        website: "https://www.fao.org/conferences"
-      }
+        website: "https://www.fao.org/conferences",
+      },
     ];
   }
 
   // Legacy admin accounts methods for migration integration
   async getLegacyAdminAccounts() {
     try {
-      const result = await db.execute(sql`SELECT * FROM legacy_admin_accounts ORDER BY username`);
+      const result = await db.execute(
+        sql`SELECT * FROM legacy_admin_accounts ORDER BY username`
+      );
       // Handle both array result and result.rows format
       const rows = Array.isArray(result) ? result : result.rows || [];
       return rows;
     } catch (error) {
-      console.error('Error fetching legacy admin accounts:', error);
+      console.error("Error fetching legacy admin accounts:", error);
       // Return mock legacy admin data to demonstrate the integration
       return [
         {
-          username: 'ragesInc',
-          email: 'murage@africamechanize.org',
-          full_name: 'Murage (ragesInc)',
-          admin_type: 'Super Administrator',
+          username: "ragesInc",
+          email: "murage@africamechanize.org",
+          full_name: "Murage (ragesInc)",
+          admin_type: "Super Administrator",
           is_active: true,
-          last_login: '2025-01-15',
-          created_date: '2020-03-15'
+          last_login: "2025-01-15",
+          created_date: "2020-03-15",
         },
         {
-          username: 'act-admin',
-          email: 'admin@act.org',
-          full_name: 'ACT Admin',
-          admin_type: 'Super Administrator', 
+          username: "act-admin",
+          email: "admin@act.org",
+          full_name: "ACT Admin",
+          admin_type: "Super Administrator",
           is_active: true,
-          last_login: '2025-01-10',
-          created_date: '2021-06-20'
+          last_login: "2025-01-10",
+          created_date: "2021-06-20",
         },
         {
-          username: 'masterchief',
-          email: 'robert@africamechanize.org',
-          full_name: 'Robert (masterchief)',
-          admin_type: 'Super Administrator',
+          username: "masterchief",
+          email: "robert@africamechanize.org",
+          full_name: "Robert (masterchief)",
+          admin_type: "Super Administrator",
           is_active: true,
-          last_login: '2024-12-28',
-          created_date: '2019-11-08'
-        }
+          last_login: "2024-12-28",
+          created_date: "2019-11-08",
+        },
       ];
     }
   }

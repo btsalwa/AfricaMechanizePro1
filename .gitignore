@@ -4,3 +4,10 @@ dist
 server/public
 vite.config.ts.*
 *.tar.gz
+.env
+server/createAdmin.js
+ADMIN_CREDENTIALS.md
+ADMIN_SETUP.md
+CRITICAL_LEGACY_CONTENT.md
+LEGACY_DATA_USAGE.md
+LEGACY_INTEGRATION.md

@@ -1,0 +1,955 @@
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AfricaMechanize - Sustainable Agricultural Mechanization Platform</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js" defer></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        'inter': ['Inter', 'sans-serif'],
+                    },
+                    colors: {
+                        primary: '#2E7D32',
+                        secondary: '#FF8F00',
+                        accent: '#1976D2',
+                        neutral: '#37474F',
+                        success: '#4CAF50',
+                        warning: '#FF9800',
+                        error: '#F44336',
+                    },
+                    animation: {
+                        'fade-in': 'fadeIn 0.6s ease-in-out',
+                        'slide-up': 'slideUp 0.8s ease-out',
+                        'bounce-gentle': 'bounceGentle 2s ease-in-out infinite',
+                        'pulse-slow': 'pulse 3s ease-in-out infinite',
+                    },
+                    keyframes: {
+                        fadeIn: {
+                            '0%': { opacity: '0', transform: 'translateY(20px)' },
+                            '100%': { opacity: '1', transform: 'translateY(0)' },
+                        },
+                        slideUp: {
+                            '0%': { opacity: '0', transform: 'translateY(50px)' },
+                            '100%': { opacity: '1', transform: 'translateY(0)' },
+                        },
+                        bounceGentle: {
+                            '0%, 20%, 50%, 80%, 100%': { transform: 'translateY(0)' },
+                            '40%': { transform: 'translateY(-10px)' },
+                            '60%': { transform: 'translateY(-5px)' },
+                        },
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        html {
+            scroll-behavior: smooth;
+        }
+        
+        .glassmorphism {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+        
+        .gradient-bg {
+            background: linear-gradient(135deg, #2E7D32 0%, #4CAF50 100%);
+        }
+        
+        .text-gradient {
+            background: linear-gradient(135deg, #2E7D32, #FF8F00);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        .card-hover {
+            transition: all 0.3s ease;
+        }
+        
+        .card-hover:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+        }
+        
+        .parallax-bg {
+            background-attachment: fixed;
+            background-position: center;
+            background-repeat: no-repeat;
+            background-size: cover;
+        }
+        
+        .number-counter {
+            font-feature-settings: 'tnum';
+            font-variant-numeric: tabular-nums;
+        }
+        
+        .framework-card {
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        
+        .framework-card:hover {
+            transform: translateY(-12px) scale(1.02);
+        }
+        
+        .resource-filter-btn {
+            transition: all 0.3s ease;
+        }
+        
+        .resource-filter-btn.active {
+            background: linear-gradient(135deg, #2E7D32, #4CAF50);
+            color: white;
+        }
+        
+        .language-toggle {
+            transition: all 0.3s ease;
+        }
+        
+        .language-toggle:hover {
+            transform: scale(1.1);
+        }
+        
+        .dark-mode {
+            background: #1a1a1a;
+            color: #ffffff;
+        }
+        
+        .dark-mode .card-bg {
+            background: #2d2d2d;
+        }
+        
+        .dark-mode .text-neutral-600 {
+            color: #a0a0a0;
+        }
+        
+        .scroll-indicator {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 4px;
+            background: linear-gradient(90deg, #2E7D32, #FF8F00);
+            transform-origin: left;
+            z-index: 9999;
+        }
+    </style>
+</head>
+
+<body class="font-inter antialiased bg-gray-50 text-neutral-800" x-data="{ 
+    darkMode: false, 
+    language: 'en',
+    mobileMenuOpen: false,
+    activeFrameworkCard: null,
+    resourceFilter: 'all',
+    newsletterEmail: '',
+    stats: {
+        network: 0,
+        countries: 0,
+        webinars: 0,
+        speakers: 0,
+        participants: 0
+    },
+    scrollProgress: 0
+}" x-init="
+    // Animate statistics on page load
+    setTimeout(() => {
+        stats.network = 250;
+        stats.countries = 54;
+        stats.webinars = 24;
+        stats.speakers = 180;
+        stats.participants = 12500;
+    }, 1000);
+    
+    // Update scroll progress
+    window.addEventListener('scroll', () => {
+        const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
+        const scrollHeight = document.documentElement.scrollHeight - window.innerHeight;
+        scrollProgress = (scrollTop / scrollHeight) * 100;
+    });
+" :class="{ 'dark-mode': darkMode }">
+
+    <!-- Scroll Progress Indicator -->
+    <div class="scroll-indicator" :style="`transform: scaleX(${scrollProgress / 100})`"></div>
+
+    <!-- Header -->
+    <header class="fixed top-0 w-full z-50 glassmorphism">
+        <nav class="container mx-auto px-6 py-4">
+            <div class="flex items-center justify-between">
+                <!-- Logo -->
+                <div class="flex items-center space-x-3">
+                    <div class="w-10 h-10 bg-gradient-to-br from-primary to-secondary rounded-lg flex items-center justify-center">
+                        <i class="fas fa-seedling text-white text-xl"></i>
+                    </div>
+                    <div>
+                        <h1 class="text-xl font-bold text-gradient">AfricaMechanize</h1>
+                        <p class="text-xs text-neutral-600">Sustainable Agriculture</p>
+                    </div>
+                </div>
+
+                <!-- Desktop Navigation -->
+                <div class="hidden lg:flex items-center space-x-8">
+                    <a href="#home" class="text-neutral-700 hover:text-primary transition-colors">Home</a>
+                    <a href="#framework" class="text-neutral-700 hover:text-primary transition-colors">Framework</a>
+                    <a href="#events" class="text-neutral-700 hover:text-primary transition-colors">Events</a>
+                    <a href="#resources" class="text-neutral-700 hover:text-primary transition-colors">Resources</a>
+                    <a href="#about" class="text-neutral-700 hover:text-primary transition-colors">About</a>
+                    <a href="#contact" class="text-neutral-700 hover:text-primary transition-colors">Contact</a>
+                </div>
+
+                <!-- Controls -->
+                <div class="flex items-center space-x-4">
+                    <!-- Language Toggle -->
+                    <div class="hidden md:flex items-center space-x-2">
+                        <button @click="language = 'en'" 
+                                :class="language === 'en' ? 'text-primary' : 'text-neutral-600'"
+                                class="language-toggle px-2 py-1 rounded text-sm font-medium">EN</button>
+                        <span class="text-neutral-400">|</span>
+                        <button @click="language = 'fr'" 
+                                :class="language === 'fr' ? 'text-primary' : 'text-neutral-600'"
+                                class="language-toggle px-2 py-1 rounded text-sm font-medium">FR</button>
+                    </div>
+
+                    <!-- Dark Mode Toggle -->
+                    <button @click="darkMode = !darkMode" 
+                            class="p-2 rounded-lg hover:bg-gray-200 transition-colors">
+                        <i :class="darkMode ? 'fas fa-sun' : 'fas fa-moon'" 
+                           class="text-lg text-neutral-600"></i>
+                    </button>
+
+                    <!-- Mobile Menu Toggle -->
+                    <button @click="mobileMenuOpen = !mobileMenuOpen" 
+                            class="lg:hidden p-2 rounded-lg hover:bg-gray-200 transition-colors">
+                        <i :class="mobileMenuOpen ? 'fas fa-times' : 'fas fa-bars'" 
+                           class="text-lg text-neutral-600"></i>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Mobile Menu -->
+            <div x-show="mobileMenuOpen" x-transition class="lg:hidden mt-4 pb-4 border-t border-gray-200">
+                <div class="flex flex-col space-y-4 mt-4">
+                    <a href="#home" class="text-neutral-700 hover:text-primary transition-colors">Home</a>
+                    <a href="#framework" class="text-neutral-700 hover:text-primary transition-colors">Framework</a>
+                    <a href="#events" class="text-neutral-700 hover:text-primary transition-colors">Events</a>
+                    <a href="#resources" class="text-neutral-700 hover:text-primary transition-colors">Resources</a>
+                    <a href="#about" class="text-neutral-700 hover:text-primary transition-colors">About</a>
+                    <a href="#contact" class="text-neutral-700 hover:text-primary transition-colors">Contact</a>
+                </div>
+            </div>
+        </nav>
+    </header>
+
+    <!-- Hero Section -->
+    <section id="home" class="relative min-h-screen flex items-center justify-center overflow-hidden">
+        <!-- Hero Background with African farmers working -->
+        <div class="absolute inset-0 parallax-bg" style="background-image: url('https://images.unsplash.com/photo-1586771107445-d3ca888129ff?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1920&h=1080');">
+            <div class="absolute inset-0 bg-black bg-opacity-50"></div>
+        </div>
+        
+        <!-- Hero Content -->
+        <div class="relative z-10 text-center text-white px-6 max-w-4xl mx-auto">
+            <h1 class="text-5xl md:text-7xl font-bold mb-6 animate-fade-in">
+                Transforming
+                <span class="text-secondary">Agriculture</span>
+                in Africa
+            </h1>
+            <p class="text-xl md:text-2xl mb-8 animate-slide-up opacity-90">
+                Sustainable Agricultural Mechanization for a prosperous future
+            </p>
+            <div class="flex flex-col sm:flex-row gap-4 justify-center animate-slide-up">
+                <button class="bg-primary hover:bg-primary/90 text-white px-8 py-4 rounded-full font-semibold transition-all duration-300 transform hover:scale-105 shadow-lg">
+                    Explore Framework
+                </button>
+                <button class="border-2 border-white text-white hover:bg-white hover:text-primary px-8 py-4 rounded-full font-semibold transition-all duration-300">
+                    Watch Video
+                </button>
+            </div>
+        </div>
+
+        <!-- Scroll Indicator -->
+        <div class="absolute bottom-8 left-1/2 transform -translate-x-1/2 animate-bounce-gentle">
+            <div class="w-6 h-10 border-2 border-white rounded-full flex justify-center">
+                <div class="w-1 h-3 bg-white rounded-full mt-2 animate-pulse"></div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Statistics Section -->
+    <section class="py-20 bg-white">
+        <div class="container mx-auto px-6">
+            <div class="grid grid-cols-2 md:grid-cols-5 gap-8">
+                <div class="text-center">
+                    <div class="text-4xl md:text-5xl font-bold text-primary mb-2 number-counter" 
+                         x-text="stats.network.toLocaleString()">0</div>
+                    <p class="text-neutral-600 font-medium">Network Partners</p>
+                </div>
+                <div class="text-center">
+                    <div class="text-4xl md:text-5xl font-bold text-secondary mb-2 number-counter" 
+                         x-text="stats.countries">0</div>
+                    <p class="text-neutral-600 font-medium">Countries</p>
+                </div>
+                <div class="text-center">
+                    <div class="text-4xl md:text-5xl font-bold text-accent mb-2 number-counter" 
+                         x-text="stats.webinars">0</div>
+                    <p class="text-neutral-600 font-medium">Webinars</p>
+                </div>
+                <div class="text-center">
+                    <div class="text-4xl md:text-5xl font-bold text-success mb-2 number-counter" 
+                         x-text="stats.speakers.toLocaleString()">0</div>
+                    <p class="text-neutral-600 font-medium">Speakers</p>
+                </div>
+                <div class="text-center">
+                    <div class="text-4xl md:text-5xl font-bold text-warning mb-2 number-counter" 
+                         x-text="stats.participants.toLocaleString()">0</div>
+                    <p class="text-neutral-600 font-medium">Participants</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- F-SAMA Framework Section -->
+    <section id="framework" class="py-20 bg-gray-50">
+        <div class="container mx-auto px-6">
+            <div class="text-center mb-16">
+                <h2 class="text-4xl md:text-5xl font-bold mb-6 text-gradient">F-SAMA Framework</h2>
+                <p class="text-xl text-neutral-600 max-w-3xl mx-auto">
+                    The 10 essential elements for developing and operationalizing Sustainable Agricultural Mechanization in Africa
+                </p>
+            </div>
+
+            <!-- Framework Grid -->
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-6">
+                <!-- Framework Element 1 -->
+                <div class="framework-card bg-white rounded-2xl p-6 shadow-lg card-hover cursor-pointer"
+                     @click="activeFrameworkCard = activeFrameworkCard === 1 ? null : 1">
+                    <div class="w-16 h-16 bg-gradient-to-br from-primary to-secondary rounded-full flex items-center justify-center mb-4 mx-auto">
+                        <i class="fas fa-bolt text-white text-xl"></i>
+                    </div>
+                    <div class="text-center">
+                        <div class="text-2xl font-bold text-primary mb-2">#1</div>
+                        <h3 class="text-lg font-semibold mb-3">Farm Power</h3>
+                        <p class="text-neutral-600 text-sm">Boosting farm power through appropriate technologies and innovative business models</p>
+                    </div>
+                </div>
+
+                <!-- Framework Element 2 -->
+                <div class="framework-card bg-white rounded-2xl p-6 shadow-lg card-hover cursor-pointer"
+                     @click="activeFrameworkCard = activeFrameworkCard === 2 ? null : 2">
+                    <div class="w-16 h-16 bg-gradient-to-br from-secondary to-warning rounded-full flex items-center justify-center mb-4 mx-auto">
+                        <i class="fas fa-coins text-white text-xl"></i>
+                    </div>
+                    <div class="text-center">
+                        <div class="text-2xl font-bold text-secondary mb-2">#2</div>
+                        <h3 class="text-lg font-semibold mb-3">Innovative Financing</h3>
+                        <p class="text-neutral-600 text-sm">Promoting innovative financing mechanisms for agricultural mechanization</p>
+                    </div>
+                </div>
+
+                <!-- Framework Element 3 -->
+                <div class="framework-card bg-white rounded-2xl p-6 shadow-lg card-hover cursor-pointer"
+                     @click="activeFrameworkCard = activeFrameworkCard === 3 ? null : 3">
+                    <div class="w-16 h-16 bg-gradient-to-br from-accent to-primary rounded-full flex items-center justify-center mb-4 mx-auto">
+                        <i class="fas fa-cogs text-white text-xl"></i>
+                    </div>
+                    <div class="text-center">
+                        <div class="text-2xl font-bold text-accent mb-2">#3</div>
+                        <h3 class="text-lg font-semibold mb-3">Sustainable Systems</h3>
+                        <p class="text-neutral-600 text-sm">Building sustainable systems for manufacture and distribution</p>
+                    </div>
+                </div>
+
+                <!-- Framework Element 4 -->
+                <div class="framework-card bg-white rounded-2xl p-6 shadow-lg card-hover cursor-pointer"
+                     @click="activeFrameworkCard = activeFrameworkCard === 4 ? null : 4">
+                    <div class="w-16 h-16 bg-gradient-to-br from-success to-primary rounded-full flex items-center justify-center mb-4 mx-auto">
+                        <i class="fas fa-tractor text-white text-xl"></i>
+                    </div>
+                    <div class="text-center">
+                        <div class="text-2xl font-bold text-success mb-2">#4</div>
+                        <h3 class="text-lg font-semibold mb-3">Mechanization</h3>
+                        <p class="text-neutral-600 text-sm">Sustainable mechanization across agrifood value chains</p>
+                    </div>
+                </div>
+
+                <!-- Framework Element 5 -->
+                <div class="framework-card bg-white rounded-2xl p-6 shadow-lg card-hover cursor-pointer"
+                     @click="activeFrameworkCard = activeFrameworkCard === 5 ? null : 5">
+                    <div class="w-16 h-16 bg-gradient-to-br from-warning to-secondary rounded-full flex items-center justify-center mb-4 mx-auto">
+                        <i class="fas fa-lightbulb text-white text-xl"></i>
+                    </div>
+                    <div class="text-center">
+                        <div class="text-2xl font-bold text-warning mb-2">#5</div>
+                        <h3 class="text-lg font-semibold mb-3">Innovative Systems</h3>
+                        <p class="text-neutral-600 text-sm">Innovative systems for sustainable technology development</p>
+                    </div>
+                </div>
+
+                <!-- Framework Element 6 -->
+                <div class="framework-card bg-white rounded-2xl p-6 shadow-lg card-hover cursor-pointer"
+                     @click="activeFrameworkCard = activeFrameworkCard === 6 ? null : 6">
+                    <div class="w-16 h-16 bg-gradient-to-br from-primary to-accent rounded-full flex items-center justify-center mb-4 mx-auto">
+                        <i class="fas fa-seedling text-white text-xl"></i>
+                    </div>
+                    <div class="text-center">
+                        <div class="text-2xl font-bold text-primary mb-2">#6</div>
+                        <h3 class="text-lg font-semibold mb-3">Land Preparation</h3>
+                        <p class="text-neutral-600 text-sm">Sustainable transformation of land preparation practices</p>
+                    </div>
+                </div>
+
+                <!-- Framework Element 7 -->
+                <div class="framework-card bg-white rounded-2xl p-6 shadow-lg card-hover cursor-pointer"
+                     @click="activeFrameworkCard = activeFrameworkCard === 7 ? null : 7">
+                    <div class="w-16 h-16 bg-gradient-to-br from-secondary to-primary rounded-full flex items-center justify-center mb-4 mx-auto">
+                        <i class="fas fa-users text-white text-xl"></i>
+                    </div>
+                    <div class="text-center">
+                        <div class="text-2xl font-bold text-secondary mb-2">#7</div>
+                        <h3 class="text-lg font-semibold mb-3">Social Sustainability</h3>
+                        <p class="text-neutral-600 text-sm">Roles of small-scale farmers, women and youth</p>
+                    </div>
+                </div>
+
+                <!-- Framework Element 8 -->
+                <div class="framework-card bg-white rounded-2xl p-6 shadow-lg card-hover cursor-pointer"
+                     @click="activeFrameworkCard = activeFrameworkCard === 8 ? null : 8">
+                    <div class="w-16 h-16 bg-gradient-to-br from-accent to-success rounded-full flex items-center justify-center mb-4 mx-auto">
+                        <i class="fas fa-graduation-cap text-white text-xl"></i>
+                    </div>
+                    <div class="text-center">
+                        <div class="text-2xl font-bold text-accent mb-2">#8</div>
+                        <h3 class="text-lg font-semibold mb-3">Human Resources</h3>
+                        <p class="text-neutral-600 text-sm">Human resources development and capacity building</p>
+                    </div>
+                </div>
+
+                <!-- Framework Element 9 -->
+                <div class="framework-card bg-white rounded-2xl p-6 shadow-lg card-hover cursor-pointer"
+                     @click="activeFrameworkCard = activeFrameworkCard === 9 ? null : 9">
+                    <div class="w-16 h-16 bg-gradient-to-br from-success to-secondary rounded-full flex items-center justify-center mb-4 mx-auto">
+                        <i class="fas fa-eye text-white text-xl"></i>
+                    </div>
+                    <div class="text-center">
+                        <div class="text-2xl font-bold text-success mb-2">#9</div>
+                        <h3 class="text-lg font-semibold mb-3">Long-Term Vision</h3>
+                        <p class="text-neutral-600 text-sm">Long-term vision: policy and strategy issues</p>
+                    </div>
+                </div>
+
+                <!-- Framework Element 10 -->
+                <div class="framework-card bg-white rounded-2xl p-6 shadow-lg card-hover cursor-pointer"
+                     @click="activeFrameworkCard = activeFrameworkCard === 10 ? null : 10">
+                    <div class="w-16 h-16 bg-gradient-to-br from-warning to-accent rounded-full flex items-center justify-center mb-4 mx-auto">
+                        <i class="fas fa-network-wired text-white text-xl"></i>
+                    </div>
+                    <div class="text-center">
+                        <div class="text-2xl font-bold text-warning mb-2">#10</div>
+                        <h3 class="text-lg font-semibold mb-3">Cooperation</h3>
+                        <p class="text-neutral-600 text-sm">Creating sustainable institutions for regional cooperation</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Featured Content Section -->
+    <section class="py-20 bg-white">
+        <div class="container mx-auto px-6">
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+                <!-- Content -->
+                <div class="animate-fade-in">
+                    <h2 class="text-4xl font-bold mb-6 text-gradient">
+                        Consultative Meeting on Mechanization Strategy
+                    </h2>
+                    <p class="text-xl text-neutral-600 mb-8">
+                        New models for sustainable agricultural mechanization in sub-Saharan Africa
+                    </p>
+                    <p class="text-neutral-600 mb-8 leading-relaxed">
+                        Discover innovative approaches to agricultural mechanization that can transform 
+                        farming practices across Africa. Our comprehensive strategy focuses on sustainable 
+                        solutions that empower farmers and strengthen food security.
+                    </p>
+                    <button class="bg-primary hover:bg-primary/90 text-white px-8 py-4 rounded-full font-semibold transition-all duration-300 transform hover:scale-105 shadow-lg">
+                        Read More
+                    </button>
+                </div>
+                
+                <!-- Image -->
+                <div class="animate-slide-up">
+                    <!-- Conference meeting with people discussing agricultural mechanization -->
+                    <img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=800&h=600" 
+                         alt="Agricultural mechanization conference" 
+                         class="rounded-2xl shadow-2xl w-full h-auto">
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- News & Events Section -->
+    <section id="events" class="py-20 bg-gray-50">
+        <div class="container mx-auto px-6">
+            <div class="text-center mb-16">
+                <h2 class="text-4xl md:text-5xl font-bold mb-6 text-gradient">Latest News & Events</h2>
+                <p class="text-xl text-neutral-600 max-w-3xl mx-auto">
+                    Stay updated with the latest developments in agricultural mechanization across Africa
+                </p>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                <!-- Event 1 -->
+                <article class="bg-white rounded-2xl shadow-lg overflow-hidden card-hover">
+                    <!-- Modern farming equipment in action -->
+                    <img src="https://images.unsplash.com/photo-1625246333195-78d9c38ad449?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=800&h=400" 
+                         alt="Sustainable farm power equipment" 
+                         class="w-full h-48 object-cover">
+                    <div class="p-6">
+                        <div class="flex items-center justify-between mb-4">
+                            <span class="bg-primary text-white px-3 py-1 rounded-full text-sm font-medium">Jun 04, 2024</span>
+                            <span class="text-neutral-500 text-sm">Event</span>
+                        </div>
+                        <h3 class="text-xl font-bold mb-3 text-neutral-800">
+                            Sustainable Farm Power for Enhanced Productivity
+                        </h3>
+                        <p class="text-neutral-600 mb-4">
+                            FAO & CEMA Hybrid Event exploring innovative solutions for agricultural power systems
+                        </p>
+                        <a href="#" class="inline-flex items-center text-primary hover:text-primary/80 font-semibold">
+                            Learn More <i class="fas fa-arrow-right ml-2"></i>
+                        </a>
+                    </div>
+                </article>
+
+                <!-- Event 2 -->
+                <article class="bg-white rounded-2xl shadow-lg overflow-hidden card-hover">
+                    <!-- Agricultural technology and innovation -->
+                    <img src="https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=800&h=400" 
+                         alt="Agricultural conference" 
+                         class="w-full h-48 object-cover">
+                    <div class="p-6">
+                        <div class="flex items-center justify-between mb-4">
+                            <span class="bg-secondary text-white px-3 py-1 rounded-full text-sm font-medium">Sep 29, 2023</span>
+                            <span class="text-neutral-500 text-sm">Conference</span>
+                        </div>
+                        <h3 class="text-xl font-bold mb-3 text-neutral-800">
+                            FAO Global Conference On Sustainable Agricultural Mechanization
+                        </h3>
+                        <p class="text-neutral-600 mb-4">
+                            Global leaders discuss the future of sustainable agricultural mechanization
+                        </p>
+                        <a href="#" class="inline-flex items-center text-primary hover:text-primary/80 font-semibold">
+                            Learn More <i class="fas fa-arrow-right ml-2"></i>
+                        </a>
+                    </div>
+                </article>
+
+                <!-- Event 3 -->
+                <article class="bg-white rounded-2xl shadow-lg overflow-hidden card-hover">
+                    <!-- African farmers collaborating -->
+                    <img src="https://images.unsplash.com/photo-1556075798-4825dfaaf498?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=800&h=400" 
+                         alt="African farmers collaboration" 
+                         class="w-full h-48 object-cover">
+                    <div class="p-6">
+                        <div class="flex items-center justify-between mb-4">
+                            <span class="bg-accent text-white px-3 py-1 rounded-full text-sm font-medium">Dec 09, 2019</span>
+                            <span class="text-neutral-500 text-sm">Meeting</span>
+                        </div>
+                        <h3 class="text-xl font-bold mb-3 text-neutral-800">
+                            Uganda Regional Experience Sharing Meeting
+                        </h3>
+                        <p class="text-neutral-600 mb-4">
+                            SAM hire service provision and regional cooperation initiatives
+                        </p>
+                        <a href="#" class="inline-flex items-center text-primary hover:text-primary/80 font-semibold">
+                            Learn More <i class="fas fa-arrow-right ml-2"></i>
+                        </a>
+                    </div>
+                </article>
+            </div>
+        </div>
+    </section>
+
+    <!-- Resources Section -->
+    <section id="resources" class="py-20 bg-white">
+        <div class="container mx-auto px-6">
+            <div class="text-center mb-16">
+                <h2 class="text-4xl md:text-5xl font-bold mb-6 text-gradient">Featured Resources</h2>
+                <p class="text-xl text-neutral-600 max-w-3xl mx-auto">
+                    Access comprehensive resources, research papers, and educational materials
+                </p>
+            </div>
+
+            <!-- Resource Filters -->
+            <div class="flex flex-wrap justify-center gap-4 mb-12">
+                <button @click="resourceFilter = 'all'" 
+                        :class="resourceFilter === 'all' ? 'active' : ''"
+                        class="resource-filter-btn px-6 py-3 rounded-full border-2 border-primary font-semibold">
+                    All Resources
+                </button>
+                <button @click="resourceFilter = 'webinars'" 
+                        :class="resourceFilter === 'webinars' ? 'active' : ''"
+                        class="resource-filter-btn px-6 py-3 rounded-full border-2 border-primary font-semibold">
+                    Webinars
+                </button>
+                <button @click="resourceFilter = 'newsletter'" 
+                        :class="resourceFilter === 'newsletter' ? 'active' : ''"
+                        class="resource-filter-btn px-6 py-3 rounded-full border-2 border-primary font-semibold">
+                    Newsletter
+                </button>
+                <button @click="resourceFilter = 'research'" 
+                        :class="resourceFilter === 'research' ? 'active' : ''"
+                        class="resource-filter-btn px-6 py-3 rounded-full border-2 border-primary font-semibold">
+                    Research
+                </button>
+            </div>
+
+            <!-- Resource Grid -->
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                <!-- Resource 1 -->
+                <div class="bg-gray-50 rounded-2xl p-6 card-hover">
+                    <div class="flex items-center justify-between mb-4">
+                        <span class="bg-primary text-white px-3 py-1 rounded-full text-sm font-medium">English</span>
+                        <i class="fas fa-download text-primary text-lg"></i>
+                    </div>
+                    <h3 class="text-xl font-bold mb-3">Sustainable Agricultural Mechanization - A Framework for Africa</h3>
+                    <p class="text-neutral-600 mb-4">
+                        The framework presents a menu of priority elements to be considered for sustainable agricultural mechanization in Africa.
+                    </p>
+                    <div class="flex items-center justify-between">
+                        <span class="text-sm text-neutral-500">Webinar 1</span>
+                        <button class="bg-primary hover:bg-primary/90 text-white px-4 py-2 rounded-lg font-semibold transition-all duration-300">
+                            Download
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Resource 2 -->
+                <div class="bg-gray-50 rounded-2xl p-6 card-hover">
+                    <div class="flex items-center justify-between mb-4">
+                        <span class="bg-secondary text-white px-3 py-1 rounded-full text-sm font-medium">French</span>
+                        <i class="fas fa-download text-primary text-lg"></i>
+                    </div>
+                    <h3 class="text-xl font-bold mb-3">La Mécanisation Agricole Durable</h3>
+                    <p class="text-neutral-600 mb-4">
+                        La mécanisation agricole durable peut sauver l'Afrique. Cadre Stratégique pour l'Afrique.
+                    </p>
+                    <div class="flex items-center justify-between">
+                        <span class="text-sm text-neutral-500">Webinar 1</span>
+                        <button class="bg-primary hover:bg-primary/90 text-white px-4 py-2 rounded-lg font-semibold transition-all duration-300">
+                            Download
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Resource 3 -->
+                <div class="bg-gray-50 rounded-2xl p-6 card-hover">
+                    <div class="flex items-center justify-between mb-4">
+                        <span class="bg-accent text-white px-3 py-1 rounded-full text-sm font-medium">English</span>
+                        <i class="fas fa-download text-primary text-lg"></i>
+                    </div>
+                    <h3 class="text-xl font-bold mb-3">AfricaMechanize Newsletter - Issue 02 (2024)</h3>
+                    <p class="text-neutral-600 mb-4">
+                        This is the second quarterly newsletter of the AfricaMechanize Platform, featuring latest developments and insights.
+                    </p>
+                    <div class="flex items-center justify-between">
+                        <span class="text-sm text-neutral-500">Magazine</span>
+                        <button class="bg-primary hover:bg-primary/90 text-white px-4 py-2 rounded-lg font-semibold transition-all duration-300">
+                            Download
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Resource 4 -->
+                <div class="bg-gray-50 rounded-2xl p-6 card-hover">
+                    <div class="flex items-center justify-between mb-4">
+                        <span class="bg-warning text-white px-3 py-1 rounded-full text-sm font-medium">English</span>
+                        <i class="fas fa-video text-primary text-lg"></i>
+                    </div>
+                    <h3 class="text-xl font-bold mb-3">Webinar 12: Revamping Manufacturing of Agricultural Machinery</h3>
+                    <p class="text-neutral-600 mb-4">
+                        WEBINAR No. 12: Revamping Manufacturing of Agricultural Machinery in Africa
+                    </p>
+                    <div class="flex items-center justify-between">
+                        <span class="text-sm text-neutral-500">Upcoming Webinars</span>
+                        <button class="bg-primary hover:bg-primary/90 text-white px-4 py-2 rounded-lg font-semibold transition-all duration-300">
+                            Register
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Resource 5 -->
+                <div class="bg-gray-50 rounded-2xl p-6 card-hover">
+                    <div class="flex items-center justify-between mb-4">
+                        <span class="bg-success text-white px-3 py-1 rounded-full text-sm font-medium">French</span>
+                        <i class="fas fa-video text-primary text-lg"></i>
+                    </div>
+                    <h3 class="text-xl font-bold mb-3">Webinaire 12: Relancer la fabrication des machines agricoles</h3>
+                    <p class="text-neutral-600 mb-4">
+                        L'objectif du webinaire 12 est d'initier une collaboration entre les pays africains.
+                    </p>
+                    <div class="flex items-center justify-between">
+                        <span class="text-sm text-neutral-500">Upcoming Webinars</span>
+                        <button class="bg-primary hover:bg-primary/90 text-white px-4 py-2 rounded-lg font-semibold transition-all duration-300">
+                            S'inscrire
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Resource 6 -->
+                <div class="bg-gray-50 rounded-2xl p-6 card-hover">
+                    <div class="flex items-center justify-between mb-4">
+                        <span class="bg-error text-white px-3 py-1 rounded-full text-sm font-medium">English</span>
+                        <i class="fas fa-file-alt text-primary text-lg"></i>
+                    </div>
+                    <h3 class="text-xl font-bold mb-3">Concept Note: AfricaMechanize Webinar No12</h3>
+                    <p class="text-neutral-600 mb-4">
+                        The Objective of Webinar 12 is to initiate collaboration between African countries in agricultural machinery manufacturing.
+                    </p>
+                    <div class="flex items-center justify-between">
+                        <span class="text-sm text-neutral-500">Upcoming Webinars</span>
+                        <button class="bg-primary hover:bg-primary/90 text-white px-4 py-2 rounded-lg font-semibold transition-all duration-300">
+                            Download
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Call to Action Section -->
+    <section class="py-20 gradient-bg relative overflow-hidden">
+        <div class="absolute inset-0 opacity-10">
+            <!-- Agricultural sustainability background image -->
+            <img src="https://images.unsplash.com/photo-1574943320219-553eb213f72d?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1920&h=1080" 
+                 alt="Agricultural sustainability" 
+                 class="w-full h-full object-cover">
+        </div>
+        
+        <div class="container mx-auto px-6 relative z-10">
+            <div class="text-center text-white">
+                <h2 class="text-4xl md:text-5xl font-bold mb-6">Join the Movement</h2>
+                <p class="text-xl mb-8 opacity-90 max-w-2xl mx-auto">
+                    Be part of the transformation of African agriculture through sustainable mechanization
+                </p>
+                
+                <!-- Newsletter Signup -->
+                <div class="max-w-md mx-auto mb-8">
+                    <div class="flex flex-col sm:flex-row gap-4">
+                        <input type="email" 
+                               x-model="newsletterEmail"
+                               placeholder="Enter your email" 
+                               class="flex-1 px-6 py-4 rounded-full text-neutral-800 placeholder-neutral-500 border-none outline-none">
+                        <button class="bg-secondary hover:bg-secondary/90 text-white px-8 py-4 rounded-full font-semibold transition-all duration-300 whitespace-nowrap">
+                            Subscribe
+                        </button>
+                    </div>
+                </div>
+
+                <div class="flex flex-col sm:flex-row gap-4 justify-center">
+                    <button class="bg-white text-primary hover:bg-gray-100 px-8 py-4 rounded-full font-semibold transition-all duration-300">
+                        Get Involved
+                    </button>
+                    <button class="border-2 border-white text-white hover:bg-white hover:text-primary px-8 py-4 rounded-full font-semibold transition-all duration-300">
+                        Contact Us
+                    </button>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="bg-neutral text-white py-16">
+        <div class="container mx-auto px-6">
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+                <!-- Company Info -->
+                <div>
+                    <div class="flex items-center space-x-3 mb-6">
+                        <div class="w-10 h-10 bg-gradient-to-br from-primary to-secondary rounded-lg flex items-center justify-center">
+                            <i class="fas fa-seedling text-white text-xl"></i>
+                        </div>
+                        <div>
+                            <h3 class="text-xl font-bold">AfricaMechanize</h3>
+                            <p class="text-sm opacity-75">Sustainable Agriculture</p>
+                        </div>
+                    </div>
+                    <p class="text-gray-300 mb-6">
+                        Empowering African agriculture through sustainable mechanization solutions and innovative partnerships.
+                    </p>
+                    <div class="flex space-x-4">
+                        <a href="#" class="text-gray-400 hover:text-primary transition-colors">
+                            <i class="fab fa-twitter text-xl"></i>
+                        </a>
+                        <a href="#" class="text-gray-400 hover:text-primary transition-colors">
+                            <i class="fab fa-facebook text-xl"></i>
+                        </a>
+                        <a href="#" class="text-gray-400 hover:text-primary transition-colors">
+                            <i class="fab fa-linkedin text-xl"></i>
+                        </a>
+                        <a href="#" class="text-gray-400 hover:text-primary transition-colors">
+                            <i class="fab fa-youtube text-xl"></i>
+                        </a>
+                    </div>
+                </div>
+
+                <!-- Quick Links -->
+                <div>
+                    <h4 class="text-lg font-semibold mb-6">Quick Links</h4>
+                    <ul class="space-y-3">
+                        <li><a href="#framework" class="text-gray-300 hover:text-primary transition-colors">F-SAMA Framework</a></li>
+                        <li><a href="#events" class="text-gray-300 hover:text-primary transition-colors">Events</a></li>
+                        <li><a href="#resources" class="text-gray-300 hover:text-primary transition-colors">Resources</a></li>
+                        <li><a href="#" class="text-gray-300 hover:text-primary transition-colors">Webinars</a></li>
+                        <li><a href="#" class="text-gray-300 hover:text-primary transition-colors">Magazine</a></li>
+                    </ul>
+                </div>
+
+                <!-- Framework -->
+                <div>
+                    <h4 class="text-lg font-semibold mb-6">Framework Elements</h4>
+                    <ul class="space-y-3">
+                        <li><a href="#" class="text-gray-300 hover:text-primary transition-colors">Farm Power</a></li>
+                        <li><a href="#" class="text-gray-300 hover:text-primary transition-colors">Innovative Financing</a></li>
+                        <li><a href="#" class="text-gray-300 hover:text-primary transition-colors">Sustainable Systems</a></li>
+                        <li><a href="#" class="text-gray-300 hover:text-primary transition-colors">Social Sustainability</a></li>
+                        <li><a href="#" class="text-gray-300 hover:text-primary transition-colors">Human Resources</a></li>
+                    </ul>
+                </div>
+
+                <!-- Contact -->
+                <div>
+                    <h4 class="text-lg font-semibold mb-6">Contact Information</h4>
+                    <ul class="space-y-3">
+                        <li class="flex items-center space-x-3">
+                            <i class="fas fa-envelope text-primary"></i>
+                            <span class="text-gray-300">info@africamechanize.org</span>
+                        </li>
+                        <li class="flex items-center space-x-3">
+                            <i class="fas fa-phone text-primary"></i>
+                            <span class="text-gray-300">+1 (555) 123-4567</span>
+                        </li>
+                        <li class="flex items-center space-x-3">
+                            <i class="fas fa-map-marker-alt text-primary"></i>
+                            <span class="text-gray-300">Rome, Italy</span>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="border-t border-gray-700 mt-12 pt-8 text-center">
+                <p class="text-gray-400">
+                    &copy; 2024 AfricaMechanize. All rights reserved. | 
+                    <a href="#" class="hover:text-primary transition-colors">Privacy Policy</a> | 
+                    <a href="#" class="hover:text-primary transition-colors">Terms of Service</a>
+                </p>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // TODO: Implement business logic, API calls, and state management
+        (function() {
+            'use strict';
+            
+            // Initialize smooth scrolling for navigation links
+            document.querySelectorAll('a[href^="#"]').forEach(function(anchor) {
+                anchor.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    const target = document.querySelector(this.getAttribute('href'));
+                    if (target) {
+                        target.scrollIntoView({
+                            behavior: 'smooth',
+                            block: 'start'
+                        });
+                    }
+                });
+            });
+
+            // Add parallax effect to hero section
+            window.addEventListener('scroll', function() {
+                const scrolled = window.pageYOffset;
+                const parallaxElements = document.querySelectorAll('.parallax-bg');
+                
+                parallaxElements.forEach(function(element) {
+                    const speed = 0.5;
+                    element.style.transform = `translateY(${scrolled * speed}px)`;
+                });
+            });
+
+            // Add fade-in animation on scroll
+            const observerOptions = {
+                threshold: 0.1,
+                rootMargin: '0px 0px -50px 0px'
+            };
+
+            const observer = new IntersectionObserver(function(entries) {
+                entries.forEach(function(entry) {
+                    if (entry.isIntersecting) {
+                        entry.target.style.opacity = '1';
+                        entry.target.style.transform = 'translateY(0)';
+                    }
+                });
+            }, observerOptions);
+
+            // Observe elements with fade-in animation
+            document.querySelectorAll('.animate-fade-in, .animate-slide-up').forEach(function(element) {
+                element.style.opacity = '0';
+                element.style.transform = 'translateY(30px)';
+                element.style.transition = 'opacity 0.8s ease, transform 0.8s ease';
+                observer.observe(element);
+            });
+
+            // Add loading state management
+            window.addEventListener('load', function() {
+                document.body.classList.add('loaded');
+            });
+
+            // Add form validation
+            document.querySelectorAll('form').forEach(function(form) {
+                form.addEventListener('submit', function(e) {
+                    e.preventDefault();
+                    // TODO: Add form validation logic
+                    console.log('Form submitted:', new FormData(form));
+                });
+            });
+
+            // Add search functionality
+            function initializeSearch() {
+                const searchInputs = document.querySelectorAll('input[type="search"]');
+                searchInputs.forEach(function(input) {
+                    input.addEventListener('input', function(e) {
+                        const query = e.target.value.toLowerCase();
+                        // TODO: Implement search functionality
+                        console.log('Search query:', query);
+                    });
+                });
+            }
+
+            // Initialize components
+            initializeSearch();
+            
+            // Add error handling
+            window.addEventListener('error', function(e) {
+                console.error('Application error:', e.error);
+                // TODO: Implement error reporting
+            });
+
+            // Add offline support
+            window.addEventListener('online', function() {
+                console.log('Application is online');
+                // TODO: Sync offline data
+            });
+
+            window.addEventListener('offline', function() {
+                console.log('Application is offline');
+                // TODO: Enable offline mode
+            });
+        })();
+    </script>
+</body>
+</html>

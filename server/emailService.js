@@ -1,4 +1,4 @@
-import nodemailer from 'nodemailer';
+import nodemailer from "nodemailer";
 
 // Email configuration
 let transporter;
@@ -8,45 +8,47 @@ if (process.env.SMTP_HOST && process.env.SMTP_USER && process.env.SMTP_PASS) {
   transporter = nodemailer.createTransport({
     host: process.env.SMTP_HOST,
     port: process.env.SMTP_PORT || 587,
-    secure: process.env.SMTP_SECURE === 'true',
+    secure: process.env.SMTP_SECURE === "true",
     auth: {
       user: process.env.SMTP_USER,
       pass: process.env.SMTP_PASS,
     },
   });
-  console.log('📧 Email service configured with custom SMTP');
+  console.log("📧 Email service configured with custom SMTP");
 } else {
   // No email configuration - disable email functionality
-  console.log('⚠️  No SMTP credentials configured. Email functionality disabled.');
+  console.log(
+    "⚠️  No SMTP credentials configured. Email functionality disabled."
+  );
   transporter = null;
 }
 
 export async function sendEmail({ to, subject, text, html }) {
   try {
     if (!transporter) {
-      console.log('📧 Email not sent - SMTP not configured:', { to, subject });
+      console.log("📧 Email not sent - SMTP not configured:", { to, subject });
       return false;
     }
-    
+
     const mailOptions = {
-      from: process.env.FROM_EMAIL || 'noreply@africamechanize.org',
+      from: process.env.FROM_EMAIL || "noreply@africamechanize.org",
       to,
       subject,
-      text: text || html?.replace(/<[^>]*>/g, ''), // Strip HTML for text version
+      text: text || html?.replace(/<[^>]*>/g, ""), // Strip HTML for text version
       html,
     };
-    
+
     const info = await transporter.sendMail(mailOptions);
-    
-    console.log('📧 Email sent successfully:', {
+
+    console.log("📧 Email sent successfully:", {
       to,
       subject,
       messageId: info.messageId,
     });
-    
+
     return true;
   } catch (error) {
-    console.error('📧 Email send error:', error.message);
+    console.error("📧 Email send error:", error.message);
     return false;
   }
 }
@@ -54,14 +56,16 @@ export async function sendEmail({ to, subject, text, html }) {
 export async function sendWelcomeEmail(user) {
   return await sendEmail({
     to: user.email,
-    subject: 'Welcome to Africa Mechanize!',
+    subject: "Welcome to Africa Mechanize!",
     html: `
       <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
         <div style="background: linear-gradient(135deg, #22c55e, #16a34a); padding: 20px; text-align: center;">
           <h1 style="color: white; margin: 0;">Welcome to Africa Mechanize!</h1>
         </div>
         <div style="padding: 30px 20px; background: white;">
-          <h2 style="color: #333; margin-bottom: 20px;">Hi ${user.firstName}!</h2>
+          <h2 style="color: #333; margin-bottom: 20px;">Hi ${
+            user.firstName
+          }!</h2>
           <p style="color: #666; line-height: 1.6; margin-bottom: 25px;">
             Welcome to the Africa Mechanize platform! You're now part of a community dedicated to 
             promoting sustainable agricultural mechanization across Africa.
@@ -77,7 +81,7 @@ export async function sendWelcomeEmail(user) {
             </ul>
           </div>
           <div style="text-align: center; margin: 30px 0;">
-            <a href="${process.env.BASE_URL || 'http://localhost:5000'}" 
+            <a href="${process.env.BASE_URL || "http://localhost:5000"}" 
                style="background: #22c55e; color: white; padding: 12px 24px; text-decoration: none; 
                       border-radius: 6px; font-weight: 600; display: inline-block;">
               Get Started
@@ -88,6 +92,6 @@ export async function sendWelcomeEmail(user) {
           © 2025 Africa Mechanize. All rights reserved.
         </div>
       </div>
-    `
+    `,
   });
 }
