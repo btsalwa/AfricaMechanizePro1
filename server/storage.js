@@ -507,10 +507,11 @@ export class DatabaseStorage {
     const existingTableData = {
       title: resourceData.title,
       description: resourceData.description,
-      type: resourceData.resourceType || resourceData.type, // map resourceType to type
-      resource_type: resourceData.resourceType || resourceData.type, // ensure compatibility
+      resourceType: resourceData.resourceType || resourceData.type || resourceData.resource_type, // map to schema field
       category: resourceData.category,
-      file_url: resourceData.fileUrl || resourceData.file_url,
+      fileUrl: resourceData.fileUrl || resourceData.file_url,
+      fileName: resourceData.fileName || resourceData.file_name,
+      author: resourceData.author,
       language: resourceData.language || "en",
     };
 

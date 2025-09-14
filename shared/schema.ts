@@ -47,6 +47,7 @@ export const webinars = pgTable("webinars", {
   tags: text("tags").array(),
   category: varchar("category", { length: 100 }),
   language: varchar("language", { length: 10 }).default("en"),
+  meetingUrl: varchar("meeting_url", { length: 500 }), // Zoom, Google Meet, Teams, etc.
   isPublic: boolean("is_public").default(true),
   createdAt: timestamp("created_at").defaultNow(),
   updatedAt: timestamp("updated_at").defaultNow(),
