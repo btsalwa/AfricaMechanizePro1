@@ -268,17 +268,13 @@ router.put("/webinars/:id", verifyAdminToken, async (req, res) => {
     // Set updatedAt to current timestamp
     updateData.updatedAt = new Date();
 
-    const updated = await db
-      .update(webinars)
-      .set(updateData)
-      .where(eq(webinars.id, webinarId))
-      .returning();
+    const updated = await storage.updateWebinar(webinarId, updateData);
 
-    if (updated.length === 0) {
+    if (!updated) {
       return res.status(404).json({ error: "Webinar not found" });
     }
 
-    return res.json(updated[0]);
+    return res.json(updated);
   } catch (error) {
     console.error("Update webinar error:", error);
     return res.status(500).json({ error: "Failed to update webinar" });
