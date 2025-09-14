@@ -1,4 +1,4 @@
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useMutation } from "@tanstack/react-query";
 import { useRoute } from "wouter";
 import { useAuth } from "@/hooks/useAuth";
 import { Button } from "@/components/ui/button";
@@ -7,6 +7,8 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Alert, AlertDescription } from "@/components/ui/alert";
+import { useToast } from "@/hooks/use-toast";
+import { apiRequest } from "@/lib/queryClient";
 import { 
   Calendar, 
   Clock, 
@@ -25,10 +27,50 @@ import { Link } from "wouter";
 export default function WebinarDetail() {
   const [match, params] = useRoute("/webinars/:slug");
   const { isAuthenticated, user } = useAuth();
+  const { toast } = useToast();
   
   const { data: webinar, isLoading } = useQuery({
     queryKey: [`/api/webinars/${params?.slug}`],
     enabled: !!params?.slug
+  });
+
+  // Mutation for joining meeting (getting meeting URL)
+  const joinMeetingMutation = useMutation({
+    mutationFn: async () => {
+      const response = await apiRequest(`/api/webinars/${params?.slug}/meeting-url`, {
+        method: 'GET'
+      });
+      return response;
+    },
+    onSuccess: (data) => {
+      // Open meeting URL in new tab
+      window.open(data.meetingUrl, '_blank');
+      toast({
+        title: "Joining Meeting",
+        description: `Opening ${data.webinarTitle} meeting in new tab`,
+      });
+    },
+    onError: (error) => {
+      if (error.message.includes('must be registered')) {
+        toast({
+          title: "Registration Required",
+          description: "You must register for this webinar to access the meeting link",
+          variant: "destructive",
+        });
+      } else if (error.message.includes('Authentication required')) {
+        toast({
+          title: "Login Required",
+          description: "Please log in to access the meeting link",
+          variant: "destructive",
+        });
+      } else {
+        toast({
+          title: "Access Error",
+          description: error.message || "Failed to access meeting link",
+          variant: "destructive",
+        });
+      }
+    }
   });
 
   if (!match) {
@@ -229,6 +271,7 @@ export default function WebinarDetail() {
                   onClick={handleRegister}
                   disabled={!isAuthenticated || webinar.isRegistered}
                   className="bg-primary hover:bg-primary/90"
+                  data-testid="button-register"
                 >
                   {!isAuthenticated ? (
                     <>
@@ -247,6 +290,31 @@ export default function WebinarDetail() {
                 <Button size="lg" className="bg-red-600 hover:bg-red-700">
                   <Play className="w-5 h-5 mr-2" />
                   Join Live Session
+                </Button>
+              )}
+
+              {/* Join Meeting Button - only show if meeting URL is available */}
+              {webinar.hasMeetingUrl && (
+                <Button 
+                  size="lg" 
+                  onClick={() => joinMeetingMutation.mutate()}
+                  disabled={!isAuthenticated || joinMeetingMutation.isPending}
+                  className="bg-blue-600 hover:bg-blue-700"
+                  data-testid="button-join-meeting"
+                >
+                  {!isAuthenticated ? (
+                    <>
+                      <Lock className="w-5 h-5 mr-2" />
+                      Login to Join Meeting
+                    </>
+                  ) : joinMeetingMutation.isPending ? (
+                    "Joining..."
+                  ) : (
+                    <>
+                      <ExternalLink className="w-5 h-5 mr-2" />
+                      Join Meeting
+                    </>
+                  )}
                 </Button>
               )}
             </div>

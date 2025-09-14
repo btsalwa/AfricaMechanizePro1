@@ -59,7 +59,16 @@ router.get('/', async (req, res) => {
 
     const result = await query;
 
-    res.json(result);
+    // Remove meeting URLs from public response for security
+    const publicResult = result.map(webinar => {
+      const { meetingUrl, ...publicWebinarData } = webinar;
+      return {
+        ...publicWebinarData,
+        hasMeetingUrl: !!meetingUrl // Indicate if meeting URL is available
+      };
+    });
+
+    res.json(publicResult);
   } catch (error) {
     console.error('Error fetching webinars:', error);
     res.status(500).json({ message: 'Failed to fetch webinars' });
@@ -130,15 +139,19 @@ router.get('/:slug', async (req, res) => {
       isRegistered = registration.length > 0;
     }
 
+    // Remove meeting URL from public response - only available through protected endpoint
+    const { meetingUrl, ...publicWebinarData } = webinar;
+
     res.json({
-      ...webinar,
+      ...publicWebinarData,
       resources: {
         public: publicResources,
         authenticated: authResources
       },
       recordings: recordings,
       isRegistered: isRegistered,
-      canViewRecordings: isAuthenticated
+      canViewRecordings: isAuthenticated,
+      hasMeetingUrl: !!meetingUrl // Indicate if meeting URL is available
     });
   } catch (error) {
     console.error('Error fetching webinar:', error);
@@ -285,6 +298,61 @@ router.get('/user/registrations', requireAuth, async (req, res) => {
   } catch (error) {
     console.error('Error fetching user registrations:', error);
     res.status(500).json({ message: 'Failed to fetch registrations' });
+  }
+});
+
+// Get meeting URL for a webinar (authenticated users only)
+router.get('/:slug/meeting-url', requireAuth, async (req, res) => {
+  try {
+    const { slug } = req.params;
+    const userId = req.user.id;
+
+    // Get webinar
+    const [webinar] = await db
+      .select()
+      .from(webinars)
+      .where(and(
+        eq(webinars.slug, slug),
+        eq(webinars.isPublic, true)
+      ));
+
+    if (!webinar) {
+      return res.status(404).json({ message: 'Webinar not found' });
+    }
+
+    // Check if webinar has a meeting URL
+    if (!webinar.meetingUrl) {
+      return res.status(404).json({ message: 'Meeting URL not available for this webinar' });
+    }
+
+    // If registration is required, check if user is registered
+    if (webinar.registrationRequired) {
+      const registration = await db
+        .select()
+        .from(webinarRegistrations)
+        .where(and(
+          eq(webinarRegistrations.webinarId, webinar.id),
+          eq(webinarRegistrations.userId, userId)
+        ))
+        .limit(1);
+
+      if (registration.length === 0) {
+        return res.status(403).json({ 
+          message: 'You must be registered for this webinar to access the meeting link',
+          requiresRegistration: true 
+        });
+      }
+    }
+
+    res.json({
+      meetingUrl: webinar.meetingUrl,
+      webinarTitle: webinar.title,
+      scheduledDate: webinar.scheduledDate,
+      duration: webinar.duration
+    });
+  } catch (error) {
+    console.error('Error fetching meeting URL:', error);
+    res.status(500).json({ message: 'Failed to fetch meeting URL' });
   }
 });
 
