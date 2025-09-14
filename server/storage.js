@@ -217,7 +217,7 @@ export class DatabaseStorage {
   // Newsletter methods
   async createNewsletter(insertNewsletter) {
     const [newsletter] = await db
-      .insert(newsletters)
+      .insert(newsletterSubscriptions)
       .values(insertNewsletter)
       .returning();
     return newsletter;
@@ -226,7 +226,7 @@ export class DatabaseStorage {
   // Contact methods
   async createContact(insertContact) {
     const [contact] = await db
-      .insert(contacts)
+      .insert(contactForms)
       .values(insertContact)
       .returning();
     return contact;

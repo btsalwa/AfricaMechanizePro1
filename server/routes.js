@@ -352,7 +352,7 @@ export async function registerRoutes(app) {
   // Newsletter endpoints
   router.post("/api/newsletter", async (req, res) => {
     try {
-      const validatedData = insertNewsletterSchema.parse(req.body);
+      const validatedData = insertNewsletterSubscriptionSchema.parse(req.body);
       const newsletter = await storage.createNewsletter(validatedData);
       res.status(201).json(newsletter);
     } catch (error) {
@@ -363,7 +363,7 @@ export async function registerRoutes(app) {
   // Contact endpoints
   router.post("/api/contact", async (req, res) => {
     try {
-      const validatedData = insertContactSchema.parse(req.body);
+      const validatedData = insertContactFormSchema.parse(req.body);
       const contact = await storage.createContact(validatedData);
       res.status(201).json(contact);
     } catch (error) {
