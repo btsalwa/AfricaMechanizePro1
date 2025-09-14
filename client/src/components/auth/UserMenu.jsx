@@ -10,20 +10,33 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { useAuth, useLogout } from "@/hooks/useAuth";
 import { User, Settings, LogOut, Shield } from "lucide-react";
-import { Link } from "wouter";
+import { Link, useLocation } from "wouter";
 
 export const UserMenu = () => {
   const { user } = useAuth();
-  const { logout } = useLogout();
+  const { mutateAsync: logout } = useLogout(); // use mutation function
+  const [, setLocation] = useLocation();
 
   if (!user) {
     return null;
   }
 
-  const userInitials = user.firstName && user.lastName 
-    ? `${user.firstName[0]}${user.lastName[0]}`.toUpperCase()
-    : user.email ? user.email[0].toUpperCase()
-    : 'U';
+  const userInitials =
+    user.firstName && user.lastName
+      ? `${user.firstName[0]}${user.lastName[0]}`.toUpperCase()
+      : user.email
+      ? user.email[0].toUpperCase()
+      : "U";
+
+  const handleLogout = async () => {
+    try {
+      await logout();
+      // After logout, redirect to login or landing page
+      setLocation("/login");
+    } catch (error) {
+      console.error("Logout failed:", error);
+    }
+  };
 
   return (
     <DropdownMenu>
@@ -39,14 +52,9 @@ export const UserMenu = () => {
         <DropdownMenuLabel className="font-normal">
           <div className="flex flex-col space-y-1">
             <p className="text-sm font-medium leading-none">
-              {user.firstName && user.lastName 
-                ? `${user.firstName} ${user.lastName}`
-                : user.email
-              }
+              {user.firstName && user.lastName ? `${user.firstName} ${user.lastName}` : user.email}
             </p>
-            <p className="text-xs leading-none text-muted-foreground">
-              {user.email}
-            </p>
+            <p className="text-xs leading-none text-muted-foreground">{user.email}</p>
           </div>
         </DropdownMenuLabel>
         <DropdownMenuSeparator />
@@ -71,8 +79,8 @@ export const UserMenu = () => {
           </DropdownMenuItem>
         )}
         <DropdownMenuSeparator />
-        <DropdownMenuItem 
-          onClick={logout} 
+        <DropdownMenuItem
+          onClick={handleLogout}
           className="flex items-center cursor-pointer text-red-600 focus:text-red-600"
         >
           <LogOut className="mr-2 h-4 w-4" />

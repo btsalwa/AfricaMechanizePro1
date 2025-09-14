@@ -58,7 +58,7 @@ export const Header = () => {
 
   const navItems = [
     { href: "/", label: "Home" },
-    { href: "/legacy-content", label: "Legacy Resources", badge: "42 Resources" },
+    // { href: "/legacy-content", label: "Legacy Resources", badge: "42 Resources" },
     {
       href: "/framework",
       label: "Framework",

@@ -166,7 +166,7 @@ export const NewsletterSignup = () => {
             </Button>
             <Button 
               variant="outline"
-              className="border-2 border-white text-white hover:bg-white hover:text-primary px-8 py-4 rounded-full font-semibold transition-all duration-300"
+              className="border-2 border-white text-black hover:bg-white hover:text-primary px-8 py-4 rounded-full font-semibold transition-all duration-300"
             >
               Contact Us
             </Button>

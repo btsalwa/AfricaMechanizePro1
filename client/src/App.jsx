@@ -16,7 +16,8 @@ import News from "./pages/News";
 import NotFound from "./pages/not-found";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
-import EmailVerification from "./pages/EmailVerification";
+// import EmailVerification from "./pages/EmailVerification";
+import VerifyEmailPage from "./hooks/VerifyEmailPage";
 import ResetPassword from "./pages/ResetPassword";
 import WebinarDetail from "./pages/WebinarDetail";
 import Webinars from "./pages/Webinars";
@@ -49,16 +50,29 @@ function Router() {
           <Route path="/news" component={News} />
           <Route path="/login" component={Login} />
           <Route path="/register" component={Register} />
-          <Route path="/verify-email" component={EmailVerification} />
+          {/* <Route path="/verify-email" component={EmailVerification} /> */}
+          <Route path="/verify-email" component={VerifyEmailPage} />
           <Route path="/reset-password" component={ResetPassword} />
           <Route path="/webinars" component={Webinars} />
-          <Route path="/webinars/presentations" component={WebinarPresentations} />
+          <Route
+            path="/webinars/presentations"
+            component={WebinarPresentations}
+          />
           <Route path="/webinars/:slug" component={WebinarDetail} />
           <Route path="/framework/farm-power" component={FarmPower} />
-          <Route path="/framework/innovative-financing" component={InnovativeFinancing} />
-          <Route path="/framework/sustainable-systems" component={SustainableSystems} />
+          <Route
+            path="/framework/innovative-financing"
+            component={InnovativeFinancing}
+          />
+          <Route
+            path="/framework/sustainable-systems"
+            component={SustainableSystems}
+          />
           <Route path="/framework/mechanization" component={Mechanization} />
-          <Route path="/framework/social-sustainability" component={SocialSustainability} />
+          <Route
+            path="/framework/social-sustainability"
+            component={SocialSustainability}
+          />
           <Route path="/framework/human-resources" component={HumanResources} />
           <Route path="/admin/login" component={AdminLogin} />
           <Route path="/admin/reset-password" component={AdminResetPassword} />

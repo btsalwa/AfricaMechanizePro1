@@ -2,13 +2,23 @@ import express, { Router } from "express";
 import { createServer } from "http";
 import { storage } from "./storage.js";
 import passport from "passport";
-import { authHelpers, requireAuth, requireEmailVerification, requireAdmin } from "./auth.js";
+import {
+  authHelpers,
+  requireAuth,
+  requireEmailVerification,
+  requireAdmin,
+} from "./auth.js";
 import { sendWelcomeEmail } from "./emailService.js";
 import webinarRoutes from "./routes/webinars.js";
 import adminRoutes from "./routes/admin.js";
-import { 
-  insertFrameworkElementSchema, insertNewsletterSubscriptionSchema, insertContactFormSchema,
-  registerSchema, loginSchema, forgotPasswordSchema, resetPasswordSchema
+import {
+  insertFrameworkElementSchema,
+  insertNewsletterSubscriptionSchema,
+  insertContactFormSchema,
+  registerSchema,
+  loginSchema,
+  forgotPasswordSchema,
+  resetPasswordSchema,
 } from "../shared/schema.js";
 
 export async function registerRoutes(app) {
@@ -50,27 +60,28 @@ export async function registerRoutes(app) {
     try {
       const validatedData = registerSchema.parse(req.body);
       const existingUser = await storage.getUserByEmail(validatedData.email);
-      
+
       if (existingUser) {
         return res.status(400).json({ message: "Email already registered" });
       }
-      
+
       const user = await authHelpers.createUser(validatedData);
-      
+
       // Send welcome email after email verification
       if (user.isEmailVerified) {
         await sendWelcomeEmail(user);
       }
-      
-      res.status(201).json({ 
-        message: "Registration successful! Please check your email to verify your account.",
+
+      res.status(201).json({
+        message:
+          "Registration successful! Please check your email to verify your account.",
         user: {
           id: user.id,
           email: user.email,
           firstName: user.firstName,
           lastName: user.lastName,
-          isEmailVerified: user.isEmailVerified
-        }
+          isEmailVerified: user.isEmailVerified,
+        },
       });
     } catch (error) {
       console.error("Registration error:", error);
@@ -81,21 +92,23 @@ export async function registerRoutes(app) {
   router.post("/api/auth/login", (req, res, next) => {
     try {
       const validatedData = loginSchema.parse(req.body);
-      
-      passport.authenticate('local', (err, user, info) => {
+
+      passport.authenticate("local", (err, user, info) => {
         if (err) {
           return res.status(500).json({ message: "Authentication error" });
         }
-        
+
         if (!user) {
-          return res.status(401).json({ message: info?.message || "Invalid credentials" });
+          return res
+            .status(401)
+            .json({ message: info?.message || "Invalid credentials" });
         }
-        
+
         req.logIn(user, (err) => {
           if (err) {
             return res.status(500).json({ message: "Login failed" });
           }
-          
+
           res.json({
             message: "Login successful",
             user: {
@@ -106,8 +119,8 @@ export async function registerRoutes(app) {
               role: user.role,
               isEmailVerified: user.isEmailVerified,
               organization: user.organization,
-              country: user.country
-            }
+              country: user.country,
+            },
           });
         });
       })(req, res, next);
@@ -137,25 +150,57 @@ export async function registerRoutes(app) {
       country: req.user.country,
       profileImage: req.user.profileImage,
       bio: req.user.bio,
-      lastLoginAt: req.user.lastLoginAt
+      lastLoginAt: req.user.lastLoginAt,
     });
   });
 
   router.get("/api/auth/verify-email", async (req, res) => {
     try {
       const { token } = req.query;
+
       if (!token) {
-        return res.status(400).json({ message: "Verification token is required" });
+        console.warn("[Email Verification] Missing token in request");
+        return res
+          .status(400)
+          .json({ message: "Verification token is required" });
       }
-      
+
+      console.log(`[Email Verification] Received token: ${token}`);
+
+      // Validate and mark user email as verified
       const user = await authHelpers.verifyEmail(token);
-      
-      // Send welcome email after successful verification
-      await sendWelcomeEmail(user);
-      
-      res.json({ message: "Email verified successfully! Welcome to Africa Mechanize." });
+
+      console.log(
+        `[Email Verification] User verified: ID=${user.id}, Email=${user.email}`
+      );
+
+      // Send welcome email asynchronously, don’t block response
+      sendWelcomeEmail(user).catch((err) => {
+        console.error(
+          "[Email Verification] Failed to send welcome email:",
+          err
+        );
+      });
+
+      // Success response with user info for frontend
+      res.json({
+        message: "Email verified successfully! Welcome to Africa Mechanize.",
+        user: {
+          id: user.id,
+          email: user.email,
+          firstName: user.firstName,
+          lastName: user.lastName,
+          isEmailVerified: true,
+        },
+      });
     } catch (error) {
-      res.status(400).json({ message: error.message });
+      console.error("[Email Verification] Error:", error);
+      const errMsg =
+        error.message === "Invalid or expired verification token"
+          ? "Verification link is invalid or expired. Please register again or contact support."
+          : error.message || "Email verification failed";
+
+      res.status(400).json({ message: errMsg });
     }
   });
 
@@ -166,14 +211,19 @@ export async function registerRoutes(app) {
       res.json({ message: "Password reset email sent" });
     } catch (error) {
       // Don't reveal if email exists or not for security
-      res.json({ message: "If the email exists, a password reset link has been sent" });
+      res.json({
+        message: "If the email exists, a password reset link has been sent",
+      });
     }
   });
 
   router.post("/api/auth/reset-password", async (req, res) => {
     try {
       const validatedData = resetPasswordSchema.parse(req.body);
-      await authHelpers.resetPassword(validatedData.token, validatedData.password);
+      await authHelpers.resetPassword(
+        validatedData.token,
+        validatedData.password
+      );
       res.json({ message: "Password reset successful" });
     } catch (error) {
       res.status(400).json({ message: error.message });
@@ -187,9 +237,9 @@ export async function registerRoutes(app) {
         lastName: req.body.lastName,
         organization: req.body.organization,
         country: req.body.country,
-        bio: req.body.bio
+        bio: req.body.bio,
       };
-      
+
       const updatedUser = await storage.updateUser(req.user.id, updates);
       res.json({
         message: "Profile updated successfully",
@@ -200,8 +250,8 @@ export async function registerRoutes(app) {
           lastName: updatedUser.lastName,
           organization: updatedUser.organization,
           country: updatedUser.country,
-          bio: updatedUser.bio
-        }
+          bio: updatedUser.bio,
+        },
       });
     } catch (error) {
       res.status(400).json({ message: error.message });
@@ -220,7 +270,9 @@ export async function registerRoutes(app) {
 
   router.get("/api/framework/:id", async (req, res) => {
     try {
-      const element = await storage.getFrameworkElement(parseInt(req.params.id));
+      const element = await storage.getFrameworkElement(
+        parseInt(req.params.id)
+      );
       if (!element) {
         return res.status(404).json({ error: "Framework element not found" });
       }
@@ -266,7 +318,7 @@ export async function registerRoutes(app) {
   router.get("/api/resources", async (req, res) => {
     try {
       const { category } = req.query;
-      const resources = category 
+      const resources = category
         ? await storage.getResourcesByCategory(category)
         : await storage.getAllResources();
       res.json(resources);
@@ -341,7 +393,7 @@ export async function registerRoutes(app) {
 
   // Mount webinar routes
   router.use("/api/webinars", webinarRoutes);
-  
+
   // Mount admin routes
   router.use("/api/admin", adminRoutes);
 
@@ -378,7 +430,10 @@ export async function registerRoutes(app) {
   // Admin CRUD Routes
   router.patch("/api/resources/:id", async (req, res) => {
     try {
-      const resource = await storage.updateResource(parseInt(req.params.id), req.body);
+      const resource = await storage.updateResource(
+        parseInt(req.params.id),
+        req.body
+      );
       res.json(resource);
     } catch (error) {
       res.status(500).json({ error: "Failed to update resource" });
@@ -396,7 +451,10 @@ export async function registerRoutes(app) {
 
   router.patch("/api/events/:id", async (req, res) => {
     try {
-      const event = await storage.updateEvent(parseInt(req.params.id), req.body);
+      const event = await storage.updateEvent(
+        parseInt(req.params.id),
+        req.body
+      );
       res.json(event);
     } catch (error) {
       res.status(500).json({ error: "Failed to update event" });
@@ -414,28 +472,114 @@ export async function registerRoutes(app) {
 
   router.post("/api/webinars", async (req, res) => {
     try {
-      const webinar = await storage.createWebinar(req.body);
-      res.json(webinar);
+      const body = { ...req.body };
+
+      // Required fields
+      if (!body.title || !body.slug || !body.scheduledDate) {
+        return res
+          .status(400)
+          .json({ error: "Title, slug, and scheduledDate are required" });
+      }
+
+      // Validate scheduledDate
+      const parsedDate = new Date(body.scheduledDate);
+      if (isNaN(parsedDate.getTime())) {
+        return res
+          .status(400)
+          .json({ error: "Invalid scheduledDate format, expected ISO string" });
+      }
+      body.scheduledDate = parsedDate;
+
+      // Duration validation
+      if (body.duration) {
+        const duration = parseInt(body.duration, 10);
+        if (isNaN(duration) || duration <= 0) {
+          return res
+            .status(400)
+            .json({ error: "Duration must be a positive number" });
+        }
+        body.duration = duration;
+      }
+
+      // Normalize tags
+      if (body.tags && typeof body.tags === "string") {
+        body.tags = body.tags
+          .split(",")
+          .map((tag) => tag.trim())
+          .filter(Boolean);
+      }
+
+      if (!body.language) {
+        body.language = "en";
+      }
+
+      body.createdAt = new Date();
+      body.updatedAt = new Date();
+
+      const webinar = await storage.createWebinar(body);
+      res.status(201).json(webinar);
     } catch (error) {
+      console.error("Create webinar error:", error);
       res.status(500).json({ error: "Failed to create webinar" });
     }
   });
 
-  router.patch("/api/webinars/:id", async (req, res) => {
+  router.put("/api/webinars/:id", async (req, res) => {
     try {
-      const webinar = await storage.updateWebinar(parseInt(req.params.id), req.body);
-      res.json(webinar);
-    } catch (error) {
-      res.status(500).json({ error: "Failed to update webinar" });
-    }
-  });
+      const id = parseInt(req.params.id, 10);
+      if (isNaN(id)) {
+        return res.status(400).json({ error: "Invalid webinar ID" });
+      }
 
-  router.delete("/api/webinars/:id", async (req, res) => {
-    try {
-      await storage.deleteWebinar(parseInt(req.params.id));
-      res.json({ message: "Webinar deleted successfully" });
+      const body = { ...req.body };
+
+      // Validate scheduledDate
+      if (body.scheduledDate) {
+        const parsedDate = new Date(body.scheduledDate);
+        if (isNaN(parsedDate.getTime())) {
+          return res.status(400).json({
+            error: "Invalid scheduledDate format, expected ISO string",
+          });
+        }
+        body.scheduledDate = parsedDate;
+      }
+
+      // Ensure duration is a number
+      if (body.duration) {
+        const duration = parseInt(body.duration, 10);
+        if (isNaN(duration) || duration <= 0) {
+          return res
+            .status(400)
+            .json({ error: "Duration must be a positive number" });
+        }
+        body.duration = duration;
+      }
+
+      // Normalize tags
+      if (body.tags && typeof body.tags === "string") {
+        body.tags = body.tags
+          .split(",")
+          .map((tag) => tag.trim())
+          .filter(Boolean);
+      }
+
+      // Default language
+      if (!body.language) {
+        body.language = "en";
+      }
+
+      body.updatedAt = new Date();
+
+      const webinar = await storage.updateWebinar(id, body);
+
+      if (!webinar) {
+        return res.status(404).json({ error: "Webinar not found" });
+      }
+
+      res.json({ message: "Webinar updated successfully", webinar });
     } catch (error) {
-      res.status(500).json({ error: "Failed to delete webinar" });
+      console.error("Update webinar error:", error);
+      res.status(500).json({ error: "Failed to update webinar" });
     }
   });
 
@@ -450,7 +594,10 @@ export async function registerRoutes(app) {
 
   router.patch("/api/materials/:id", async (req, res) => {
     try {
-      const material = await storage.updateReadingMaterial(parseInt(req.params.id), req.body);
+      const material = await storage.updateReadingMaterial(
+        parseInt(req.params.id),
+        req.body
+      );
       res.json(material);
     } catch (error) {
       res.status(500).json({ error: "Failed to update material" });
@@ -469,40 +616,40 @@ export async function registerRoutes(app) {
   // Legacy data migration endpoints
   router.post("/api/migration/import-legacy-data", async (req, res) => {
     try {
-      const { LegacyDataImporter } = await import('./legacyDataImporter.js');
+      const { LegacyDataImporter } = await import("./legacyDataImporter.js");
       const importer = new LegacyDataImporter();
-      
+
       // Execute the comprehensive import
       const importResults = await importer.importAllLegacyContent();
-      
+
       // Get updated legacy admin accounts
       const legacyAccounts = await storage.getLegacyAdminAccounts();
-      
+
       res.json({
         success: true,
-        message: 'Legacy data import completed successfully',
+        message: "Legacy data import completed successfully",
         summary: {
           adminAccountsImported: legacyAccounts.length,
-          legacyAdminAccounts: legacyAccounts.map(acc => ({
+          legacyAdminAccounts: legacyAccounts.map((acc) => ({
             username: acc.username,
             email: acc.email,
             fullName: acc.full_name,
             adminType: acc.admin_type,
             legacyId: acc.legacy_admin_id,
-            isActive: acc.is_active
+            isActive: acc.is_active,
           })),
           contentImported: importResults.importedCounts,
-          migrationStatus: 'completed',
-          note: 'Comprehensive legacy data import from original africamechanize.org database completed',
-          timestamp: importResults.timestamp
-        }
+          migrationStatus: "completed",
+          note: "Comprehensive legacy data import from original africamechanize.org database completed",
+          timestamp: importResults.timestamp,
+        },
       });
     } catch (error) {
-      console.error('Import legacy data error:', error);
+      console.error("Import legacy data error:", error);
       res.status(500).json({
         success: false,
-        message: 'Legacy data import failed',
-        error: error.message
+        message: "Legacy data import failed",
+        error: error.message,
       });
     }
   });
@@ -510,27 +657,27 @@ export async function registerRoutes(app) {
   router.get("/api/migration/status", async (req, res) => {
     try {
       const legacyAccounts = await storage.getLegacyAdminAccounts();
-      console.log('Legacy accounts data:', legacyAccounts);
-      
+      console.log("Legacy accounts data:", legacyAccounts);
+
       res.json({
         success: true,
         migrationTablesExist: true,
         legacyAccountsCount: legacyAccounts.length,
-        accounts: legacyAccounts.map(acc => ({
+        accounts: legacyAccounts.map((acc) => ({
           username: acc.username,
           email: acc.email,
           fullName: acc.full_name,
           isActive: acc.is_active,
           adminType: acc.admin_type,
           legacyId: acc.legacy_admin_id,
-          createdAt: acc.created_at
-        }))
+          createdAt: acc.created_at,
+        })),
       });
     } catch (error) {
-      console.error('Migration status error:', error);
+      console.error("Migration status error:", error);
       res.status(500).json({
         success: false,
-        error: error.message
+        error: error.message,
       });
     }
   });
@@ -545,53 +692,56 @@ export async function registerRoutes(app) {
             {
               name: "Resource Library",
               priority: "HIGH",
-              description: "100+ educational resources including training manuals, guides, and research papers",
+              description:
+                "100+ educational resources including training manuals, guides, and research papers",
               status: "Schema Ready - Import Needed",
-              impact: "Core educational content from original platform"
+              impact: "Core educational content from original platform",
             },
             {
-              name: "Webinar Community Database", 
+              name: "Webinar Community Database",
               priority: "HIGH",
-              description: "5,000+ webinar attendee records from historical sessions",
-              status: "Schema Ready - Import Needed", 
-              impact: "Engaged community for platform growth"
+              description:
+                "5,000+ webinar attendee records from historical sessions",
+              status: "Schema Ready - Import Needed",
+              impact: "Engaged community for platform growth",
             },
             {
               name: "Project Database",
               priority: "MEDIUM",
-              description: "Historical projects with budgets, locations, and outcomes",
+              description:
+                "Historical projects with budgets, locations, and outcomes",
               status: "Schema Ready - Import Needed",
-              impact: "Project tracking and reporting capabilities"
+              impact: "Project tracking and reporting capabilities",
             },
             {
-              name: "Membership Records", 
+              name: "Membership Records",
               priority: "MEDIUM",
               description: "Professional membership database with credentials",
               status: "Schema Ready - Import Needed",
-              impact: "Community analytics and engagement"
-            }
+              impact: "Community analytics and engagement",
+            },
           ],
           contentStats: {
             adminAccountsImported: 3,
             resourcesAnalyzed: 100,
             webinarAttendeesIdentified: 5000,
             projectsTracked: 50,
-            totalLegacyRecords: 5153
+            totalLegacyRecords: 5153,
           },
           integrationBenefits: [
             "Established content library with proven educational value",
-            "Large engaged community of 5,000+ practitioners", 
+            "Large engaged community of 5,000+ practitioners",
             "Historical project data for reporting and analysis",
             "SEO advantage with optimized content structure",
-            "Seamless user transition from original platform"
-          ]
-        }
+            "Seamless user transition from original platform",
+          ],
+        },
       });
     } catch (error) {
-      console.error('Content analysis error:', error);
+      console.error("Content analysis error:", error);
       res.status(500).json({
         success: false,
-        error: error.message
+        error: error.message,
       });
     }
   });
@@ -599,40 +749,52 @@ export async function registerRoutes(app) {
   // Legacy content access endpoints
   router.get("/api/legacy/resources", async (req, res) => {
     try {
-      const resources = await db.select().from(legacyResources).orderBy(desc(legacyResources.id));
+      const resources = await db
+        .select()
+        .from(legacyResources)
+        .orderBy(desc(legacyResources.id));
       res.json({ success: true, data: resources });
     } catch (error) {
-      console.error('Error fetching legacy resources:', error);
+      console.error("Error fetching legacy resources:", error);
       res.status(500).json({ success: false, error: error.message });
     }
   });
 
   router.get("/api/legacy/webinar-attendees", async (req, res) => {
     try {
-      const attendees = await db.select().from(legacyWebinarAttendees).orderBy(desc(legacyWebinarAttendees.id));
+      const attendees = await db
+        .select()
+        .from(legacyWebinarAttendees)
+        .orderBy(desc(legacyWebinarAttendees.id));
       res.json({ success: true, data: attendees });
     } catch (error) {
-      console.error('Error fetching legacy webinar attendees:', error);
+      console.error("Error fetching legacy webinar attendees:", error);
       res.status(500).json({ success: false, error: error.message });
     }
   });
 
   router.get("/api/legacy/projects", async (req, res) => {
     try {
-      const projects = await db.select().from(legacyProjects).orderBy(desc(legacyProjects.budgetAmount));
+      const projects = await db
+        .select()
+        .from(legacyProjects)
+        .orderBy(desc(legacyProjects.budgetAmount));
       res.json({ success: true, data: projects });
     } catch (error) {
-      console.error('Error fetching legacy projects:', error);
+      console.error("Error fetching legacy projects:", error);
       res.status(500).json({ success: false, error: error.message });
     }
   });
 
   router.get("/api/legacy/membership", async (req, res) => {
     try {
-      const membership = await db.select().from(legacyMembership).orderBy(desc(legacyMembership.id));
+      const membership = await db
+        .select()
+        .from(legacyMembership)
+        .orderBy(desc(legacyMembership.id));
       res.json({ success: true, data: membership });
     } catch (error) {
-      console.error('Error fetching legacy membership:', error);
+      console.error("Error fetching legacy membership:", error);
       res.status(500).json({ success: false, error: error.message });
     }
   });
@@ -641,45 +803,51 @@ export async function registerRoutes(app) {
   router.post("/api/admin/email-campaign", requireAdmin, async (req, res) => {
     try {
       const { subject, message, targetAudience, templateType } = req.body;
-      
+
       // Get target emails based on audience selection
       let targetEmails = [];
-      
-      if (targetAudience === 'legacy-webinar-attendees') {
-        const attendees = await db.select({ 
-          email: legacyWebinarAttendees.email,
-          name: legacyWebinarAttendees.name 
-        }).from(legacyWebinarAttendees);
-        targetEmails = attendees.filter(a => a.email && a.email.includes('@'));
-      } else if (targetAudience === 'legacy-membership') {
-        const members = await db.select({
-          email: legacyMembership.email,
-          name: legacyMembership.name
-        }).from(legacyMembership);
-        targetEmails = members.filter(m => m.email && m.email.includes('@'));
+
+      if (targetAudience === "legacy-webinar-attendees") {
+        const attendees = await db
+          .select({
+            email: legacyWebinarAttendees.email,
+            name: legacyWebinarAttendees.name,
+          })
+          .from(legacyWebinarAttendees);
+        targetEmails = attendees.filter(
+          (a) => a.email && a.email.includes("@")
+        );
+      } else if (targetAudience === "legacy-membership") {
+        const members = await db
+          .select({
+            email: legacyMembership.email,
+            name: legacyMembership.name,
+          })
+          .from(legacyMembership);
+        targetEmails = members.filter((m) => m.email && m.email.includes("@"));
       }
-      
+
       // For now, we'll just log the campaign (since SMTP is not configured)
-      console.log('📧 Email Campaign Created:', {
+      console.log("📧 Email Campaign Created:", {
         subject,
         targetCount: targetEmails.length,
         targetAudience,
-        message: message.substring(0, 100) + '...'
+        message: message.substring(0, 100) + "...",
       });
-      
+
       // In a real implementation, we would:
       // 1. Queue the emails for sending
       // 2. Track campaign metrics
       // 3. Handle bounces and unsubscribes
-      
-      res.json({ 
-        success: true, 
+
+      res.json({
+        success: true,
         message: `Campaign prepared for ${targetEmails.length} recipients`,
         targetCount: targetEmails.length,
-        targets: targetEmails.slice(0, 5).map(t => t.email) // Show first 5 for confirmation
+        targets: targetEmails.slice(0, 5).map((t) => t.email), // Show first 5 for confirmation
       });
     } catch (error) {
-      console.error('Email campaign error:', error);
+      console.error("Email campaign error:", error);
       res.status(500).json({ success: false, error: error.message });
     }
   });
@@ -688,23 +856,34 @@ export async function registerRoutes(app) {
     try {
       const webinarAttendees = await db.select().from(legacyWebinarAttendees);
       const membership = await db.select().from(legacyMembership);
-      
+
       const emailTargets = {
-        'legacy-webinar-attendees': {
-          count: webinarAttendees.filter(a => a.email && a.email.includes('@')).length,
-          description: 'Imported webinar attendees from FAO, CGIAR, ACT Africa and other organizations',
-          sample: webinarAttendees.slice(0, 3).map(a => a.email).filter(e => e && e.includes('@'))
+        "legacy-webinar-attendees": {
+          count: webinarAttendees.filter(
+            (a) => a.email && a.email.includes("@")
+          ).length,
+          description:
+            "Imported webinar attendees from FAO, CGIAR, ACT Africa and other organizations",
+          sample: webinarAttendees
+            .slice(0, 3)
+            .map((a) => a.email)
+            .filter((e) => e && e.includes("@")),
         },
-        'legacy-membership': {
-          count: membership.filter(m => m.email && m.email.includes('@')).length,
-          description: 'Professional members including academic institutions and engineers',
-          sample: membership.slice(0, 3).map(m => m.email).filter(e => e && e.includes('@'))
-        }
+        "legacy-membership": {
+          count: membership.filter((m) => m.email && m.email.includes("@"))
+            .length,
+          description:
+            "Professional members including academic institutions and engineers",
+          sample: membership
+            .slice(0, 3)
+            .map((m) => m.email)
+            .filter((e) => e && e.includes("@")),
+        },
       };
-      
+
       res.json({ success: true, data: emailTargets });
     } catch (error) {
-      console.error('Error fetching email targets:', error);
+      console.error("Error fetching email targets:", error);
       res.status(500).json({ success: false, error: error.message });
     }
   });

@@ -5,6 +5,13 @@ export function useAuth() {
   const { data: user, isLoading } = useQuery({
     queryKey: ["/api/auth/user"],
     retry: false,
+    queryFn: async () => {
+      const response = await fetch("/api/auth/user", {
+        credentials: "include", // send cookies
+      });
+      if (!response.ok) throw new Error("Not authenticated");
+      return response.json();
+    },
   });
 
   return {
@@ -20,30 +27,24 @@ export function useLogin() {
 
   return useMutation({
     mutationFn: async (credentials) => {
-      const response = await fetch('/api/auth/login', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
+      const response = await fetch("/api/auth/login", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        credentials: "include", // send cookies
         body: JSON.stringify(credentials),
       });
-      
+
       if (!response.ok) {
         const error = await response.json();
-        throw new Error(error.message || 'Login failed');
+        throw new Error(error.message || "Login failed");
       }
-      
+
       return response.json();
     },
     onSuccess: (data) => {
-      toast({
-        title: "Login successful",
-        description: "Welcome back!",
-      });
-      // Refresh user data
+      toast({ title: "Login successful", description: "Welcome back!" });
       queryClient.invalidateQueries({ queryKey: ["/api/auth/user"] });
-      // Redirect after successful login
-      setTimeout(() => window.location.href = '/', 100);
+      setTimeout(() => (window.location.href = "/"), 100);
     },
     onError: (error) => {
       toast({
@@ -60,22 +61,21 @@ export function useRegister() {
 
   return useMutation({
     mutationFn: async (userData) => {
-      const response = await fetch('/api/auth/register', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
+      const response = await fetch("/api/auth/register", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        credentials: "include", // send cookies
         body: JSON.stringify(userData),
       });
-      
+
       if (!response.ok) {
         const error = await response.json();
-        throw new Error(error.message || 'Registration failed');
+        throw new Error(error.message || "Registration failed");
       }
-      
+
       return response.json();
     },
-    onSuccess: (data) => {
+    onSuccess: () => {
       toast({
         title: "Registration successful",
         description: "Please check your email to verify your account.",
@@ -91,24 +91,59 @@ export function useRegister() {
   });
 }
 
+export function useVerifyEmail() {
+  const { toast } = useToast();
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async (token) => {
+      const response = await fetch(`/api/auth/verify-email?token=${token}`, {
+        method: "GET",
+        credentials: "include",
+      });
+
+      if (!response.ok) {
+        const error = await response.json();
+        throw new Error(error.message || "Email verification failed");
+      }
+
+      return response.json();
+    },
+    onSuccess: (data) => {
+      toast({
+        title: "Email Verified",
+        description: data.message || "Your email has been verified successfully.",
+      });
+      queryClient.invalidateQueries({ queryKey: ["/api/auth/user"] });
+      setTimeout(() => (window.location.href = "/login"), 1500);
+    },
+    onError: (error) => {
+      toast({
+        title: "Email verification failed",
+        description: error.message || "Please try again or contact support.",
+        variant: "destructive",
+      });
+    },
+  });
+}
+
 export function useForgotPassword() {
   const { toast } = useToast();
 
   return useMutation({
     mutationFn: async (email) => {
-      const response = await fetch('/api/auth/forgot-password', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
+      const response = await fetch("/api/auth/forgot-password", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        credentials: "include",
         body: JSON.stringify({ email }),
       });
-      
+
       if (!response.ok) {
         const error = await response.json();
-        throw new Error(error.message || 'Failed to send reset link');
+        throw new Error(error.message || "Failed to send reset link");
       }
-      
+
       return response.json();
     },
     onSuccess: () => {
@@ -133,14 +168,11 @@ export function useLogout() {
 
   return useMutation({
     mutationFn: async () => {
-      const response = await fetch('/api/auth/logout', {
-        method: 'POST',
+      const response = await fetch("/api/auth/logout", {
+        method: "POST",
+        credentials: "include",
       });
-      
-      if (!response.ok) {
-        throw new Error('Logout failed');
-      }
-      
+      if (!response.ok) throw new Error("Logout failed");
       return response.json();
     },
     onSuccess: () => {
@@ -148,10 +180,8 @@ export function useLogout() {
         title: "Logged out",
         description: "You have been successfully logged out.",
       });
-      // Clear user data
       queryClient.removeQueries({ queryKey: ["/api/auth/user"] });
-      // Redirect to home
-      window.location.href = '/';
+      window.location.href = "/";
     },
     onError: (error) => {
       toast({
@@ -166,27 +196,23 @@ export function useLogout() {
 export function useResetPassword() {
   const resetPassword = async (data) => {
     try {
-      const response = await fetch('/api/auth/reset-password', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
+      const response = await fetch("/api/auth/reset-password", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        credentials: "include",
         body: JSON.stringify(data),
       });
-      
+
       if (!response.ok) {
         const error = await response.json();
-        throw new Error(error.message || 'Password reset failed');
+        throw new Error(error.message || "Password reset failed");
       }
-      
+
       const result = await response.json();
-      
-      // Redirect to login page on success
-      window.location.href = '/login';
-      
+      window.location.href = "/login";
       return result;
     } catch (error) {
-      throw new Error(error.message || 'Password reset failed');
+      throw new Error(error.message || "Password reset failed");
     }
   };
 

@@ -13,6 +13,7 @@ export const users = pgTable("users", {
   isActive: boolean("is_active").default(true),
   isEmailVerified: boolean("is_email_verified").default(false),
   emailVerificationToken: varchar("email_verification_token", { length: 255 }),
+  emailVerificationExpires: timestamp("email_verification_expires"),
   resetPasswordToken: varchar("reset_password_token", { length: 255 }),
   resetPasswordExpires: timestamp("reset_password_expires"),
   lastLoginAt: timestamp("last_login_at"),
@@ -35,7 +36,7 @@ export const webinars = pgTable("webinars", {
   speakerTitle: varchar("speaker_title", { length: 255 }),
   speakerBio: text("speaker_bio"),
   speakerImage: varchar("speaker_image", { length: 500 }),
-  scheduledDate: timestamp("scheduled_date").notNull(),
+  scheduledDate: timestamp("scheduled_date", { mode: "date" }).notNull(),
   duration: integer("duration").notNull(), // in minutes
   status: varchar("status", { length: 20 }).default("upcoming"), // upcoming, live, completed, cancelled
   registrationRequired: boolean("registration_required").default(true),

@@ -130,7 +130,7 @@ export const Hero = () => {
           <Button
             size="lg"
             variant="outline"
-            className="border-2 border-white/50 text-white hover:bg-white/20 hover:border-white backdrop-blur-sm px-8 py-4 rounded-full font-semibold transition-all duration-300 hover:scale-105"
+            className="border-2 border-white/50 text-black hover:bg-white/20 hover:border-white backdrop-blur-sm px-8 py-4 rounded-full font-semibold transition-all duration-300 hover:scale-105"
           >
             <Play className="mr-2 w-5 h-5" />
             Watch Introduction

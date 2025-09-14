@@ -61,9 +61,12 @@ export const setupAuth = async () => {
   passport.deserializeUser(async (id, done) => {
     try {
       const [user] = await db.select().from(users).where(eq(users.id, id));
-      done(null, user);
+      if (!user) {
+        return done(null, false); // user not found, no error
+      }
+      done(null, user); // user found, pass user
     } catch (error) {
-      done(error);
+      done(error); // some DB error happened
     }
   });
 }; // End of setupAuth function
@@ -105,7 +108,7 @@ export const authHelpers = {
       .returning();
 
     // Send verification email
-    if (process.env.NODE_ENV !== "test") {
+    if (process.env.NODE_ENV !== "") {
       await this.sendVerificationEmail(newUser.email, emailVerificationToken);
     }
 
@@ -158,7 +161,7 @@ export const authHelpers = {
       .where(eq(users.id, user.id));
 
     // Send password reset email
-    if (process.env.NODE_ENV !== "test") {
+    if (process.env.NODE_ENV !== "") {
       await this.sendPasswordResetEmail(user.email, resetToken);
     }
 
@@ -196,7 +199,7 @@ export const authHelpers = {
 
   async sendVerificationEmail(email, token) {
     const verificationUrl = `${
-      process.env.BASE_URL || "http://localhost:6000"
+      process.env.BASE_URL || "http://localhost:5000"
     }/verify-email?token=${token}`;
 
     await sendEmail({

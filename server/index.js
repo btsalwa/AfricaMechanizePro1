@@ -23,11 +23,12 @@ app.use(
   session({
     store: new PgStore({
       conString: process.env.DATABASE_URL,
-      createTableIfMissing: false, // We'll create it via migration
+      createTableIfMissing: true, // We'll create it via migration
       tableName: "sessions",
     }),
-    secret: process.env.SESSION_SECRET || "africa-mechanize-dev-secret",
+    secret: process.env.SESSION_SECRET || "P@$$w0rd",
     resave: false,
+    httpOnly: true,
     saveUninitialized: false,
     cookie: {
       secure: process.env.NODE_ENV === "production",

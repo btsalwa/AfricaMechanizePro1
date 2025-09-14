@@ -6,7 +6,7 @@ import { storage } from "../storage.js";
 import { sendEmail } from "../emailService.js";
 
 const router = express.Router();
-const JWT_SECRET = process.env.JWT_SECRET || "your-admin-jwt-secret-key";
+const JWT_SECRET = process.env.JWT_SECRET || "P@$$w0rd";
 const JWT_EXPIRES = "24h";
 
 // Middleware to verify admin JWT token
@@ -19,7 +19,7 @@ const verifyAdminToken = async (req, res, next) => {
 
     const decoded = jwt.verify(token, JWT_SECRET);
     const admin = await storage.getAdminUser(decoded.username);
-    
+
     if (!admin || !admin.isActive) {
       return res.status(401).json({ error: "Invalid token" });
     }
@@ -100,7 +100,9 @@ router.post("/reset-password", async (req, res) => {
     const admin = await storage.getAdminUserByEmail(email);
     if (!admin) {
       // Don't reveal if email exists or not
-      return res.json({ message: "If email exists, reset instructions were sent" });
+      return res.json({
+        message: "If email exists, reset instructions were sent",
+      });
     }
 
     const resetToken = crypto.randomBytes(32).toString("hex");
@@ -111,8 +113,10 @@ router.post("/reset-password", async (req, res) => {
       resetPasswordExpires: resetExpires,
     });
 
-    const resetUrl = `${req.protocol}://${req.get("host")}/admin/reset-password?token=${resetToken}`;
-    
+    const resetUrl = `${req.protocol}://${req.get(
+      "host"
+    )}/admin/reset-password?token=${resetToken}`;
+
     await sendEmail({
       to: email,
       subject: "AfricaMechanize Admin Password Reset",
@@ -246,14 +250,40 @@ router.post("/webinars", verifyAdminToken, async (req, res) => {
 router.put("/webinars/:id", verifyAdminToken, async (req, res) => {
   try {
     const webinarId = parseInt(req.params.id);
-    const webinarData = req.body;
-    const webinar = await storage.updateWebinar(webinarId, webinarData);
-    res.json(webinar);
+    if (isNaN(webinarId)) {
+      return res.status(400).json({ error: "Invalid webinar ID" });
+    }
+
+    const updateData = req.body;
+
+    // Validate and convert scheduledDate if present
+    if (updateData.scheduledDate) {
+      const dateObj = new Date(updateData.scheduledDate);
+      if (isNaN(dateObj.getTime())) {
+        return res.status(400).json({ error: "Invalid scheduledDate value" });
+      }
+      updateData.scheduledDate = dateObj;
+    }
+
+    // Set updatedAt to current timestamp
+    updateData.updatedAt = new Date();
+
+    const updated = await db
+      .update(webinars)
+      .set(updateData)
+      .where(eq(webinars.id, webinarId))
+      .returning();
+
+    if (updated.length === 0) {
+      return res.status(404).json({ error: "Webinar not found" });
+    }
+
+    return res.json(updated[0]);
   } catch (error) {
     console.error("Update webinar error:", error);
-    res.status(500).json({ error: "Failed to update webinar" });
+    return res.status(500).json({ error: "Failed to update webinar" });
   }
-});
+}); 
 
 router.delete("/webinars/:id", verifyAdminToken, async (req, res) => {
   try {
@@ -414,7 +444,10 @@ router.put("/webinar-resources/:id", verifyAdminToken, async (req, res) => {
   try {
     const resourceId = parseInt(req.params.id);
     const resourceData = req.body;
-    const resource = await storage.updateWebinarResource(resourceId, resourceData);
+    const resource = await storage.updateWebinarResource(
+      resourceId,
+      resourceData
+    );
     res.json(resource);
   } catch (error) {
     console.error("Update webinar resource error:", error);

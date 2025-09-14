@@ -20,6 +20,18 @@ import {
 import { db } from "./db.js";
 import { eq, sql, desc } from "drizzle-orm";
 
+// Helper for normalizing date
+function normalizeDate(value) {
+  if (!value) return null;
+  if (value instanceof Date) return value;
+
+  const parsed = new Date(value);
+  if (isNaN(parsed.getTime())) {
+    throw new Error("Invalid scheduledDate format");
+  }
+  return parsed;
+}
+
 export class DatabaseStorage {
   // User methods
   async getUser(id) {
@@ -335,17 +347,56 @@ export class DatabaseStorage {
     await db.delete(contactForms).where(eq(contactForms.id, id));
   }
 
-  async createWebinar(webinarData) {
-    const [webinar] = await db.insert(webinars).values(webinarData).returning();
+  async createWebinar(insertWebinar) {
+    if (!insertWebinar.scheduledDate) {
+      throw new Error("scheduledDate is required");
+    }
+
+    let scheduledDate = insertWebinar.scheduledDate;
+    if (!(scheduledDate instanceof Date)) {
+      const parsed = new Date(scheduledDate);
+      if (isNaN(parsed)) {
+        throw new Error("Invalid scheduledDate format");
+      }
+      scheduledDate = parsed;
+    }
+
+    const [webinar] = await db
+      .insert(webinars)
+      .values({
+        ...insertWebinar,
+        scheduledDate,
+        createdAt: new Date(),
+        updatedAt: new Date(),
+      })
+      .returning();
+
     return webinar;
   }
 
-  async updateWebinar(id, webinarData) {
+  async updateWebinar(id, updateData) {
+    // Clone updateData and set updatedAt timestamp
+    const updatePayload = {
+      ...updateData,
+      updatedAt: new Date(),
+    };
+
+    // Validate and convert scheduledDate if present
+    if (updatePayload.scheduledDate) {
+      const dateObj = new Date(updatePayload.scheduledDate);
+      if (isNaN(dateObj.getTime())) {
+        throw new Error("Invalid scheduledDate");
+      }
+      updatePayload.scheduledDate = dateObj; // Convert to Date instance for ORM
+    }
+
+    // Perform the update and return the updated webinar
     const [webinar] = await db
       .update(webinars)
-      .set({ ...webinarData, updatedAt: new Date() })
+      .set(updatePayload)
       .where(eq(webinars.id, id))
       .returning();
+
     return webinar;
   }
 
@@ -363,28 +414,8 @@ export class DatabaseStorage {
       .select()
       .from(webinars)
       .where(eq(webinars.id, id));
+
     return webinar || undefined;
-  }
-
-  async createWebinar(insertWebinar) {
-    const [webinar] = await db
-      .insert(webinars)
-      .values(insertWebinar)
-      .returning();
-    return webinar;
-  }
-
-  async updateWebinar(id, updateData) {
-    const [webinar] = await db
-      .update(webinars)
-      .set(updateData)
-      .where(eq(webinars.id, id))
-      .returning();
-    return webinar;
-  }
-
-  async deleteWebinar(id) {
-    await db.delete(webinars).where(eq(webinars.id, id));
   }
 
   // Reading Materials methods
