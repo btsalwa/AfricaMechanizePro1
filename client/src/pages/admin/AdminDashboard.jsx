@@ -175,6 +175,15 @@ export default function AdminDashboard() {
     content: "",
   });
 
+  // Form state for Webinar Resources
+  const [webinarResourceFormData, setWebinarResourceFormData] = useState({
+    webinarId: "",
+    title: "",
+    resourceType: "",
+    fileUrl: "",
+    description: "",
+  });
+
   const getAuthHeaders = () => {
     const token = localStorage.getItem("adminToken");
     return {
@@ -1933,7 +1942,7 @@ export default function AdminDashboard() {
                               if (editingNewsEvent) {
                                 await updateNewsEventMutation.mutateAsync({
                                   id: editingNewsEvent.id,
-                                  ...newsEventData
+                                  data: newsEventData
                                 });
                                 setEditingNewsEvent(null);
                                 setIsEditNewsEventOpen(false);
@@ -2143,7 +2152,19 @@ export default function AdminDashboard() {
                         <Button 
                           onClick={async () => {
                             try {
-                              await createResourceMutation.mutateAsync(resourceFormData);
+                              if (editingResource) {
+                                await updateResourceMutation.mutateAsync({
+                                  id: editingResource.id,
+                                  data: resourceFormData
+                                });
+                                setEditingResource(null);
+                                setIsEditResourceOpen(false);
+                              } else {
+                                await createResourceMutation.mutateAsync(resourceFormData);
+                                setIsCreateResourceOpen(false);
+                              }
+                              
+                              // Reset form
                               setResourceFormData({
                                 title: "",
                                 description: "",
@@ -2153,13 +2174,16 @@ export default function AdminDashboard() {
                                 author: "",
                               });
                             } catch (error) {
-                              console.error('Resource creation failed:', error);
+                              console.error('Resource operation failed:', error);
                             }
                           }}
-                          disabled={createResourceMutation.isPending}
+                          disabled={createResourceMutation.isPending || updateResourceMutation.isPending}
                           data-testid="button-save-resource"
                         >
-                          {createResourceMutation.isPending ? 'Creating...' : 'Create Resource'}
+                          {editingResource ? 
+                            (updateResourceMutation.isPending ? 'Updating...' : 'Update Resource') :
+                            (createResourceMutation.isPending ? 'Creating...' : 'Create Resource')
+                          }
                         </Button>
                       </div>
                     </DialogContent>
@@ -2286,7 +2310,7 @@ export default function AdminDashboard() {
                       <div className="space-y-4">
                         <div>
                           <Label htmlFor="webinarSelect">Webinar</Label>
-                          <Select>
+                          <Select value={webinarResourceFormData.webinarId} onValueChange={(value) => setWebinarResourceFormData({...webinarResourceFormData, webinarId: value})}>
                             <SelectTrigger>
                               <SelectValue placeholder="Select webinar" />
                             </SelectTrigger>
@@ -2307,12 +2331,14 @@ export default function AdminDashboard() {
                           <Input
                             id="resourceTitle"
                             placeholder="Enter resource title..."
+                            value={webinarResourceFormData.title}
+                            onChange={(e) => setWebinarResourceFormData({...webinarResourceFormData, title: e.target.value})}
                             data-testid="input-webinar-resource-title"
                           />
                         </div>
                         <div>
                           <Label htmlFor="webinarResourceType">Type</Label>
-                          <Select>
+                          <Select value={webinarResourceFormData.resourceType} onValueChange={(value) => setWebinarResourceFormData({...webinarResourceFormData, resourceType: value})}>
                             <SelectTrigger>
                               <SelectValue placeholder="Select type" />
                             </SelectTrigger>
@@ -2331,6 +2357,8 @@ export default function AdminDashboard() {
                           <Input
                             id="webinarResourceUrl"
                             placeholder="https://..."
+                            value={webinarResourceFormData.fileUrl}
+                            onChange={(e) => setWebinarResourceFormData({...webinarResourceFormData, fileUrl: e.target.value})}
                             data-testid="input-webinar-resource-url"
                           />
                         </div>
@@ -2342,11 +2370,70 @@ export default function AdminDashboard() {
                             id="webinarResourceDescription"
                             rows={3}
                             placeholder="Enter description..."
+                            value={webinarResourceFormData.description}
+                            onChange={(e) => setWebinarResourceFormData({...webinarResourceFormData, description: e.target.value})}
                             data-testid="textarea-webinar-resource-description"
                           />
                         </div>
-                        <Button data-testid="button-save-webinar-resource">
-                          Create Webinar Resource
+                        <Button 
+                          onClick={async () => {
+                            try {
+                              // Validation
+                              if (!webinarResourceFormData.title.trim()) {
+                                console.error("Title is required");
+                                return;
+                              }
+                              if (!webinarResourceFormData.resourceType.trim()) {
+                                console.error("Resource type is required");
+                                return;
+                              }
+                              if (!webinarResourceFormData.fileUrl.trim()) {
+                                console.error("File URL is required");
+                                return;
+                              }
+                              if (!webinarResourceFormData.webinarId.trim()) {
+                                console.error("Webinar selection is required");
+                                return;
+                              }
+
+                              const webinarId = parseInt(webinarResourceFormData.webinarId);
+                              if (isNaN(webinarId)) {
+                                console.error("Invalid webinar selection");
+                                return;
+                              }
+
+                              const webinarResourceData = {
+                                ...webinarResourceFormData,
+                                webinarId: webinarId
+                              };
+                              
+                              if (editingWebinarResource) {
+                                await updateWebinarResourceMutation.mutateAsync({
+                                  id: editingWebinarResource.id,
+                                  data: webinarResourceData
+                                });
+                                setEditingWebinarResource(null);
+                                setIsEditWebinarResourceOpen(false);
+                              } else {
+                                await createWebinarResourceMutation.mutateAsync(webinarResourceData);
+                                setIsCreateWebinarResourceOpen(false);
+                              }
+                              
+                              // Reset form
+                              setWebinarResourceFormData({
+                                webinarId: "",
+                                title: "",
+                                resourceType: "",
+                                fileUrl: "",
+                                description: "",
+                              });
+                            } catch (error) {
+                              console.error("Error saving webinar resource:", error);
+                            }
+                          }}
+                          data-testid="button-save-webinar-resource"
+                        >
+                          {editingWebinarResource ? 'Update Webinar Resource' : 'Create Webinar Resource'}
                         </Button>
                       </div>
                     </DialogContent>
@@ -2381,17 +2468,49 @@ export default function AdminDashboard() {
                             <Button
                               size="sm"
                               variant="outline"
+                              onClick={() => {
+                                setEditingWebinarResource(resource);
+                                setWebinarResourceFormData({
+                                  webinarId: resource.webinarId?.toString() || "",
+                                  title: resource.title || "",
+                                  resourceType: resource.resourceType || "",
+                                  fileUrl: resource.fileUrl || "",
+                                  description: resource.description || "",
+                                });
+                                setIsCreateWebinarResourceOpen(true);
+                              }}
                               data-testid={`button-edit-webinar-resource-${resource.id}`}
                             >
                               <Edit className="w-3 h-3" />
                             </Button>
-                            <Button
-                              size="sm"
-                              variant="outline"
-                              data-testid={`button-delete-webinar-resource-${resource.id}`}
-                            >
-                              <Trash2 className="w-3 h-3" />
-                            </Button>
+                            <AlertDialog>
+                              <AlertDialogTrigger asChild>
+                                <Button
+                                  size="sm"
+                                  variant="outline"
+                                  data-testid={`button-delete-webinar-resource-${resource.id}`}
+                                >
+                                  <Trash2 className="w-3 h-3" />
+                                </Button>
+                              </AlertDialogTrigger>
+                              <AlertDialogContent>
+                                <AlertDialogHeader>
+                                  <AlertDialogTitle>Delete Webinar Resource</AlertDialogTitle>
+                                  <AlertDialogDescription>
+                                    Are you sure you want to delete "{resource.title}"? This action cannot be undone.
+                                  </AlertDialogDescription>
+                                </AlertDialogHeader>
+                                <AlertDialogFooter>
+                                  <AlertDialogCancel>Cancel</AlertDialogCancel>
+                                  <AlertDialogAction
+                                    onClick={() => deleteWebinarResourceMutation.mutate(resource.id)}
+                                    className="bg-red-600 hover:bg-red-700"
+                                  >
+                                    Delete
+                                  </AlertDialogAction>
+                                </AlertDialogFooter>
+                              </AlertDialogContent>
+                            </AlertDialog>
                           </div>
                         </div>
                       </div>
