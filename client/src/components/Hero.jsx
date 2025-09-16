@@ -1,10 +1,12 @@
 import { useState, useEffect } from "react";
 import { ChevronDown, Play, Sparkles, Leaf, Tractor } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { useLocation } from "wouter";
 
 export const Hero = () => {
   const [isVisible, setIsVisible] = useState(false);
   const [particles, setParticles] = useState([]);
+  const [, setLocation] = useLocation();
 
   useEffect(() => {
     setIsVisible(true);
@@ -130,6 +132,7 @@ export const Hero = () => {
           <Button
             size="lg"
             variant="outline"
+            onClick={() => setLocation("/about")}
             className="border-2 border-white/50 text-black hover:bg-white/20 hover:border-white backdrop-blur-sm px-8 py-4 rounded-full font-semibold transition-all duration-300 hover:scale-105"
           >
             <Play className="mr-2 w-5 h-5" />

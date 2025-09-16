@@ -3,8 +3,10 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Calendar, ExternalLink, Clock, MapPin, Users, ArrowRight } from "lucide-react";
+import { useLocation } from "wouter";
 
 export const NewsEvents = () => {
+  const [, setLocation] = useLocation();
   const { data: events, isLoading } = useQuery({
     queryKey: ["/api/events"],
     enabled: true,
@@ -244,6 +246,7 @@ export const NewsEvents = () => {
                   
                   <Button 
                     variant="ghost" 
+                    onClick={() => setLocation("/news")}
                     className="p-0 text-primary hover:text-primary/80 font-semibold group-hover:bg-primary/10 transition-all duration-300"
                   >
                     Learn More <ArrowRight className="ml-2 w-4 h-4 group-hover:translate-x-1 transition-transform duration-300" />

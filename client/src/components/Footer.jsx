@@ -21,16 +21,40 @@ export const Footer = () => {
               Empowering African agriculture through sustainable mechanization solutions, featuring 42 educational resources from the established Africa Mechanize platform and expert partnerships with FAO, CGIAR, and ACT Africa.
             </p>
             <div className="flex space-x-4">
-              <a href="#" className="text-gray-400 hover:text-primary transition-colors">
+              <a 
+                href="https://twitter.com/africamechanize" 
+                target="_blank" 
+                rel="noopener noreferrer" 
+                className="text-gray-400 hover:text-primary transition-colors"
+                aria-label="Follow us on Twitter"
+              >
                 <Twitter size={20} />
               </a>
-              <a href="#" className="text-gray-400 hover:text-primary transition-colors">
+              <a 
+                href="https://facebook.com/africamechanize" 
+                target="_blank" 
+                rel="noopener noreferrer" 
+                className="text-gray-400 hover:text-primary transition-colors"
+                aria-label="Follow us on Facebook"
+              >
                 <Facebook size={20} />
               </a>
-              <a href="#" className="text-gray-400 hover:text-primary transition-colors">
+              <a 
+                href="https://linkedin.com/company/africamechanize" 
+                target="_blank" 
+                rel="noopener noreferrer" 
+                className="text-gray-400 hover:text-primary transition-colors"
+                aria-label="Follow us on LinkedIn"
+              >
                 <Linkedin size={20} />
               </a>
-              <a href="#" className="text-gray-400 hover:text-primary transition-colors">
+              <a 
+                href="https://youtube.com/@africamechanize" 
+                target="_blank" 
+                rel="noopener noreferrer" 
+                className="text-gray-400 hover:text-primary transition-colors"
+                aria-label="Subscribe to our YouTube channel"
+              >
                 <Youtube size={20} />
               </a>
             </div>
