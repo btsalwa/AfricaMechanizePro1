@@ -5,6 +5,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Calendar, Clock, Users, Play, Download, FileText } from "lucide-react";
 import { Link } from "wouter";
 import { format } from "date-fns";
+import { LazyImage } from "@/components/LazyImage";
 
 export const WebinarCard = ({ webinar, variant = "default" }) => {
   const formatDate = (date) => {
@@ -52,10 +53,10 @@ export const WebinarCard = ({ webinar, variant = "default" }) => {
           <div className="flex items-start space-x-4">
             {webinar.thumbnailImage && (
               <div className="flex-shrink-0">
-                <img 
+                <LazyImage 
                   src={webinar.thumbnailImage} 
                   alt={webinar.title}
-                  className="w-16 h-16 rounded-lg object-cover"
+                  className="w-16 h-16 rounded-lg"
                 />
               </div>
             )}
@@ -101,10 +102,10 @@ export const WebinarCard = ({ webinar, variant = "default" }) => {
       {/* Banner Image */}
       {webinar.bannerImage && (
         <div className="relative h-48 overflow-hidden">
-          <img 
+          <LazyImage 
             src={webinar.bannerImage} 
             alt={webinar.title}
-            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+            className="w-full h-full group-hover:scale-105 transition-transform duration-300"
           />
           <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent" />
           <div className="absolute top-4 left-4 flex items-center space-x-2">

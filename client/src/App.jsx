@@ -6,34 +6,43 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { AppProvider } from "./contexts/AppContext";
 import { Header } from "./components/Header";
 import { Footer } from "./components/Footer";
-import Home from "./pages/Home";
-import Framework from "./pages/Framework";
-import Events from "./pages/Events";
-import Resources from "./pages/Resources";
-import ResourceDetail from "./pages/ResourceDetail";
-import NewsDetail from "./pages/NewsDetail";
-import About from "./pages/About";
-import Contact from "./pages/Contact";
-import News from "./pages/News";
-import NotFound from "./pages/not-found";
-import Login from "./pages/Login";
-import Register from "./pages/Register";
-// import EmailVerification from "./pages/EmailVerification";
-import VerifyEmailPage from "./hooks/VerifyEmailPage";
-import ResetPassword from "./pages/ResetPassword";
-import WebinarDetail from "./pages/WebinarDetail";
-import Webinars from "./pages/Webinars";
-import WebinarPresentations from "./pages/WebinarPresentations";
-import FarmPower from "./pages/framework/FarmPower";
-import InnovativeFinancing from "./pages/framework/InnovativeFinancing";
-import SustainableSystems from "./pages/framework/SustainableSystems";
-import SocialSustainability from "./pages/framework/SocialSustainability";
-import Mechanization from "./pages/framework/Mechanization";
-import HumanResources from "./pages/framework/HumanResources";
-import AdminLogin from "./pages/admin/AdminLogin";
-import AdminResetPassword from "./pages/admin/AdminResetPassword";
-import AdminDashboard from "./pages/admin/AdminDashboard";
-import LegacyContent from "./pages/LegacyContent";
+import { Suspense, lazy } from "react";
+
+// Lazy-loaded page components for code splitting
+const Home = lazy(() => import("./pages/Home"));
+const Framework = lazy(() => import("./pages/Framework"));
+const Events = lazy(() => import("./pages/Events"));
+const Resources = lazy(() => import("./pages/Resources"));
+const ResourceDetail = lazy(() => import("./pages/ResourceDetail"));
+const NewsDetail = lazy(() => import("./pages/NewsDetail"));
+const About = lazy(() => import("./pages/About"));
+const Contact = lazy(() => import("./pages/Contact"));
+const News = lazy(() => import("./pages/News"));
+const NotFound = lazy(() => import("./pages/not-found"));
+const Login = lazy(() => import("./pages/Login"));
+const Register = lazy(() => import("./pages/Register"));
+const VerifyEmailPage = lazy(() => import("./hooks/VerifyEmailPage"));
+const ResetPassword = lazy(() => import("./pages/ResetPassword"));
+const WebinarDetail = lazy(() => import("./pages/WebinarDetail"));
+const Webinars = lazy(() => import("./pages/Webinars"));
+const WebinarPresentations = lazy(() => import("./pages/WebinarPresentations"));
+const FarmPower = lazy(() => import("./pages/framework/FarmPower"));
+const InnovativeFinancing = lazy(() => import("./pages/framework/InnovativeFinancing"));
+const SustainableSystems = lazy(() => import("./pages/framework/SustainableSystems"));
+const SocialSustainability = lazy(() => import("./pages/framework/SocialSustainability"));
+const Mechanization = lazy(() => import("./pages/framework/Mechanization"));
+const HumanResources = lazy(() => import("./pages/framework/HumanResources"));
+const AdminLogin = lazy(() => import("./pages/admin/AdminLogin"));
+const AdminResetPassword = lazy(() => import("./pages/admin/AdminResetPassword"));
+const AdminDashboard = lazy(() => import("./pages/admin/AdminDashboard"));
+const LegacyContent = lazy(() => import("./pages/LegacyContent"));
+
+// Loading fallback component
+const PageLoader = () => (
+  <div className="min-h-screen flex items-center justify-center">
+    <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
+  </div>
+);
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
 
@@ -42,7 +51,8 @@ function Router() {
     <div className="min-h-screen flex flex-col">
       <Header />
       <main className="flex-1">
-        <Switch>
+        <Suspense fallback={<PageLoader />}>
+          <Switch>
           <Route path="/" component={Home} />
           <Route path="/framework" component={Framework} />
           <Route path="/events" component={Events} />
@@ -83,7 +93,8 @@ function Router() {
           <Route path="/admin/dashboard" component={AdminDashboard} />
           <Route path="/legacy-content" component={LegacyContent} />
           <Route component={NotFound} />
-        </Switch>
+          </Switch>
+        </Suspense>
       </main>
       <Footer />
     </div>

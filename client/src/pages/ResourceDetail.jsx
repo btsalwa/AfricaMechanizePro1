@@ -5,6 +5,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { ArrowLeft, Download, FileText, Video, ExternalLink, Calendar, User, Globe, Eye } from "lucide-react";
+import { LazyImage } from "@/components/LazyImage";
 
 export default function ResourceDetail() {
   const { id } = useParams();
@@ -207,11 +208,10 @@ export default function ResourceDetail() {
           {/* Featured Image */}
           {resource.featuredImage && (
             <div className="mb-8">
-              <img
+              <LazyImage
                 src={resource.featuredImage}
                 alt={resource.title}
-                className="w-full h-64 md:h-96 object-cover rounded-lg shadow-lg"
-                loading="lazy"
+                className="w-full h-64 md:h-96 rounded-lg shadow-lg"
                 data-testid="img-featured"
               />
             </div>

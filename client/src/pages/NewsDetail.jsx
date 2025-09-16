@@ -5,6 +5,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { ArrowLeft, Calendar, Eye, User, Clock } from "lucide-react";
+import { LazyImage } from "@/components/LazyImage";
 
 export default function NewsDetail() {
   const { slug } = useParams();
@@ -148,11 +149,10 @@ export default function NewsDetail() {
           {/* Featured Image */}
           {newsItem.featuredImage && (
             <div className="mb-8">
-              <img
+              <LazyImage
                 src={newsItem.featuredImage}
                 alt={newsItem.title}
-                className="w-full h-64 md:h-96 object-cover rounded-lg shadow-lg"
-                loading="lazy"
+                className="w-full h-64 md:h-96 rounded-lg shadow-lg"
                 data-testid="img-featured"
               />
             </div>
