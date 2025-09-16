@@ -1,4 +1,5 @@
 import { useQuery } from "@tanstack/react-query";
+import { Link } from "wouter";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -351,14 +352,15 @@ export default function Resources() {
                           <span className="text-sm text-gray-500">
                             Section: {resource.category}
                           </span>
-                          <Button 
-                            size="sm"
-                            onClick={() => window.open(resource.downloadUrl, '_blank')}
-                            data-testid={`button-download-${resource.id}`}
-                          >
-                            <Download className="w-4 h-4 mr-2" />
-                            Access
-                          </Button>
+                          <Link href={`/resources/${resource.id}`}>
+                            <Button 
+                              size="sm"
+                              data-testid={`button-view-${resource.id}`}
+                            >
+                              <ArrowRight className="w-4 h-4 mr-2" />
+                              View Details
+                            </Button>
+                          </Link>
                         </div>
                       </CardContent>
                     </Card>
@@ -405,21 +407,18 @@ export default function Resources() {
                   </CardHeader>
                   <CardContent className="p-0">
                     <div className="flex gap-4">
-                      <Button 
-                        onClick={() => window.open("https://africamechanize.org/resource/sustainable-agricultural-mechanization-a-framework-for-africa", '_blank')}
-                        className="flex-1"
-                      >
-                        <ExternalLink className="w-4 h-4 mr-2" />
-                        English
-                      </Button>
-                      <Button 
-                        variant="outline"
-                        onClick={() => window.open("https://africamechanize.org/resource/la-mecanisation-agricole-durable-cadre-strategique-pour-lafrique", '_blank')}
-                        className="flex-1"
-                      >
-                        <ExternalLink className="w-4 h-4 mr-2" />
-                        Français
-                      </Button>
+                      <Link href="/framework" className="flex-1">
+                        <Button className="w-full">
+                          <FileText className="w-4 h-4 mr-2" />
+                          View Framework
+                        </Button>
+                      </Link>
+                      <Link href="/legacy-content" className="flex-1">
+                        <Button variant="outline" className="w-full">
+                          <ArrowRight className="w-4 h-4 mr-2" />
+                          Legacy Resources
+                        </Button>
+                      </Link>
                     </div>
                   </CardContent>
                 </Card>
@@ -436,13 +435,12 @@ export default function Resources() {
                     </CardDescription>
                   </CardHeader>
                   <CardContent className="p-0">
-                    <Button 
-                      onClick={() => window.open("https://africamechanize.org/resource/africamechanize-newsletter-issue-02", '_blank')}
-                      className="w-full bg-secondary hover:bg-secondary/90"
-                    >
-                      <Download className="w-4 h-4 mr-2" />
-                      Download Issue 02 (2024)
-                    </Button>
+                    <Link href="/news">
+                      <Button className="w-full bg-secondary hover:bg-secondary/90">
+                        <ArrowRight className="w-4 h-4 mr-2" />
+                        View Latest News
+                      </Button>
+                    </Link>
                   </CardContent>
                 </Card>
               </div>

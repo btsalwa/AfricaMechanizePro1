@@ -15,6 +15,7 @@ import {
   insertFrameworkElementSchema,
   insertNewsletterSubscriptionSchema,
   insertContactFormSchema,
+  insertNewsEventSchema,
   registerSchema,
   loginSchema,
   forgotPasswordSchema,
@@ -386,6 +387,46 @@ export async function registerRoutes(app) {
       const validatedData = insertStatisticsSchema.parse(req.body);
       const stats = await storage.updateStatistics(validatedData);
       res.json(stats);
+    } catch (error) {
+      res.status(400).json({ error: error.message });
+    }
+  });
+
+  // News Events endpoints
+  router.get("/api/news", async (req, res) => {
+    try {
+      const { limit = 10, offset = 0, category, tag } = req.query;
+      const news = await storage.getAllNewsEvents({
+        limit: parseInt(limit),
+        offset: parseInt(offset),
+        category,
+        tag
+      });
+      res.json(news);
+    } catch (error) {
+      res.status(500).json({ error: "Failed to fetch news" });
+    }
+  });
+
+  router.get("/api/news/:slug", async (req, res) => {
+    try {
+      const newsItem = await storage.getNewsEventBySlug(req.params.slug);
+      if (!newsItem) {
+        return res.status(404).json({ error: "News article not found" });
+      }
+      // Increment view count
+      await storage.incrementNewsViewCount(newsItem.id);
+      res.json(newsItem);
+    } catch (error) {
+      res.status(500).json({ error: "Failed to fetch news article" });
+    }
+  });
+
+  router.post("/api/news", async (req, res) => {
+    try {
+      const validatedData = insertNewsEventSchema.parse(req.body);
+      const newsItem = await storage.createNewsEvent(validatedData);
+      res.status(201).json(newsItem);
     } catch (error) {
       res.status(400).json({ error: error.message });
     }

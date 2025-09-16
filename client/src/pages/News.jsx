@@ -1,4 +1,5 @@
 import { useQuery } from "@tanstack/react-query";
+import { Link } from "wouter";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -28,7 +29,6 @@ export default function News() {
       date: "2024-06-04",
       category: "Conference",
       type: "event",
-      url: "https://africamechanize.org/109/sustainable-farm-power-for-enhanced-productivity-fao-cema-hybrid-event/"
     },
     {
       id: 101,
@@ -37,7 +37,6 @@ export default function News() {
       date: "2023-09-29",
       category: "Conference",
       type: "event",
-      url: "https://africamechanize.org/101/fao-global-conference-sustainable-agricultural-mechanization/"
     },
     {
       id: 111,
@@ -46,7 +45,6 @@ export default function News() {
       date: "2024-08-15",
       category: "Call for Papers",
       type: "announcement",
-      url: "https://africamechanize.org/111/call-for-abstracts-now-open-africa-conference-sustainable-agricultural-mechanization/"
     },
     {
       id: 85,
@@ -55,7 +53,6 @@ export default function News() {
       date: "2019-12-09",
       category: "Meeting",
       type: "event",
-      url: "https://africamechanize.org/85/uganda-regional-experience-sharing-meeting-sam-hire-service-provision/"
     },
     {
       id: 84,
@@ -64,7 +61,6 @@ export default function News() {
       date: "2016-12-02",
       category: "Strategy Meeting",
       type: "event",
-      url: "https://africamechanize.org/84/consultative-meeting-mechanization-strategy-new-models-for-sustainable-agricultural-in-sub-saharan-africa/"
     }
   ];
 
@@ -221,24 +217,21 @@ export default function News() {
 
                         <CardContent className="pt-0">
                           <div className="flex justify-between items-center">
-                            {item.url ? (
-                              <Button 
-                                variant="outline" 
-                                size="sm"
-                                onClick={() => window.open(item.url, '_blank')}
-                                data-testid={`button-view-${item.id}`}
-                              >
-                                <ExternalLink className="w-4 h-4 mr-2" />
-                                View Details
-                              </Button>
+                            {item.source === 'api' ? (
+                              <Link href={`/news/news-${item.id}`}>
+                                <Button 
+                                  variant="outline" 
+                                  size="sm"
+                                  data-testid={`button-view-${item.id}`}
+                                >
+                                  <ArrowRight className="w-4 h-4 mr-2" />
+                                  View Details
+                                </Button>
+                              </Link>
                             ) : (
-                              <Button 
-                                variant="outline" 
-                                size="sm"
-                                disabled
-                              >
-                                Details
-                              </Button>
+                              <Badge variant="secondary" className="text-xs">
+                                Featured Highlight
+                              </Badge>
                             )}
                           </div>
                         </CardContent>
@@ -298,16 +291,15 @@ export default function News() {
                       </CardHeader>
 
                       <CardContent className="pt-0">
-                        {item.url && (
+                        <Link href={`/news/news-${item.id}`}>
                           <Button 
                             size="sm"
-                            onClick={() => window.open(item.url, '_blank')}
                             className="w-full bg-green-600 hover:bg-green-700"
                           >
-                            <ExternalLink className="w-4 h-4 mr-2" />
+                            <ArrowRight className="w-4 h-4 mr-2" />
                             Learn More
                           </Button>
-                        )}
+                        </Link>
                       </CardContent>
                     </Card>
                   ))}
@@ -349,17 +341,16 @@ export default function News() {
                       </CardHeader>
 
                       <CardContent className="pt-0">
-                        {item.url && (
+                        <Link href={`/news/news-${item.id}`}>
                           <Button 
                             variant="outline" 
                             size="sm"
-                            onClick={() => window.open(item.url, '_blank')}
                             className="w-full"
                           >
-                            <ExternalLink className="w-4 h-4 mr-2" />
+                            <ArrowRight className="w-4 h-4 mr-2" />
                             View Details
                           </Button>
-                        )}
+                        </Link>
                       </CardContent>
                     </Card>
                   ))}

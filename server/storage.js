@@ -489,6 +489,24 @@ export class DatabaseStorage {
     await db.delete(newsEvents).where(eq(newsEvents.id, id));
   }
 
+  async getNewsEventBySlug(slug) {
+    const [newsEvent] = await db
+      .select()
+      .from(newsEvents)
+      .where(eq(newsEvents.slug, slug));
+    return newsEvent;
+  }
+
+  async incrementNewsViewCount(id) {
+    await db
+      .update(newsEvents)
+      .set({ 
+        viewCount: sql`${newsEvents.viewCount} + 1`,
+        updatedAt: new Date()
+      })
+      .where(eq(newsEvents.id, id));
+  }
+
   // General Resources Management (using existing table structure)
   async getAllResources() {
     return await db.select().from(resources).orderBy(desc(resources.createdAt));

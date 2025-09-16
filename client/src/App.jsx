@@ -10,6 +10,8 @@ import Home from "./pages/Home";
 import Framework from "./pages/Framework";
 import Events from "./pages/Events";
 import Resources from "./pages/Resources";
+import ResourceDetail from "./pages/ResourceDetail";
+import NewsDetail from "./pages/NewsDetail";
 import About from "./pages/About";
 import Contact from "./pages/Contact";
 import News from "./pages/News";
@@ -45,9 +47,11 @@ function Router() {
           <Route path="/framework" component={Framework} />
           <Route path="/events" component={Events} />
           <Route path="/resources" component={Resources} />
+          <Route path="/resources/:id" component={ResourceDetail} />
           <Route path="/about" component={About} />
           <Route path="/contact" component={Contact} />
           <Route path="/news" component={News} />
+          <Route path="/news/:slug" component={NewsDetail} />
           <Route path="/login" component={Login} />
           <Route path="/register" component={Register} />
           {/* <Route path="/verify-email" component={EmailVerification} /> */}
