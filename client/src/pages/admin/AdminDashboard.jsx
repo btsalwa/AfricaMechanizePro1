@@ -154,6 +154,27 @@ export default function AdminDashboard() {
     meetingLink: "",
   });
 
+  // Form state for Resources
+  const [resourceFormData, setResourceFormData] = useState({
+    title: "",
+    description: "",
+    resourceType: "",
+    fileUrl: "",
+    category: "",
+    author: "",
+  });
+
+  // Form state for News/Events
+  const [newsEventFormData, setNewsEventFormData] = useState({
+    title: "",
+    description: "",
+    eventType: "news",
+    eventDate: "",
+    eventLocation: "",
+    eventOrganizer: "",
+    content: "",
+  });
+
   const getAuthHeaders = () => {
     const token = localStorage.getItem("adminToken");
     return {
@@ -355,6 +376,189 @@ export default function AdminDashboard() {
     onError: (error) => {
       toast({
         title: "Update failed",
+        description: error.message,
+        variant: "destructive",
+      });
+    },
+  });
+
+  // News/Events CRUD Mutations
+  const createNewsEventMutation = useMutation({
+    mutationFn: async (data) => {
+      const response = await apiRequest("POST", "/api/events", data);
+      return response;
+    },
+    onSuccess: () => {
+      toast({ title: "News/Event created successfully" });
+      refetchNewsEvents();
+      refetchStats();
+      setIsCreateNewsEventOpen(false);
+    },
+    onError: (error) => {
+      toast({
+        title: "Creation failed",
+        description: error.message,
+        variant: "destructive",
+      });
+    },
+  });
+
+  const updateNewsEventMutation = useMutation({
+    mutationFn: async ({ id, data }) => {
+      const response = await apiRequest("PUT", `/api/events/${id}`, data);
+      return response;
+    },
+    onSuccess: () => {
+      toast({ title: "News/Event updated successfully" });
+      refetchNewsEvents();
+      refetchStats();
+      setIsEditNewsEventOpen(false);
+      setEditingNewsEvent(null);
+    },
+    onError: (error) => {
+      toast({
+        title: "Update failed",
+        description: error.message,
+        variant: "destructive",
+      });
+    },
+  });
+
+  const deleteNewsEventMutation = useMutation({
+    mutationFn: async (id) => {
+      const response = await apiRequest("DELETE", `/api/events/${id}`);
+      return response;
+    },
+    onSuccess: () => {
+      toast({ title: "News/Event deleted successfully" });
+      refetchNewsEvents();
+      refetchStats();
+    },
+    onError: (error) => {
+      toast({
+        title: "Deletion failed",
+        description: error.message,
+        variant: "destructive",
+      });
+    },
+  });
+
+  // Resources CRUD Mutations
+  const createResourceMutation = useMutation({
+    mutationFn: async (data) => {
+      const response = await apiRequest("POST", "/api/resources", data);
+      return response;
+    },
+    onSuccess: () => {
+      toast({ title: "Resource created successfully" });
+      refetchResources();
+      refetchStats();
+      setIsCreateResourceOpen(false);
+    },
+    onError: (error) => {
+      toast({
+        title: "Creation failed",
+        description: error.message,
+        variant: "destructive",
+      });
+    },
+  });
+
+  const updateResourceMutation = useMutation({
+    mutationFn: async ({ id, data }) => {
+      const response = await apiRequest("PUT", `/api/resources/${id}`, data);
+      return response;
+    },
+    onSuccess: () => {
+      toast({ title: "Resource updated successfully" });
+      refetchResources();
+      refetchStats();
+      setIsEditResourceOpen(false);
+      setEditingResource(null);
+    },
+    onError: (error) => {
+      toast({
+        title: "Update failed",
+        description: error.message,
+        variant: "destructive",
+      });
+    },
+  });
+
+  const deleteResourceMutation = useMutation({
+    mutationFn: async (id) => {
+      const response = await apiRequest("DELETE", `/api/resources/${id}`);
+      return response;
+    },
+    onSuccess: () => {
+      toast({ title: "Resource deleted successfully" });
+      refetchResources();
+      refetchStats();
+    },
+    onError: (error) => {
+      toast({
+        title: "Deletion failed",
+        description: error.message,
+        variant: "destructive",
+      });
+    },
+  });
+
+  // Webinar Resources CRUD Mutations
+  const createWebinarResourceMutation = useMutation({
+    mutationFn: async (data) => {
+      const response = await apiRequest("POST", "/api/webinar-resources", data);
+      return response;
+    },
+    onSuccess: () => {
+      toast({ title: "Webinar Resource created successfully" });
+      refetchWebinarResources();
+      refetchStats();
+      setIsCreateWebinarResourceOpen(false);
+    },
+    onError: (error) => {
+      toast({
+        title: "Creation failed",
+        description: error.message,
+        variant: "destructive",
+      });
+    },
+  });
+
+  const updateWebinarResourceMutation = useMutation({
+    mutationFn: async ({ id, data }) => {
+      const response = await apiRequest("PUT", `/api/webinar-resources/${id}`, data);
+      return response;
+    },
+    onSuccess: () => {
+      toast({ title: "Webinar Resource updated successfully" });
+      refetchWebinarResources();
+      refetchStats();
+      setIsEditWebinarResourceOpen(false);
+      setEditingWebinarResource(null);
+    },
+    onError: (error) => {
+      toast({
+        title: "Update failed",
+        description: error.message,
+        variant: "destructive",
+      });
+    },
+  });
+
+  const deleteWebinarResourceMutation = useMutation({
+    mutationFn: async (id) => {
+      const response = await apiRequest("DELETE", `/api/webinar-resources/${id}`);
+      return response;
+    },
+    onSuccess: () => {
+      toast({ title: "Webinar Resource deleted successfully" });
+      refetchWebinarResources();
+      refetchStats();
+    },
+    onError: (error) => {
+      toast({
+        title: "Deletion failed",
         description: error.message,
         variant: "destructive",
       });
@@ -1807,12 +2011,14 @@ export default function AdminDashboard() {
                           <Input
                             id="resourceTitle"
                             placeholder="Enter resource title..."
+                            value={resourceFormData.title}
+                            onChange={(e) => setResourceFormData({...resourceFormData, title: e.target.value})}
                             data-testid="input-resource-title"
                           />
                         </div>
                         <div>
                           <Label htmlFor="resourceType">Type</Label>
-                          <Select>
+                          <Select value={resourceFormData.resourceType} onValueChange={(value) => setResourceFormData({...resourceFormData, resourceType: value})}>
                             <SelectTrigger>
                               <SelectValue placeholder="Select type" />
                             </SelectTrigger>
@@ -1834,6 +2040,8 @@ export default function AdminDashboard() {
                             id="resourceDescription"
                             rows={4}
                             placeholder="Enter description..."
+                            value={resourceFormData.description}
+                            onChange={(e) => setResourceFormData({...resourceFormData, description: e.target.value})}
                             data-testid="textarea-resource-description"
                           />
                         </div>
@@ -1843,6 +2051,8 @@ export default function AdminDashboard() {
                             <Input
                               id="fileUrl"
                               placeholder="https://..."
+                              value={resourceFormData.fileUrl}
+                              onChange={(e) => setResourceFormData({...resourceFormData, fileUrl: e.target.value})}
                               data-testid="input-resource-url"
                             />
                           </div>
@@ -1851,12 +2061,32 @@ export default function AdminDashboard() {
                             <Input
                               id="category"
                               placeholder="Resource category..."
+                              value={resourceFormData.category}
+                              onChange={(e) => setResourceFormData({...resourceFormData, category: e.target.value})}
                               data-testid="input-resource-category"
                             />
                           </div>
                         </div>
-                        <Button data-testid="button-save-resource">
-                          Create Resource
+                        <Button 
+                          onClick={async () => {
+                            try {
+                              await createResourceMutation.mutateAsync(resourceFormData);
+                              setResourceFormData({
+                                title: "",
+                                description: "",
+                                resourceType: "",
+                                fileUrl: "",
+                                category: "",
+                                author: "",
+                              });
+                            } catch (error) {
+                              console.error('Resource creation failed:', error);
+                            }
+                          }}
+                          disabled={createResourceMutation.isPending}
+                          data-testid="button-save-resource"
+                        >
+                          {createResourceMutation.isPending ? 'Creating...' : 'Create Resource'}
                         </Button>
                       </div>
                     </DialogContent>
@@ -1898,17 +2128,50 @@ export default function AdminDashboard() {
                             <Button
                               size="sm"
                               variant="outline"
+                              onClick={() => {
+                                setEditingResource(resource);
+                                setResourceFormData({
+                                  title: resource.title || "",
+                                  description: resource.description || "",
+                                  resourceType: resource.resourceType || "",
+                                  fileUrl: resource.fileUrl || "",
+                                  category: resource.category || "",
+                                  author: resource.author || "",
+                                });
+                                setIsEditResourceOpen(true);
+                              }}
                               data-testid={`button-edit-resource-${resource.id}`}
                             >
                               <Edit className="w-3 h-3" />
                             </Button>
-                            <Button
-                              size="sm"
-                              variant="outline"
-                              data-testid={`button-delete-resource-${resource.id}`}
-                            >
-                              <Trash2 className="w-3 h-3" />
-                            </Button>
+                            <AlertDialog>
+                              <AlertDialogTrigger asChild>
+                                <Button
+                                  size="sm"
+                                  variant="outline"
+                                  data-testid={`button-delete-resource-${resource.id}`}
+                                >
+                                  <Trash2 className="w-3 h-3" />
+                                </Button>
+                              </AlertDialogTrigger>
+                              <AlertDialogContent>
+                                <AlertDialogHeader>
+                                  <AlertDialogTitle>Delete Resource</AlertDialogTitle>
+                                  <AlertDialogDescription>
+                                    Are you sure you want to delete "{resource.title}"? This action cannot be undone.
+                                  </AlertDialogDescription>
+                                </AlertDialogHeader>
+                                <AlertDialogFooter>
+                                  <AlertDialogCancel>Cancel</AlertDialogCancel>
+                                  <AlertDialogAction
+                                    onClick={() => deleteResourceMutation.mutate(resource.id)}
+                                    className="bg-red-600 hover:bg-red-700"
+                                  >
+                                    Delete
+                                  </AlertDialogAction>
+                                </AlertDialogFooter>
+                              </AlertDialogContent>
+                            </AlertDialog>
                           </div>
                         </div>
                       </div>
