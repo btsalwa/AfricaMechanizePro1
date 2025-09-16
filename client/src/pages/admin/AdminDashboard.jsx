@@ -1865,12 +1865,14 @@ export default function AdminDashboard() {
                           <Input
                             id="title"
                             placeholder="Enter title..."
+                            value={newsEventFormData.title}
+                            onChange={(e) => setNewsEventFormData({...newsEventFormData, title: e.target.value})}
                             data-testid="input-news-title"
                           />
                         </div>
                         <div>
                           <Label htmlFor="eventType">Type</Label>
-                          <Select>
+                          <Select value={newsEventFormData.eventType} onValueChange={(value) => setNewsEventFormData({...newsEventFormData, eventType: value})}>
                             <SelectTrigger>
                               <SelectValue placeholder="Select type" />
                             </SelectTrigger>
@@ -1893,6 +1895,8 @@ export default function AdminDashboard() {
                             id="content"
                             rows={6}
                             placeholder="Enter content..."
+                            value={newsEventFormData.content}
+                            onChange={(e) => setNewsEventFormData({...newsEventFormData, content: e.target.value})}
                             data-testid="textarea-news-content"
                           />
                         </div>
@@ -1902,6 +1906,8 @@ export default function AdminDashboard() {
                             <Input
                               id="eventDate"
                               type="datetime-local"
+                              value={newsEventFormData.eventDate}
+                              onChange={(e) => setNewsEventFormData({...newsEventFormData, eventDate: e.target.value})}
                               data-testid="input-event-date"
                             />
                           </div>
@@ -1910,12 +1916,47 @@ export default function AdminDashboard() {
                             <Input
                               id="location"
                               placeholder="Event location..."
+                              value={newsEventFormData.location}
+                              onChange={(e) => setNewsEventFormData({...newsEventFormData, location: e.target.value})}
                               data-testid="input-event-location"
                             />
                           </div>
                         </div>
-                        <Button data-testid="button-save-news-event">
-                          Create News/Event
+                        <Button 
+                          onClick={async () => {
+                            try {
+                              const newsEventData = {
+                                ...newsEventFormData,
+                                status: 'draft'
+                              };
+                              
+                              if (editingNewsEvent) {
+                                await updateNewsEventMutation.mutateAsync({
+                                  id: editingNewsEvent.id,
+                                  ...newsEventData
+                                });
+                                setEditingNewsEvent(null);
+                                setIsEditNewsEventOpen(false);
+                              } else {
+                                await createNewsEventMutation.mutateAsync(newsEventData);
+                                setIsCreateNewsEventOpen(false);
+                              }
+                              
+                              // Reset form
+                              setNewsEventFormData({
+                                title: "",
+                                eventType: "",
+                                content: "",
+                                eventDate: "",
+                                location: "",
+                              });
+                            } catch (error) {
+                              console.error("Error saving news/event:", error);
+                            }
+                          }}
+                          data-testid="button-save-news-event"
+                        >
+                          {editingNewsEvent ? 'Update News/Event' : 'Create News/Event'}
                         </Button>
                       </div>
                     </DialogContent>
@@ -1958,17 +1999,49 @@ export default function AdminDashboard() {
                             <Button
                               size="sm"
                               variant="outline"
+                              onClick={() => {
+                                setEditingNewsEvent(item);
+                                setNewsEventFormData({
+                                  title: item.title || "",
+                                  eventType: item.eventType || "",
+                                  content: item.content || "",
+                                  eventDate: item.eventDate || "",
+                                  location: item.location || "",
+                                });
+                                setIsCreateNewsEventOpen(true);
+                              }}
                               data-testid={`button-edit-news-${item.id}`}
                             >
                               <Edit className="w-3 h-3" />
                             </Button>
-                            <Button
-                              size="sm"
-                              variant="outline"
-                              data-testid={`button-delete-news-${item.id}`}
-                            >
-                              <Trash2 className="w-3 h-3" />
-                            </Button>
+                            <AlertDialog>
+                              <AlertDialogTrigger asChild>
+                                <Button
+                                  size="sm"
+                                  variant="outline"
+                                  data-testid={`button-delete-news-${item.id}`}
+                                >
+                                  <Trash2 className="w-3 h-3" />
+                                </Button>
+                              </AlertDialogTrigger>
+                              <AlertDialogContent>
+                                <AlertDialogHeader>
+                                  <AlertDialogTitle>Delete News/Event</AlertDialogTitle>
+                                  <AlertDialogDescription>
+                                    Are you sure you want to delete "{item.title}"? This action cannot be undone.
+                                  </AlertDialogDescription>
+                                </AlertDialogHeader>
+                                <AlertDialogFooter>
+                                  <AlertDialogCancel>Cancel</AlertDialogCancel>
+                                  <AlertDialogAction
+                                    onClick={() => deleteNewsEventMutation.mutate(item.id)}
+                                    className="bg-red-600 hover:bg-red-700"
+                                  >
+                                    Delete
+                                  </AlertDialogAction>
+                                </AlertDialogFooter>
+                              </AlertDialogContent>
+                            </AlertDialog>
                           </div>
                         </div>
                       </div>
