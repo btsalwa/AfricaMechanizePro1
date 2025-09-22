@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useLocation } from "wouter";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -21,6 +22,7 @@ import {
 } from "lucide-react";
 
 export default function Contact() {
+  const [location, setLocation] = useLocation();
   const [formData, setFormData] = useState({
     name: "",
     email: "",
@@ -176,7 +178,7 @@ export default function Contact() {
                       if (info.action.startsWith('http') || info.action.startsWith('mailto:')) {
                         window.open(info.action, '_blank');
                       } else {
-                        window.location.href = info.action;
+                        setLocation(info.action);
                       }
                     }}>
                 <CardContent className="p-0">

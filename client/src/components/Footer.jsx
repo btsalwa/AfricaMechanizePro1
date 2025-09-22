@@ -85,9 +85,9 @@ export const Footer = () => {
                 </Link>
               </li>
               <li>
-                <a href="#" className="text-gray-300 hover:text-primary transition-colors">
+                <Link href="/webinars" className="text-gray-300 hover:text-primary transition-colors">
                   Webinars
-                </a>
+                </Link>
               </li>
             </ul>
           </div>
@@ -97,29 +97,29 @@ export const Footer = () => {
             <h4 className="text-lg font-semibold mb-6">Framework Elements</h4>
             <ul className="space-y-3">
               <li>
-                <a href="#" className="text-gray-300 hover:text-primary transition-colors">
+                <Link href="/framework/farm-power" className="text-gray-300 hover:text-primary transition-colors">
                   Farm Power
-                </a>
+                </Link>
               </li>
               <li>
-                <a href="#" className="text-gray-300 hover:text-primary transition-colors">
+                <Link href="/framework/innovative-financing" className="text-gray-300 hover:text-primary transition-colors">
                   Innovative Financing
-                </a>
+                </Link>
               </li>
               <li>
-                <a href="#" className="text-gray-300 hover:text-primary transition-colors">
+                <Link href="/framework/sustainable-systems" className="text-gray-300 hover:text-primary transition-colors">
                   Sustainable Systems
-                </a>
+                </Link>
               </li>
               <li>
-                <a href="#" className="text-gray-300 hover:text-primary transition-colors">
+                <Link href="/framework/social-sustainability" className="text-gray-300 hover:text-primary transition-colors">
                   Social Sustainability
-                </a>
+                </Link>
               </li>
               <li>
-                <a href="#" className="text-gray-300 hover:text-primary transition-colors">
+                <Link href="/framework/human-resources" className="text-gray-300 hover:text-primary transition-colors">
                   Human Resources
-                </a>
+                </Link>
               </li>
             </ul>
           </div>

@@ -362,7 +362,7 @@ export async function registerRoutes(app) {
   });
 
   // Contact endpoints
-  router.post("/api/contact", async (req, res) => {
+  router.post("/api/contacts", async (req, res) => {
     try {
       const validatedData = insertContactFormSchema.parse(req.body);
       const contact = await storage.createContact(validatedData);
