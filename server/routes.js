@@ -307,7 +307,7 @@ export async function registerRoutes(app) {
 
   router.post("/api/events", async (req, res) => {
     try {
-      const validatedData = insertEventSchema.parse(req.body);
+      const validatedData = insertNewsEventSchema.parse(req.body);
       const event = await storage.createEvent(validatedData);
       res.status(201).json(event);
     } catch (error) {
@@ -347,6 +347,29 @@ export async function registerRoutes(app) {
       res.status(201).json(resource);
     } catch (error) {
       res.status(400).json({ error: error.message });
+    }
+  });
+
+  // Resource download endpoint
+  router.get("/api/resources/:id/download", async (req, res) => {
+    try {
+      const resourceId = parseInt(req.params.id);
+      const resource = await storage.getResource(resourceId);
+      if (!resource) {
+        return res.status(404).json({ error: "Resource not found" });
+      }
+      
+      // Increment download count
+      await storage.updateResource(resourceId, { 
+        downloadCount: resource.downloadCount + 1 
+      });
+      
+      res.json({
+        downloadUrl: resource.fileUrl,
+        fileName: resource.fileName
+      });
+    } catch (error) {
+      res.status(500).json({ error: "Failed to process download" });
     }
   });
 

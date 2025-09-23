@@ -1,5 +1,5 @@
-
 import { Hero } from "../components/Hero";
+import { FAOConferenceBanner } from "../components/FAOConferenceBanner";
 import { StatsCounter } from "../components/StatsCounter";
 import { FrameworkGrid } from "../components/FrameworkGrid";
 import { WebinarSection } from "../components/WebinarSection";
@@ -43,11 +43,13 @@ export default function Home() {
       </div> */}
 
       <Hero />
-      
+
+      <FAOConferenceBanner />
+
       <StatsCounter />
-      
+
       <FrameworkGrid />
-      
+
       <section className="py-20 bg-white dark:bg-gray-800">
         <div className="container mx-auto px-6">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
@@ -71,7 +73,7 @@ export default function Home() {
                 Read More
               </Button>
             </div> */}
-            
+
             {/* Image */}
             {/* <div>
               <img 
@@ -83,15 +85,15 @@ export default function Home() {
           </div>
         </div>
       </section>
-      
+
       {/* <NewsEvents /> */}
-      
-      <WebinarSection />
-      
+
+      {/* <WebinarSection /> */}
+
       {/* <ResourceLibrary /> */}
-      
+
       {/* <ReadingMaterials /> */}
-      
+
       <NewsletterSignup />
       {/* <div className="bg-gradient-to-r from-green-50 to-blue-50 dark:from-green-900/20 dark:to-blue-900/20 border-b border-green-200 dark:border-green-800">
         <div className="container mx-auto px-6 py-4">

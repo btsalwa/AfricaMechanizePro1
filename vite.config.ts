@@ -31,35 +31,35 @@ export default defineConfig({
       output: {
         manualChunks: {
           // Vendor chunks - split large libraries
-          'vendor-react': ['react', 'react-dom'],
-          'vendor-ui': [
-            '@radix-ui/react-dialog',
-            '@radix-ui/react-dropdown-menu',
-            '@radix-ui/react-select',
-            '@radix-ui/react-tabs',
-            '@radix-ui/react-accordion',
-            '@radix-ui/react-navigation-menu',
-            '@radix-ui/react-popover',
-            '@radix-ui/react-tooltip',
+          "vendor-react": ["react", "react-dom"],
+          "vendor-ui": [
+            "@radix-ui/react-dialog",
+            "@radix-ui/react-dropdown-menu",
+            "@radix-ui/react-select",
+            "@radix-ui/react-tabs",
+            "@radix-ui/react-accordion",
+            "@radix-ui/react-navigation-menu",
+            "@radix-ui/react-popover",
+            "@radix-ui/react-tooltip",
           ],
-          'vendor-form': [
-            'react-hook-form',
-            '@hookform/resolvers',
-            'zod',
-            'zod-validation-error'
+          "vendor-form": [
+            "react-hook-form",
+            "@hookform/resolvers",
+            "zod",
+            "zod-validation-error",
           ],
-          'vendor-animation': ['framer-motion', 'swiper'],
-          'vendor-charts': ['recharts'],
-          'vendor-query': ['@tanstack/react-query'],
-          'vendor-icons': ['lucide-react', 'react-icons'],
-          'vendor-utils': [
-            'date-fns',
-            'clsx',
-            'tailwind-merge',
-            'class-variance-authority'
-          ]
-        }
-      }
+          "vendor-animation": ["framer-motion", "swiper"],
+          "vendor-charts": ["recharts"],
+          "vendor-query": ["@tanstack/react-query"],
+          "vendor-icons": ["lucide-react", "react-icons"],
+          "vendor-utils": [
+            "date-fns",
+            "clsx",
+            "tailwind-merge",
+            "class-variance-authority",
+          ],
+        },
+      },
     },
     chunkSizeWarningLimit: 600, // Increase limit slightly but still enforce reasonable sizes
   },

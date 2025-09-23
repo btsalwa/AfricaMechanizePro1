@@ -6,7 +6,11 @@ import { storage } from "../storage.js";
 import { sendEmail } from "../emailService.js";
 
 const router = express.Router();
-const JWT_SECRET = process.env.JWT_SECRET || "P@$$w0rd";
+const JWT_SECRET = process.env.JWT_SECRET;
+if (!JWT_SECRET) {
+  console.error("FATAL: JWT_SECRET environment variable is required");
+  process.exit(1);
+}
 const JWT_EXPIRES = "24h";
 
 // Middleware to verify admin JWT token

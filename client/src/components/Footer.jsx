@@ -1,5 +1,14 @@
 import { Link } from "wouter";
-import { Sprout, Twitter, Facebook, Linkedin, Youtube, Mail, Phone, MapPin } from "lucide-react";
+import {
+  Sprout,
+  Twitter,
+  Facebook,
+  Linkedin,
+  Youtube,
+  Mail,
+  Phone,
+  MapPin,
+} from "lucide-react";
 
 export const Footer = () => {
   return (
@@ -18,7 +27,10 @@ export const Footer = () => {
               </div>
             </div>
             <p className="text-gray-300 mb-6">
-              Empowering African agriculture through sustainable mechanization solutions, featuring 42 educational resources from the established Africa Mechanize platform and expert partnerships with FAO, CGIAR, and ACT Africa.
+              Empowering African agriculture through sustainable mechanization
+              solutions, featuring 42 educational resources from the established
+              Africa Mechanize platform and expert partnerships with FAO, CGIAR,
+              and ACT Africa.
             </p>
             <div className="flex space-x-4">
               <a 
@@ -65,22 +77,34 @@ export const Footer = () => {
             <h4 className="text-lg font-semibold mb-6">Quick Links</h4>
             <ul className="space-y-3">
               <li>
-                <Link href="/framework" className="text-gray-300 hover:text-primary transition-colors">
+                <Link
+                  href="/framework"
+                  className="text-gray-300 hover:text-primary transition-colors"
+                >
                   F-SAMA Framework
                 </Link>
               </li>
               <li>
-                <Link href="/events" className="text-gray-300 hover:text-primary transition-colors">
+                <Link
+                  href="/events"
+                  className="text-gray-300 hover:text-primary transition-colors"
+                >
                   Events
                 </Link>
               </li>
               <li>
-                <Link href="/resources" className="text-gray-300 hover:text-primary transition-colors">
+                <Link
+                  href="/resources"
+                  className="text-gray-300 hover:text-primary transition-colors"
+                >
                   Resources
                 </Link>
               </li>
               <li>
-                <Link href="/news" className="text-gray-300 hover:text-primary transition-colors">
+                <Link
+                  href="/news"
+                  className="text-gray-300 hover:text-primary transition-colors"
+                >
                   News
                 </Link>
               </li>
@@ -93,7 +117,7 @@ export const Footer = () => {
           </div>
 
           {/* Framework */}
-          <div>
+          {/* <div>
             <h4 className="text-lg font-semibold mb-6">Framework Elements</h4>
             <ul className="space-y-3">
               <li>
@@ -122,7 +146,7 @@ export const Footer = () => {
                 </Link>
               </li>
             </ul>
-          </div>
+          </div> */}
 
           {/* Contact */}
           <div>
@@ -147,8 +171,13 @@ export const Footer = () => {
         <div className="border-t border-gray-700 mt-12 pt-8 text-center">
           <p className="text-gray-400">
             &copy; 2025 AfricaMechanize. All rights reserved. |
-            <a href="#" className="hover:text-primary transition-colors ml-1">Privacy Policy</a> |
-            <a href="#" className="hover:text-primary transition-colors ml-1">Terms of Service</a>
+            <a href="#" className="hover:text-primary transition-colors ml-1">
+              Privacy Policy
+            </a>{" "}
+            |
+            <a href="#" className="hover:text-primary transition-colors ml-1">
+              Terms of Service
+            </a>
           </p>
         </div>
       </div>

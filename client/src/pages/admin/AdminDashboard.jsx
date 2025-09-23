@@ -394,7 +394,7 @@ export default function AdminDashboard() {
   // News/Events CRUD Mutations
   const createNewsEventMutation = useMutation({
     mutationFn: async (data) => {
-      const response = await apiRequest("POST", "/api/events", data);
+      const response = await apiRequest("POST", "/api/admin/news-events", data);
       return response;
     },
     onSuccess: () => {
@@ -414,7 +414,7 @@ export default function AdminDashboard() {
 
   const updateNewsEventMutation = useMutation({
     mutationFn: async ({ id, data }) => {
-      const response = await apiRequest("PUT", `/api/events/${id}`, data);
+      const response = await apiRequest("PUT", `/api/admin/news-events/${id}`, data);
       return response;
     },
     onSuccess: () => {
@@ -435,7 +435,7 @@ export default function AdminDashboard() {
 
   const deleteNewsEventMutation = useMutation({
     mutationFn: async (id) => {
-      const response = await apiRequest("DELETE", `/api/events/${id}`);
+      const response = await apiRequest("DELETE", `/api/admin/news-events/${id}`);
       return response;
     },
     onSuccess: () => {
@@ -455,7 +455,7 @@ export default function AdminDashboard() {
   // Resources CRUD Mutations
   const createResourceMutation = useMutation({
     mutationFn: async (data) => {
-      const response = await apiRequest("POST", "/api/resources", data);
+      const response = await apiRequest("POST", "/api/admin/resources", data);
       return response;
     },
     onSuccess: () => {
@@ -475,7 +475,7 @@ export default function AdminDashboard() {
 
   const updateResourceMutation = useMutation({
     mutationFn: async ({ id, data }) => {
-      const response = await apiRequest("PUT", `/api/resources/${id}`, data);
+      const response = await apiRequest("PUT", `/api/admin/resources/${id}`, data);
       return response;
     },
     onSuccess: () => {
@@ -496,7 +496,7 @@ export default function AdminDashboard() {
 
   const deleteResourceMutation = useMutation({
     mutationFn: async (id) => {
-      const response = await apiRequest("DELETE", `/api/resources/${id}`);
+      const response = await apiRequest("DELETE", `/api/admin/resources/${id}`);
       return response;
     },
     onSuccess: () => {
@@ -516,7 +516,7 @@ export default function AdminDashboard() {
   // Webinar Resources CRUD Mutations
   const createWebinarResourceMutation = useMutation({
     mutationFn: async (data) => {
-      const response = await apiRequest("POST", "/api/webinar-resources", data);
+      const response = await apiRequest("POST", "/api/admin/webinar-resources", data);
       return response;
     },
     onSuccess: () => {
@@ -536,7 +536,7 @@ export default function AdminDashboard() {
 
   const updateWebinarResourceMutation = useMutation({
     mutationFn: async ({ id, data }) => {
-      const response = await apiRequest("PUT", `/api/webinar-resources/${id}`, data);
+      const response = await apiRequest("PUT", `/api/admin/webinar-resources/${id}`, data);
       return response;
     },
     onSuccess: () => {
@@ -557,7 +557,7 @@ export default function AdminDashboard() {
 
   const deleteWebinarResourceMutation = useMutation({
     mutationFn: async (id) => {
-      const response = await apiRequest("DELETE", `/api/webinar-resources/${id}`);
+      const response = await apiRequest("DELETE", `/api/admin/webinar-resources/${id}`);
       return response;
     },
     onSuccess: () => {

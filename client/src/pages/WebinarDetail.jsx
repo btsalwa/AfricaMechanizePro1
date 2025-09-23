@@ -37,9 +37,7 @@ export default function WebinarDetail() {
   // Mutation for joining meeting (getting meeting URL)
   const joinMeetingMutation = useMutation({
     mutationFn: async () => {
-      const response = await apiRequest(`/api/webinars/${params?.slug}/meeting-url`, {
-        method: 'GET'
-      });
+      const response = await apiRequest("GET", `/api/webinars/${params?.slug}/meeting-url`);
       return response;
     },
     onSuccess: (data) => {

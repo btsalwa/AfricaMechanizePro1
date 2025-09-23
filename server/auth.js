@@ -199,7 +199,7 @@ export const authHelpers = {
 
   async sendVerificationEmail(email, token) {
     const verificationUrl = `${
-      process.env.BASE_URL || "http://localhost:5000"
+      process.env.BASE_URL || "http://localhost:10000"
     }/verify-email?token=${token}`;
 
     await sendEmail({
@@ -238,7 +238,7 @@ export const authHelpers = {
 
   async sendPasswordResetEmail(email, token) {
     const resetUrl = `${
-      process.env.BASE_URL || "http://localhost:5000"
+      process.env.BASE_URL || "http://localhost:10000"
     }/reset-password?token=${token}`;
 
     await sendEmail({

@@ -168,7 +168,7 @@ export const FrameworkGrid = () => {
       >
         {frameworkElements.map((element) => (
           <SwiperSlide key={element.id}>
-            <Card className="group relative overflow-hidden border-0 shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-2">
+            <Card className="group sticky overflow-hidden border-0 shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-2">
               <div
                 className={`absolute inset-0 bg-gradient-to-br ${element.color} opacity-5 group-hover:opacity-10 transition-opacity duration-300`}
               />
@@ -185,11 +185,11 @@ export const FrameworkGrid = () => {
                   {element.title}
                 </CardTitle>
               </CardHeader>
-              <CardContent className="text-center pt-0 relative z-10">
+              <CardContent className="text-center pb-0 relative z-10">
                 <p className="text-sm text-gray-600 dark:text-gray-300 mb-3 line-clamp-3">
                   {element.description}
                 </p>
-                <p className="text-xs text-gray-500 dark:text-gray-400 mb-3">
+                <p className="text-sm text-gray-500 dark:text-gray-400 mb-3">
                   {element.details}
                 </p>
                 {/* <Button
