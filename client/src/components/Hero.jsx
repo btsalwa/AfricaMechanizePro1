@@ -70,7 +70,7 @@ export const Hero = () => {
       {/* Hero Content */}
       <div className="relative z-10 text-center text-white px-6 max-w-6xl mx-auto">
         {/* Floating Icons */}
-        <div className="absolute -top-20 left-0 right-0 flex justify-center space-x-8">
+        <div className="absolute -top-10 left-0 right-0 flex justify-center space-x-8">
           <div className="animate-float" style={{ animationDelay: '0s' }}>
             <Leaf className="text-primary w-8 h-8 opacity-60" />
           </div>
@@ -83,31 +83,31 @@ export const Hero = () => {
         </div>
 
         <div className="mb-8">
-          <div className="inline-block px-4 py-2 bg-white/10 backdrop-blur-sm rounded-full border border-white/20 mb-6">
-            <p className="text-white/90 text-sm font-medium">
+          <div className="inline-block px-4 py-2 bg-white/10 backdrop-blur-sm rounded-full border border-white/20 mb-1">
+            <p className="text-black/90 text-lg font-medium">
               🌱 Sustainable Agricultural Mechanization Framework
             </p>
           </div>
         </div>
 
         <h1 
-          className={`text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold mb-6 transition-all duration-1000 ${
+          className={`text-4xl sm:text-5xl md:text-5xl lg:text-6xl font-bold mb-6 transition-all duration-1000 ${
             isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-10"
           }`}
         >
-          <span className="block bg-gradient-to-r from-white to-white/80 bg-clip-text text-transparent">
+          <span className="block bg-gradient-to-r from-white to-white/90 bg-clip-text text-transparent">
             Transforming
           </span>
-          <span className="block bg-gradient-to-r from-secondary to-warning bg-clip-text text-transparent sm:inline sm:ml-4">
+          <span className="block bg-gradient-to-r from-orange-500 to-orange-500 bg-clip-text text-transparent sm:inline sm:ml-4">
             Agriculture
           </span>
-          <span className="block bg-gradient-to-r from-white to-white/80 bg-clip-text text-transparent">
+          <span className="block bg-gradient-to-r from-white to-white/90 bg-clip-text text-transparent">
             in Africa
           </span>
         </h1>
         
         <p 
-          className={`text-lg sm:text-xl md:text-2xl mb-8 opacity-90 max-w-4xl mx-auto transition-all duration-1000 delay-300 leading-relaxed ${
+          className={`text-lg sm:text-xl md:text-2xl mb-8 opacity-100 max-w-4xl mx-auto transition-all duration-1000 delay-300 leading-relaxed ${
             isVisible ? "opacity-90 translate-y-0" : "opacity-0 translate-y-10"
           }`}
         >
@@ -115,7 +115,7 @@ export const Hero = () => {
         </p>
         
         <div 
-          className={`flex flex-col sm:flex-row gap-4 justify-center mb-16 transition-all duration-1000 delay-500 ${
+          className={`flex flex-col sm:flex-row gap-4 justify-center mb-10 transition-all duration-1000 delay-500 ${
             isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-10"
           }`}
         >
@@ -138,7 +138,7 @@ export const Hero = () => {
         </div>
 
         {/* Enhanced Feature Pills with Legacy Data */}
-        <div className={`flex flex-wrap gap-3 justify-center mb-12 transition-all duration-1000 delay-700 ${
+        <div className={`flex flex-wrap gap-3 justify-center mb-2 transition-all duration-1000 delay-700 ${
           isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-10"
         }`}>
           {["10 F-SAMA Elements", "54+ Countries", "42 Legacy Resources", "$13M Project Portfolio", "Expert Network"].map((pill, index) => (
@@ -155,7 +155,7 @@ export const Hero = () => {
 
       {/* Enhanced Scroll Indicator */}
       <div 
-        className={`absolute bottom-8 left-1/2 transform -translate-x-1/2 cursor-pointer transition-all duration-1000 delay-700 group ${
+        className={`absolute bottom-6 left-1/2 transform -translate-x-1/2 cursor-pointer transition-all duration-1000 delay-700 group ${
           isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-10"
         }`}
         onClick={scrollToFramework}
