@@ -135,7 +135,8 @@ export const Header = () => {
         <div className="container mx-auto px-4 flex items-center justify-center gap-2">
           <div className="w-1.5 h-1.5 bg-red-400 rounded-full animate-pulse"></div>
           <span>
-            Join our next webinar on Agricultural Mechanization - Register now!
+            Join our next webinar on <a href="https://africamechanize.org/" className="underline hover:no-underline">https://africamechanize.org/</a> - Register
+            now!
           </span>
           <Link href="/webinars" className="underline hover:no-underline">
             Learn More
