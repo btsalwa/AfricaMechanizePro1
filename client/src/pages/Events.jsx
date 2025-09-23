@@ -6,9 +6,12 @@ import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Calendar, Clock, MapPin, Users, ExternalLink, Video, ChevronRight } from "lucide-react";
 import { format } from "date-fns";
+import { Link } from "wouter";
+import { useToast } from "@/hooks/use-toast";
 
 export default function Events() {
   const [selectedCategory, setSelectedCategory] = useState("all");
+  const { toast } = useToast();
 
   // Mock events data - replace with actual API call
   const events = [
@@ -171,20 +174,57 @@ export default function Events() {
         </div>
         
         <div className="flex gap-2">
-          <Button className="flex-1 group-hover:bg-green-600 transition-colors">
-            {event.category === "webinar" ? (
-              <>
-                <Video className="w-4 h-4 mr-2" />
-                Join Webinar
-              </>
-            ) : (
-              <>
-                Register Now
-                <ChevronRight className="w-4 h-4 ml-2" />
-              </>
-            )}
+          <Button 
+            asChild
+            className="flex-1 group-hover:bg-green-600 transition-colors"
+          >
+            <Link 
+              href={event.category === "webinar" ? "/webinars" : "/contact"}
+              data-testid={`button-${event.category === "webinar" ? "join-webinar" : "register"}-${event.id}`}
+            >
+              {event.category === "webinar" ? (
+                <>
+                  <Video className="w-4 h-4 mr-2" />
+                  Join Webinar
+                </>
+              ) : (
+                <>
+                  Register Now
+                  <ChevronRight className="w-4 h-4 ml-2" />
+                </>
+              )}
+            </Link>
           </Button>
-          <Button variant="outline" size="icon">
+          <Button 
+            variant="outline" 
+            size="icon"
+            onClick={async () => {
+              try {
+                if (navigator.share) {
+                  await navigator.share({
+                    title: event.title,
+                    text: event.description,
+                    url: window.location.href
+                  });
+                } else {
+                  await navigator.clipboard.writeText(window.location.href);
+                  toast({
+                    title: "Link copied!",
+                    description: "Event link has been copied to your clipboard.",
+                  });
+                }
+              } catch (error) {
+                toast({
+                  title: "Error",
+                  description: "Unable to share or copy link.",
+                  variant: "destructive"
+                });
+              }
+            }}
+            data-testid={`button-share-${event.id}`}
+            title="Share event"
+            aria-label="Share event"
+          >
             <ExternalLink className="w-4 h-4" />
           </Button>
         </div>
@@ -228,6 +268,7 @@ export default function Events() {
               variant={selectedCategory === category.id ? "default" : "outline"}
               onClick={() => setSelectedCategory(category.id)}
               className="capitalize"
+              data-testid={`filter-${category.id}`}
             >
               {category.label} ({category.count})
             </Button>
@@ -237,8 +278,8 @@ export default function Events() {
         {/* Events Tabs */}
         <Tabs defaultValue="upcoming" className="w-full">
           <TabsList className="grid w-full grid-cols-2 max-w-md mx-auto mb-12">
-            <TabsTrigger value="upcoming">Upcoming Events</TabsTrigger>
-            <TabsTrigger value="past">Past Events</TabsTrigger>
+            <TabsTrigger value="upcoming" data-testid="tab-upcoming">Upcoming Events</TabsTrigger>
+            <TabsTrigger value="past" data-testid="tab-past">Past Events</TabsTrigger>
           </TabsList>
           
           <TabsContent value="upcoming">
@@ -292,8 +333,18 @@ export default function Events() {
               Interested in organizing an event for the agricultural mechanization community? 
               We'd love to help you reach our global network of experts and practitioners.
             </p>
-            <Button size="lg" variant="secondary" className="px-8 py-3 text-lg font-semibold">
-              Submit Event Proposal
+            <Button 
+              asChild
+              size="lg" 
+              variant="secondary" 
+              className="px-8 py-3 text-lg font-semibold"
+            >
+              <Link 
+                href="/contact"
+                data-testid="button-submit-event-proposal"
+              >
+                Submit Event Proposal
+              </Link>
             </Button>
           </div>
         </div>

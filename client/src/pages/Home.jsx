@@ -1,4 +1,5 @@
 import { Hero } from "../components/Hero";
+import { FAOConferenceBanner } from "../components/FAOConferenceBanner";
 import { StatsCounter } from "../components/StatsCounter";
 import { FrameworkGrid } from "../components/FrameworkGrid";
 import { WebinarSection } from "../components/WebinarSection";
@@ -42,6 +43,8 @@ export default function Home() {
       </div> */}
 
       <Hero />
+
+      <FAOConferenceBanner />
 
       <StatsCounter />
 
