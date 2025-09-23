@@ -81,7 +81,7 @@ export async function sendWelcomeEmail(user) {
             </ul>
           </div>
           <div style="text-align: center; margin: 30px 0;">
-            <a href="${process.env.BASE_URL || "http://localhost:5000"}" 
+            <a href="${process.env.BASE_URL || "http://localhost:10000"}" 
                style="background: #22c55e; color: white; padding: 12px 24px; text-decoration: none; 
                       border-radius: 6px; font-weight: 600; display: inline-block;">
               Get Started
