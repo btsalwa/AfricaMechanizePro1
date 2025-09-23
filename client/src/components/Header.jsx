@@ -112,7 +112,9 @@ export const Header = () => {
   const handleSearch = (e) => {
     e.preventDefault();
     if (searchTerm.trim()) {
-      window.location.href = `/resources?search=${encodeURIComponent(searchTerm)}`;
+      window.location.href = `/resources?search=${encodeURIComponent(
+        searchTerm
+      )}`;
       setSearchOpen(false);
       setSearchTerm("");
     }
@@ -129,17 +131,13 @@ export const Header = () => {
         }}
       />
 
-      {/* Compact Announcement Bar */}
       <div className="bg-gradient-to-r from-primary to-secondary text-white text-center py-1 text-xs relative z-40">
         <div className="container mx-auto px-4 flex items-center justify-center gap-2">
           <div className="w-1.5 h-1.5 bg-red-400 rounded-full animate-pulse"></div>
           <span>
             Join our next webinar on Agricultural Mechanization - Register now!
           </span>
-          <Link
-            href="/webinars/upcoming"
-            className="underline hover:no-underline"
-          >
+          <Link href="/webinars" className="underline hover:no-underline">
             Learn More
           </Link>
         </div>
